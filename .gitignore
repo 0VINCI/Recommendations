@@ -1,0 +1,52 @@
+/Recommendations.Shared/obj/Debug/net8.0/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs
+/Recommendations.Shared/obj/Debug/net8.0/Recommendations.Shared.AssemblyInfo.cs
+/Recommendations.Shared/obj/Debug/net8.0/Recommendations.Shared.AssemblyInfoInputs.cache
+/Recommendations.Shared/obj/Debug/net8.0/Recommendations.Shared.assets.cache
+/Recommendations.Shared/obj/Debug/net8.0/Recommendations.Shared.csproj.AssemblyReference.cache
+/Recommendations.Shared/obj/Debug/net8.0/Recommendations.Shared.GeneratedMSBuildEditorConfig.editorconfig
+/Recommendations.Shared/obj/Debug/net8.0/Recommendations.Shared.GlobalUsings.g.cs
+/Recommendations.Shared/obj/project.assets.json
+/Recommendations.Shared/obj/project.nuget.cache
+/Recommendations.Shared/obj/project.packagespec.json
+/Recommendations.Shared/obj/Recommendations.Shared.csproj.nuget.dgspec.json
+/Recommendations.Shared/obj/Recommendations.Shared.csproj.nuget.g.props
+/Recommendations.Shared/obj/Recommendations.Shared.csproj.nuget.g.targets
+/Recommendations.Shared/obj/rider.project.restore.info
+# Katalogi build (bin, obj)
+bin/
+obj/
+
+# Pliki użytkownika i konfiguracje IDE
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / IntelliJ IDEA
+.idea/
+*.iml
+/modules.xml
+/projectSettingsUpdater.xml
+/.idea.Recommendations.iml
+/contentModel.xml
+
+# Pliki specyficzne projektu (z Twojego przykładu)
+/shelf/
+/workspace.xml
+
+# Ustawienia edytora HTTP Client
+/httpRequests/
+
+# Lokalne dane źródłowe
+/dataSources/
+/dataSources.local.xml
+
+# Publikowane pliki i katalogi
+publish/
+
+# Pakiety NuGet
+*.nupkg
+packages/
+
+# Konfiguracja VS Code
+.vscode/
