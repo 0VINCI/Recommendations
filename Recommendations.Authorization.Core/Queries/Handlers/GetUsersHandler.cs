@@ -3,7 +3,7 @@ using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.Authorization.Core.Queries.Handlers;
 
-internal sealed class GetUsersHandler : IQueryHandler<GetUsers, IReadOnlyCollection<User>>
+public sealed class GetUsersHandler : IQueryHandler<GetUsers, IReadOnlyCollection<User>>
 {
     public async Task<IReadOnlyCollection<User>> HandleAsync(
         GetUsers query,
@@ -11,8 +11,8 @@ internal sealed class GetUsersHandler : IQueryHandler<GetUsers, IReadOnlyCollect
     {
         var users = new List<User>
         {
-            new User { Id = 1, Name = "Jan", Surname = "Kowalski", Email = "jan.kowalski@test.com" },
-            new User { Id = 2, Name = "Anna", Surname = "Nowak", Email = "anna.nowak@test.com" }
+            new() { IdUser = new Guid(), Name = "Jan", Surname = "Kowalski", Email = "jan.kowalski@test.com", Password = "abc"},
+            new() { IdUser = new Guid(), Name = "Anna", Surname = "Nowak", Email = "anna.nowak@test.com", Password = "abc" }
         };
 
         return await Task.FromResult(users);
