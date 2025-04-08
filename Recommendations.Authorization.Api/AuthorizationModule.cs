@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Recommendations.Authorization.Core;
-using Recommendations.Shared;
 using Recommendations.Shared.Abstractions.Queries;
+using Recommendations.Shared.ModuleDefinition;
 
-namespace Recommendations.Authorization;
+namespace Recommendations.Authorization.Api;
 
 internal sealed class AuthorizationModule : ModuleDefinition
 {

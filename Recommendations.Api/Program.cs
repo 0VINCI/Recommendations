@@ -1,10 +1,10 @@
 using recommendations;
-using Recommendations.Authorization;
-using Recommendations.Shared;
+using Recommendations.Authorization.Api;
+using Recommendations.Shared.ModuleDefinition;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Modules.RegisterModule<AuthorizationModule>();
+RegistrationModules.RegisterModule<AuthorizationModule>();
 
 builder.Services.AddApiDependencies(builder.Configuration);
 

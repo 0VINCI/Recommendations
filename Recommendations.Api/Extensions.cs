@@ -1,5 +1,5 @@
-using Recommendation.Shared.Infrastructure;
-using Recommendations.Shared;
+using Recommendations.Shared.Infrastructure;
+using Recommendations.Shared.ModuleDefinition;
 
 namespace recommendations;
 

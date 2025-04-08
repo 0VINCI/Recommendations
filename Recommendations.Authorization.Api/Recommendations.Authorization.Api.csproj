@@ -4,7 +4,6 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>Recommendations.Authorization</RootNamespace>
     </PropertyGroup>
      
     <ItemGroup>
@@ -14,13 +13,14 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.2.25163.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\backen d\recommendations\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
       <ProjectReference Include="..\Recommendations.Authorization.Core\Recommendations.Authorization.Core.csproj" />
-      <ProjectReference Include="..\Recommendation.Shared.Abstractions\Recommendation.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
     </ItemGroup>
+
 
 </Project>
