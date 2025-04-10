@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Recommendations.Shared.Infrastructure.Commands;
 using Recommendations.Shared.Infrastructure.Events;
+using Recommendations.Shared.Infrastructure.Options;
 using Recommendations.Shared.Infrastructure.Queries;
 
 namespace Recommendations.Shared.Infrastructure;
@@ -20,7 +21,7 @@ public static class Extensions
         services.AddQueries(assemblies);
         services.AddEvents(assemblies);
         services.AddEndpointsApiExplorer();
-
+        services.AddOptions(configuration);
         return services;
     }
 
