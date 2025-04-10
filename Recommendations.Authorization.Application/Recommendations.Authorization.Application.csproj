@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Queries\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Recommendations.Authorization.Core\Recommendations.Authorization.Core.csproj" />
       <ProjectReference Include="..\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
     </ItemGroup>
