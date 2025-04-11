@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Shared.Modu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Authorization.Application", "Recommendations.Authorization.Application\Recommendations.Authorization.Application.csproj", "{D66BA2FA-C0A2-43B9-9DF7-069D0878936E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Authorization.Infrastructure", "Recommendations.Authorization.Infrastructure\Recommendations.Authorization.Infrastructure.csproj", "{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{D66BA2FA-C0A2-43B9-9DF7-069D0878936E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D66BA2FA-C0A2-43B9-9DF7-069D0878936E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D66BA2FA-C0A2-43B9-9DF7-069D0878936E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{40C16DF7-6297-4FC8-916A-6136FCECC210} = {0078696F-14C0-42FF-BC37-2A0102F3ED3C}
@@ -68,5 +74,6 @@ Global
 		{9FD8F492-4212-4283-8B0C-73D23044AB3E} = {FA8AFF58-F637-4733-B6DD-C23F4E28D045}
 		{80702AC6-EC32-4A30-B2BE-DA9438C72206} = {FA8AFF58-F637-4733-B6DD-C23F4E28D045}
 		{D66BA2FA-C0A2-43B9-9DF7-069D0878936E} = {C2D9417F-CD32-41E5-B655-2D3697081A05}
+		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691} = {C2D9417F-CD32-41E5-B655-2D3697081A05}
 	EndGlobalSection
 EndGlobal

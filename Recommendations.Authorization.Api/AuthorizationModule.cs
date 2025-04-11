@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Recommendations.Authorization.Application.Commands;
 using Recommendations.Authorization.Core;
 using Recommendations.Authorization.Core.Queries;
+using Recommendations.Authorization.Infrastructure;
 using Recommendations.Shared.Abstractions.Commands;
 using Recommendations.Shared.Abstractions.Queries;
 using Recommendations.Shared.ModuleDefinition;
@@ -15,10 +16,13 @@ namespace Recommendations.Authorization.Api;
 
 internal sealed class AuthorizationModule : ModuleDefinition
 {
-    public override string ModulePrefix => "/authorization";
+    public override string ModulePrefix => "/authorization";    
 
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
-        => services.AddCore(configuration);
+    {
+        services.AddCore(configuration);
+        services.AddInfrastructure(configuration);
+    }
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)
     {
