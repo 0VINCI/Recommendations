@@ -8,6 +8,7 @@ public static class Extensions
     public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
+        services.Configure<DbOptions>(configuration.GetSection(DbOptions.SectionName));
 
         return services;
     }

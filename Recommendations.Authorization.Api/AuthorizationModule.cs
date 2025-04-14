@@ -21,7 +21,7 @@ internal sealed class AuthorizationModule : ModuleDefinition
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCore(configuration);
-        services.AddInfrastructure(configuration);
+        services.AddInfrastructure();
     }
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)

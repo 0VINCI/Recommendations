@@ -1,16 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Recommendations.Authorization.Infrastructure.EF;
+using Microsoft.Extensions.Options;
+using Recommendations.Authorization.Infrastructure.DAL;
+using Recommendations.Shared.Infrastructure.Options;
 
 namespace Recommendations.Authorization.Infrastructure;
 
 public static class Extensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddDbContext<AuthorizationDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DatabaseConnection")));
+        services.AddPostgres();
         return services;
     }
 }

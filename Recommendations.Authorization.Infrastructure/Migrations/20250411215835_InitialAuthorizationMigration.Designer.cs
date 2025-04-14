@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Recommendations.Authorization.Infrastructure.EF;
+using Recommendations.Authorization.Infrastructure.DAL;
 
 #nullable disable
 
