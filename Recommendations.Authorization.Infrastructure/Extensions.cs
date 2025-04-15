@@ -1,9 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Recommendations.Authorization.Infrastructure.DAL;
-using Recommendations.Shared.Infrastructure.Options;
 
 namespace Recommendations.Authorization.Infrastructure;
 

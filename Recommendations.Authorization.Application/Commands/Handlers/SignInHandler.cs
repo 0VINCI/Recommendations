@@ -1,12 +1,25 @@
 using Recommendations.Authorization.Application.Exceptions;
+using Recommendations.Authorization.Infrastructure.DAL.Repositories;
 using Recommendations.Shared.Abstractions.Commands;
 
 namespace Recommendations.Authorization.Application.Commands.Handlers;
 
-internal sealed class SignInHandler : ICommandHandler<SignIn>
+internal sealed class SignInHandler(IUserRepository userRepository) : ICommandHandler<SignIn>
 {
-    public Task HandleAsync(SignIn command, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(SignIn command, CancellationToken cancellationToken = default)
     {
-        throw new InvalidPasswordException();    
-    }
+        var data = command.SignInDto;
+
+        var user = await userRepository.GetUser(data.Email);
+
+        if (user is null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        if (data.Password != user.Password)
+        {
+            throw new InvalidPasswordException();
+        }
+    } 
 }

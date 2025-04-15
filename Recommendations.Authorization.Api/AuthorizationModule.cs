@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Recommendations.Authorization.Application;
 using Recommendations.Authorization.Application.Commands;
+using Recommendations.Authorization.Application.Queries;
 using Recommendations.Authorization.Core;
-using Recommendations.Authorization.Core.Queries;
 using Recommendations.Authorization.Infrastructure;
 using Recommendations.Shared.Abstractions.Commands;
 using Recommendations.Shared.Abstractions.Queries;
@@ -21,14 +22,15 @@ internal sealed class AuthorizationModule : ModuleDefinition
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCore(configuration);
+        services.AddApplication();
         services.AddInfrastructure();
     }
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("/getUsers", async (                 
+        app.MapGet("/getAllUsers", async (                 
                 [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) 
-            => await queryDispatcher.QueryAsync(new GetUsers(), cancellationToken));
+            => await queryDispatcher.QueryAsync(new GetAllUsers(), cancellationToken));
 
         app.MapPost("/signIn", async (
             [FromBody] SignIn command,
