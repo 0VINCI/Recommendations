@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Recommendations.Authorization.Application.Commands.Handlers;
+using Recommendations.Authorization.Shared.Commands;
 using Recommendations.Shared.Abstractions.Commands;
 
 namespace Recommendations.Authorization.Application.Commands;

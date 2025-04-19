@@ -10,6 +10,8 @@ public static class Extensions
     {
         services.AddCommands();
         services.AddQueries();
+        services.AddAutoMapper(typeof(AuthorizationMappingProfile).Assembly);
+
         return services;
     }
 }

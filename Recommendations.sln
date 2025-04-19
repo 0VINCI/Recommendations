@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Authorizati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Authorization.Infrastructure", "Recommendations.Authorization.Infrastructure\Recommendations.Authorization.Infrastructure.csproj", "{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Authorization.Shared", "Recommendations.Authorization.Shared\Recommendations.Authorization.Shared.csproj", "{9ABD34E2-D84E-4055-8355-E4FD4B686590}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9ABD34E2-D84E-4055-8355-E4FD4B686590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ABD34E2-D84E-4055-8355-E4FD4B686590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9ABD34E2-D84E-4055-8355-E4FD4B686590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABD34E2-D84E-4055-8355-E4FD4B686590}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{40C16DF7-6297-4FC8-916A-6136FCECC210} = {0078696F-14C0-42FF-BC37-2A0102F3ED3C}
@@ -75,5 +81,6 @@ Global
 		{80702AC6-EC32-4A30-B2BE-DA9438C72206} = {FA8AFF58-F637-4733-B6DD-C23F4E28D045}
 		{D66BA2FA-C0A2-43B9-9DF7-069D0878936E} = {C2D9417F-CD32-41E5-B655-2D3697081A05}
 		{2A1F3A37-BE62-43DC-B439-7BE0E92A5691} = {C2D9417F-CD32-41E5-B655-2D3697081A05}
+		{9ABD34E2-D84E-4055-8355-E4FD4B686590} = {C2D9417F-CD32-41E5-B655-2D3697081A05}
 	EndGlobalSection
 EndGlobal

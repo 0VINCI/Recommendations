@@ -1,5 +1,6 @@
 using Recommendations.Authorization.Application.Exceptions;
 using Recommendations.Authorization.Infrastructure.DAL.Repositories;
+using Recommendations.Authorization.Shared.Commands;
 using Recommendations.Shared.Abstractions.Commands;
 
 namespace Recommendations.Authorization.Application.Commands.Handlers;
