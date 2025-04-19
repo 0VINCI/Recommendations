@@ -1,11 +1,10 @@
 namespace Recommendations.Shared.Infrastructure.Options;
 
-public class EmailOptions
+public record EmailOptions
 {
     public const string SectionName = "SendEmail";
 
-    public string ApiToken { get; }
-    public string Url { get; }
-    public string Email { get; }
-    public string Name { get; }
+    public string ApiToken      { get; init; } = default!;
+    public string Url      { get; init; } = default!;
+    public string Email    { get; init; } = default!;
 }

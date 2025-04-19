@@ -2,17 +2,18 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Recommendations.Shared.Abstractions.Email;
 using Recommendations.Shared.Infrastructure.Exceptions;
 using Recommendations.Shared.Infrastructure.Options;
 
 namespace Recommendations.Shared.Infrastructure.Email;
 
-public class SendEmailService(IOptions<EmailOptions> options) : ISendEmailService
+public class SendEmailService(HttpClient httpClient,
+    IOptions<EmailOptions> options) : ISendEmailService
 {
-    private readonly HttpClient _httpClient = new();
     private readonly EmailOptions _options = options.Value;
 
-    public async Task SendEmailAsync(string to, string subject, string body)
+    public async Task SendEmailAsync(string to, string name, string subject, string body)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, _options.Url);
 
@@ -20,7 +21,7 @@ public class SendEmailService(IOptions<EmailOptions> options) : ISendEmailServic
 
         var payload = new
         {
-            from = new { email = _options.Email, name = _options.Name },
+            from = new { email = _options.Email, name },
             to = new[] { new { email = to } },
             subject,
             html = body
@@ -28,7 +29,7 @@ public class SendEmailService(IOptions<EmailOptions> options) : ISendEmailServic
 
         request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.SendAsync(request);
+        var response = await httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
         {

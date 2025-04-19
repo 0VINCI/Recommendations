@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Recommendations.Shared.Infrastructure.Commands;
+using Recommendations.Shared.Infrastructure.Email;
 using Recommendations.Shared.Infrastructure.Events;
 using Recommendations.Shared.Infrastructure.Options;
 using Recommendations.Shared.Infrastructure.Queries;
@@ -22,6 +23,8 @@ public static class Extensions
         services.AddEvents(assemblies);
         services.AddEndpointsApiExplorer();
         services.AddOptions(configuration);
+        services.AddEmail();
+        
         return services;
     }
 
@@ -63,5 +66,4 @@ public static class Extensions
 
         return app;
     }
-
 }
