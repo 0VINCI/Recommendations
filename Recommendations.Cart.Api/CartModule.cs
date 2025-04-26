@@ -1,67 +1,67 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Recommendations.Authorization.Application;
-using Recommendations.Authorization.Core;
-using Recommendations.Authorization.Infrastructure;
-using Recommendations.Authorization.Shared.Commands;
-using Recommendations.Authorization.Shared.Queries;
+using Recommendations.Cart.Application;
+using Recommendations.Cart.Core;
+using Recommendations.Cart.Infrastructure;
+using Recommendations.Cart.Shared.Commands;
+using Recommendations.Cart.Shared.Queries;
 using Recommendations.Shared.Abstractions.Commands;
 using Recommendations.Shared.Abstractions.Queries;
 using Recommendations.Shared.ModuleDefinition;
 
-namespace Recommendations.Authorization.Api;
+namespace Recommendations.Cart.Api;
 
-internal sealed class AuthorizationModule : ModuleDefinition
+internal sealed class CartModule : ModuleDefinition
 {
-    public override string ModulePrefix => "/authorization";    
+    public override string ModulePrefix => "/cart";
 
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddCore(configuration);
-        services.AddApplication();
+        services.AddCore();
         services.AddInfrastructure();
+        services.AddApplication();
     }
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)
     {
-        app.MapGet("/getAllUsers", async (                 
+        app.MapPost("/addItem", async (
+            [FromBody] AddItemToCart command,
+            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
+        {
+            await commandDispatcher.SendAsync(command);
+            return Results.StatusCode(StatusCodes.Status200OK);
+        });
+        
+        app.MapPost("/removeItem", async (
+            [FromBody] RemoveItemFromCart command,
+            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
+        {
+            await commandDispatcher.SendAsync(command);
+            return Results.StatusCode(StatusCodes.Status200OK);
+        });
+
+        app.MapPost("/updateQuantity", async (
+            [FromBody] UpdateCartItemQuantity command,
+            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
+        {
+            await commandDispatcher.SendAsync(command);
+            return Results.StatusCode(StatusCodes.Status200OK);
+        });
+
+        app.MapPost("/clearCart", async (
+            [FromBody] ClearCart command,
+            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
+        {
+            await commandDispatcher.SendAsync(command);
+            return Results.StatusCode(StatusCodes.Status200OK);
+        });
+
+        app.MapGet("/getCartItems", async (                 
                 [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) 
-            => await queryDispatcher.QueryAsync(new GetAllUsers(), cancellationToken));
-
-        app.MapPost("/signIn", async (
-            [FromBody] SignIn command,
-            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
-        {
-            await commandDispatcher.SendAsync(command);
-            return Results.StatusCode(StatusCodes.Status200OK);
-        });
-
-        app.MapPost("/signUp", async (
-            [FromBody] SignUp command,
-            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
-        {
-            await commandDispatcher.SendAsync(command);
-            return Results.StatusCode(StatusCodes.Status200OK);
-        });
-
-        app.MapPost("/changePassword", async (
-            [FromBody] ChangePassword command,
-            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
-        {
-            await commandDispatcher.SendAsync(command);
-            return Results.StatusCode(StatusCodes.Status200OK);
-        });
-
-        app.MapPost("/remindPassword", async (
-            [FromBody] RemindPassword command,
-            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
-        {
-            await commandDispatcher.SendAsync(command);
-            return Results.StatusCode(StatusCodes.Status200OK);
-        });
+            => await queryDispatcher.QueryAsync(new GetCart(), cancellationToken));
     }
 }

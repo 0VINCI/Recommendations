@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Recommendations.Authorization.Application.Queries.Handlers;
-using Recommendations.Authorization.Core.Types;
 using Recommendations.Authorization.Shared.DTO;
 using Recommendations.Authorization.Shared.Queries;
 using Recommendations.Shared.Abstractions.Queries;

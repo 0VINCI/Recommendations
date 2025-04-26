@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>        <TargetFramework>net8.0</TargetFramework>
+    <PropertyGroup>        
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Recommendations</RootNamespace>
@@ -19,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Recommendations.Cart.Api\Recommendations.Cart.Api.csproj" />
       <ProjectReference Include="..\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
       <ProjectReference Include="..\Recommendations.Authorization.Api\Recommendations.Authorization.Api.csproj" />
       <ProjectReference Include="..\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
