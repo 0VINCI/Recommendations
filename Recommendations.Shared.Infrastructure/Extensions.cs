@@ -4,16 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Recommendations.Shared.Infrastructure.Commands;
-using Recommendations.Shared.Infrastructure.Email;
 using Recommendations.Shared.Infrastructure.Events;
 using Recommendations.Shared.Infrastructure.Options;
 using Recommendations.Shared.Infrastructure.Queries;
+using Recommendations.Shared.Infrastructure.Services;
 
 namespace Recommendations.Shared.Infrastructure;
 
 public static class Extensions
 {
-    
     public static IServiceCollection AddSharedFramework(this IServiceCollection services, IConfiguration configuration)
     {
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -23,7 +22,7 @@ public static class Extensions
         services.AddEvents(assemblies);
         services.AddEndpointsApiExplorer();
         services.AddOptions(configuration);
-        services.AddEmail();
+        services.AddServices();
         
         return services;
     }

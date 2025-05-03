@@ -8,6 +8,7 @@ using Recommendations.Authorization.Application;
 using Recommendations.Authorization.Core;
 using Recommendations.Authorization.Infrastructure;
 using Recommendations.Authorization.Shared.Commands;
+using Recommendations.Authorization.Shared.DTO;
 using Recommendations.Authorization.Shared.Queries;
 using Recommendations.Shared.Abstractions.Commands;
 using Recommendations.Shared.Abstractions.Queries;
@@ -33,11 +34,24 @@ internal sealed class AuthorizationModule : ModuleDefinition
             => await queryDispatcher.QueryAsync(new GetAllUsers(), cancellationToken));
 
         app.MapPost("/signIn", async (
-            [FromBody] SignIn command,
-            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
+            [FromBody] SignInDto signInDto,
+            [FromServices] IQueryDispatcher queryDispatcher,
+            HttpContext httpContext,
+            CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
-            return Results.StatusCode(StatusCodes.Status200OK);
+            var signedInDto = await queryDispatcher.QueryAsync(new SignIn(signInDto), cancellationToken);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(60),
+            };
+
+            httpContext.Response.Cookies.Append("jwt-token", signedInDto.Token, cookieOptions);
+
+            return Results.Ok(signedInDto);
         });
 
         app.MapPost("/signUp", async (

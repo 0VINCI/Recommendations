@@ -5,7 +5,7 @@ namespace Recommendations.Authorization.Shared;
 
 public interface IAuthorizationModuleApi
 {
-    Task SignIn(SignIn command);
+    Task <SignedInDto> SignIn(SignInDto signInDto);
     Task SignUp(SignUp command);
     Task ChangePassword(ChangePassword command);
     Task RemindPassword(RemindPassword command);

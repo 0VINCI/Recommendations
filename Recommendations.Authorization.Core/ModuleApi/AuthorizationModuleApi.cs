@@ -10,8 +10,8 @@ internal class AuthorizationModuleApi(ICommandDispatcher commands,
         IQueryDispatcher queries)
     : IAuthorizationModuleApi
 {
-    public Task SignIn(SignIn cmd) 
-        => commands.SendAsync(cmd);
+    public Task<SignedInDto> SignIn(SignInDto signInDto)
+        => queries.QueryAsync(new SignIn(signInDto));
 
     public Task SignUp(SignUp cmd) 
         => commands.SendAsync(cmd);

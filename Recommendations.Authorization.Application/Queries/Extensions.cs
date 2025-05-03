@@ -11,7 +11,8 @@ public static class Extensions
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
         services.AddScoped<IQueryHandler<GetAllUsers, IReadOnlyCollection<UserDto>>, GetAllUsersHandler>();
-        
+        services.AddScoped<IQueryHandler<SignIn, SignedInDto>, SignInHandler>();
+
         return services;
     }
 }

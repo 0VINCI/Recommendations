@@ -6,22 +6,21 @@ using Recommendations.Shared.Abstractions.Email;
 using Recommendations.Shared.Infrastructure.Exceptions;
 using Recommendations.Shared.Infrastructure.Options;
 
-namespace Recommendations.Shared.Infrastructure.Email;
+namespace Recommendations.Shared.Infrastructure.Services;
 
 public class SendEmailService(HttpClient httpClient,
     IOptions<EmailOptions> options) : ISendEmailService
 {
-    private readonly EmailOptions _options = options.Value;
-
     public async Task SendEmailAsync(string to, string name, string subject, string body)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, _options.Url);
-
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiToken);
+        var opt = options.Value;
+        var request = new HttpRequestMessage(HttpMethod.Post, opt.Url);
+        
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", opt.ApiToken);
 
         var payload = new
         {
-            from = new { email = _options.Email, name },
+            from = new { email = opt.Email, name },
             to = new[] { new { email = to } },
             subject,
             html = body
