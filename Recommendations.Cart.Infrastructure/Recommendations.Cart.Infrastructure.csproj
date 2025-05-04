@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Recommendations.Cart.Application\Recommendations.Cart.Application.csproj" />
       <ProjectReference Include="..\Recommendations.Cart.Core\Recommendations.Cart.Core.csproj" />
       <ProjectReference Include="..\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
     </ItemGroup>

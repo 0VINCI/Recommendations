@@ -22,8 +22,8 @@ internal sealed class CartModule : ModuleDefinition
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCore();
-        services.AddInfrastructure();
         services.AddApplication();
+        services.AddInfrastructure();
     }
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)
@@ -60,8 +60,11 @@ internal sealed class CartModule : ModuleDefinition
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
-        app.MapGet("/getCartItems", async (                 
-                [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) 
-            => await queryDispatcher.QueryAsync(new GetCart(), cancellationToken));
+        app.MapGet("/getCartItems", async (
+            [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) =>
+        {
+            var cartDto = await queryDispatcher.QueryAsync(new GetCart(), cancellationToken);
+            return Results.Ok(cartDto);
+        });
     }
 }

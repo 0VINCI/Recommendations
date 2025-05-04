@@ -11,9 +11,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Recommendations.Cart.Core\Recommendations.Cart.Core.csproj" />
-      <ProjectReference Include="..\Recommendations.Cart.Shared\Recommendations.Cart.Shared.csproj" />
-      <ProjectReference Include="..\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
+      <Folder Include="Commands\Handlers\" />
+      <Folder Include="Queries\Handlers\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Recommendations.Dictionaries.Core\Recommendations.Dictionaries.Core.csproj" />
     </ItemGroup>
 
 </Project>
