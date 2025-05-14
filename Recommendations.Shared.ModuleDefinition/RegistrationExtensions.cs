@@ -30,7 +30,12 @@ public static class RegistrationModules
     {
         foreach (var module in RegisteredModules.Values)
         {
-            module.CreateEndpoints(app.MapGroup(module.ModulePrefix));
+            var group = app.MapGroup(module.ModulePrefix);
+
+            if (module.RequireAuthorization)
+                group.RequireAuthorization();
+
+            module.CreateEndpoints(group);
         }
 
         return app;

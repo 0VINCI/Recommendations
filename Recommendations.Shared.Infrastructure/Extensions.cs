@@ -8,6 +8,7 @@ using Recommendations.Shared.Infrastructure.Events;
 using Recommendations.Shared.Infrastructure.Options;
 using Recommendations.Shared.Infrastructure.Queries;
 using Recommendations.Shared.Infrastructure.Services;
+using Recommendations.Shared.Infrastructure.UserContext;
 
 namespace Recommendations.Shared.Infrastructure;
 
@@ -15,6 +16,18 @@ public static class Extensions
 {
     public static IServiceCollection AddSharedFramework(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddAuthorization();
+        services.AddCors(cors =>
+        {
+            cors.AddPolicy("DefaultCorsPolicy", builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
+
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         services.AddCommands(assemblies);
@@ -23,16 +36,14 @@ public static class Extensions
         services.AddEndpointsApiExplorer();
         services.AddOptions(configuration);
         services.AddServices();
+        services.AddUserContext();
+        services.AddCustomSwagger();
         
         return services;
     }
 
     public static WebApplication UseSharedFramework(this WebApplication app)
     {
-        app.UseCors();
-        app.UseAuthentication();
-        app.UseAuthorization();
-
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -41,6 +52,9 @@ public static class Extensions
         {
             app.UseHttpsRedirection();
         }
+        app.UseCors("DefaultCorsPolicy");
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         return app;
     }
@@ -55,7 +69,7 @@ public static class Extensions
     }
 
     public static WebApplication UseCustomSwagger(this WebApplication app, string version = "v1")
-    {
+    { 
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {

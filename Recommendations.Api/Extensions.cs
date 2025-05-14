@@ -7,15 +7,16 @@ public static class Extensions
 {
     public static void AddApiDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddModules(configuration);
-        services.AddHttpContextAccessor();
         services.AddSharedFramework(configuration);
-        services.AddCustomSwagger();
-        services.AddAuthorization();
+        services.AddHttpContextAccessor();
+        services.AddModules(configuration);
     }
 
     public static WebApplication UseApiDependencies(this WebApplication app)
     {
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseSharedFramework();
         app.UseModulesEndpoints();
 
         if (app.Environment.IsDevelopment())

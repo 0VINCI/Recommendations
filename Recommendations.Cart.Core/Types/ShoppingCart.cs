@@ -7,6 +7,7 @@ public sealed class ShoppingCart(Guid userId)
 {
     public Guid IdCart { get; private set; } = Guid.NewGuid();
     public Guid UserId { get; private set; } = userId;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     private readonly List<CartItem> _items = new();
     

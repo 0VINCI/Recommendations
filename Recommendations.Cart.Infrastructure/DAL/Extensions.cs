@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Recommendations.Cart.Core.Repositories;
 using Recommendations.Cart.Infrastructure.DAL.Repositories;
 using Recommendations.Shared.Infrastructure.Options;
 

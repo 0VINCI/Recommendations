@@ -18,6 +18,8 @@ namespace Recommendations.Cart.Api;
 internal sealed class CartModule : ModuleDefinition
 {
     public override string ModulePrefix => "/cart";
+    public override bool RequireAuthorization => true;
+
 
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
