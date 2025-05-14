@@ -14,8 +14,6 @@ public static class Extensions
 
     public static WebApplication UseApiDependencies(this WebApplication app)
     {
-        app.UseAuthentication();
-        app.UseAuthorization();
         app.UseSharedFramework();
         app.UseModulesEndpoints();
 
