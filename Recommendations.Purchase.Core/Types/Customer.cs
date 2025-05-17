@@ -2,7 +2,7 @@ namespace Recommendations.Purchase.Core.Types;
 
 public record class Customer
 {
-    public Guid Id { get; }
+    public Guid IdCustomer { get; }
     public string FirstName { get; }
     public string LastName { get; }
     public string Email { get; }
@@ -11,7 +11,7 @@ public record class Customer
     public IReadOnlyList<Payment> Payments { get; init; }
 
     public Customer(
-        Guid id,
+        Guid idCustomer,
         string firstName,
         string lastName,
         string email,
@@ -27,7 +27,7 @@ public record class Customer
             throw new ArgumentException("Invalid email format.", nameof(email));
         if (!IsValidPhone(phoneNumber))
             throw new ArgumentException("Invalid phone number.", nameof(phoneNumber));
-        Id = id;
+        IdCustomer = idCustomer;
         FirstName = firstName;
         LastName = lastName;
         Email = email;

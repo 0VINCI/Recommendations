@@ -7,19 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Data\EF\Configurations\" />
+      <Folder Include="Commands\Handlers\" />
       <Folder Include="Data\EF\Migrations\" />
-      <Folder Include="Data\Models\" />
-      <Folder Include="Data\Queries\" />
-      <Folder Include="Data\Repositories\" />
+      <Folder Include="Exceptions\" />
+      <Folder Include="Queries\Handlers\" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.3.25171.5" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Recommendations.Purchase.Shared\Recommendations.Purchase.Shared.csproj" />
+      <ProjectReference Include="..\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
     </ItemGroup>
     
 </Project>

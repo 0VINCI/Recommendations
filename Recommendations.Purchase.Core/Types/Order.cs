@@ -2,7 +2,7 @@ namespace Recommendations.Purchase.Core.Types;
 
 public record class Order
 {
-    public Guid Id { get; }
+    public Guid IdOrder { get; }
     public Guid CustomerId { get; }
     public IReadOnlyList<OrderItem> Items { get; }
     public Guid ShippingAddressId { get; }
@@ -10,11 +10,11 @@ public record class Order
     public DateTime CreatedAt { get; }
     public DateTime? PaidAt { get; private set; }
 
-    public Order(Guid id, Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId)
+    public Order(Guid idOrder, Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId)
     {
         if (items == null || !items.Any())
             throw new ArgumentException("Order must contain at least one item.", nameof(items));
-        Id = id;
+        IdOrder = idOrder;
         CustomerId = customerId;
         Items = items.ToList();
         ShippingAddressId = shippingAddressId;
