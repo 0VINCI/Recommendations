@@ -19,8 +19,7 @@ internal sealed class CartModule : ModuleDefinition
 {
     public override string ModulePrefix => "/cart";
     public override bool RequireAuthorization => true;
-
-
+    
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCore();
@@ -62,11 +61,12 @@ internal sealed class CartModule : ModuleDefinition
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
-        app.MapGet("/getCartItems", async (
+        app.MapPost("/getCartItems", async (
+            [FromBody] GetCart query,
             [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) =>
         {
-            var cartDto = await queryDispatcher.QueryAsync(new GetCart(), cancellationToken);
-            return Results.Ok(cartDto);
+            var cart = await queryDispatcher.QueryAsync(new GetCart(query.CartId), cancellationToken);
+            return cart is null ? Results.NotFound() : Results.Ok(cart);
         });
     }
 }

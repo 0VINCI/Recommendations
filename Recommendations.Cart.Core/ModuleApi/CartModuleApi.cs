@@ -14,12 +14,9 @@ internal class CartModuleApi(ICommandDispatcher commands,
     
     public Task RemoveItem(RemoveItemFromCart cmd) => commands.SendAsync(cmd);
 
-    public Task UpdateQuantity(UpdateCartItemQuantity cmd) 
-        => commands.SendAsync(cmd);
+    public Task UpdateQuantity(UpdateCartItemQuantity cmd) => commands.SendAsync(cmd);
 
-    public Task ClearCart(ClearCart cmd) 
-        => commands.SendAsync(cmd);
+    public Task ClearCart(ClearCart cmd) => commands.SendAsync(cmd);
     
-    public Task<IReadOnlyCollection<CartItemDto>> GetCart(GetCart query) 
-        => queries.QueryAsync(new GetCart());
+    public Task<ShoppingCartDto?> GetCart(GetCart query) => queries.QueryAsync(new GetCart(query.CartId));
 }

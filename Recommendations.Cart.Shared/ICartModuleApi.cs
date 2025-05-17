@@ -10,5 +10,5 @@ public interface ICartModuleApi
     Task RemoveItem(RemoveItemFromCart cmd);
     Task UpdateQuantity(UpdateCartItemQuantity cmd);
     Task ClearCart(ClearCart cmd);
-    Task<IReadOnlyCollection<CartItemDto>> GetCart(GetCart query);
+    Task<ShoppingCartDto?> GetCart(GetCart query);
 }

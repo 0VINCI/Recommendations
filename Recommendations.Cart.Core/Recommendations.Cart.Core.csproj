@@ -12,7 +12,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Recommendations.Cart.Shared\Recommendations.Cart.Shared.csproj" />
-        <ProjectReference Include="..\Recommendations.Cart.Core\Recommendations.Authorization.Core.csproj" />
         <ProjectReference Include="..\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
     </ItemGroup>
 </Project>

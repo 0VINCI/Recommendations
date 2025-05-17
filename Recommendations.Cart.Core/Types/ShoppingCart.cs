@@ -37,7 +37,4 @@ public sealed class ShoppingCart(Guid userId)
                    ?? throw new ItemNotInCartException();
         item.ChangeQuantity(newQty);
     }
-
-    public void Clear() 
-        => _items.Clear();
 }
