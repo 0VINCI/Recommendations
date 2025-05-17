@@ -12,7 +12,6 @@
       <Folder Include="Data\Models\" />
       <Folder Include="Data\Queries\" />
       <Folder Include="Data\Repositories\" />
-      <Folder Include="Types\" />
     </ItemGroup>
 
     <ItemGroup>
