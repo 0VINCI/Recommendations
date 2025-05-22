@@ -10,9 +10,9 @@ public record class Order
     public DateTime CreatedAt { get; }
     public DateTime? PaidAt { get; private set; }
 
-    public Order(Guid idOrder, Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId)
+    private Order(Guid idOrder, Guid customerId, IReadOnlyCollection<OrderItem> items, Guid shippingAddressId)
     {
-        if (items == null || !items.Any())
+        if (items == null || items.Count == 0)
             throw new ArgumentException("Order must contain at least one item.", nameof(items));
         IdOrder = idOrder;
         CustomerId = customerId;
@@ -31,4 +31,9 @@ public record class Order
     }
 
     public decimal GetTotalAmount() => Items.Sum(x => x.ProductPrice * x.Quantity);
+    
+    public static Order Create(Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId)
+    {
+        return new Order(Guid.NewGuid(), customerId, items.ToList(), shippingAddressId);
+    }
 }

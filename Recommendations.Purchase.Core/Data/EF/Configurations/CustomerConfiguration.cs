@@ -15,6 +15,8 @@ internal sealed class CustomerConfiguration : IEntityTypeConfiguration<CustomerD
 
         builder.Property(c => c.IdCustomer)
             .ValueGeneratedNever();
+        
+        builder.Property(c => c.UserId);
 
         builder.Property(c => c.FirstName).IsRequired().HasMaxLength(100);
         builder.Property(c => c.LastName).IsRequired().HasMaxLength(100);

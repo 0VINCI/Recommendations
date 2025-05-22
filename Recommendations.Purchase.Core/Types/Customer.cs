@@ -3,15 +3,18 @@ namespace Recommendations.Purchase.Core.Types;
 public record class Customer
 {
     public Guid IdCustomer { get; }
+    public Guid UserId { get; }
     public string FirstName { get; }
     public string LastName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
+    
     public IReadOnlyList<Address> Addresses { get; init; }
     public IReadOnlyList<Payment> Payments { get; init; }
 
     public Customer(
         Guid idCustomer,
+        Guid userId,
         string firstName,
         string lastName,
         string email,
@@ -28,6 +31,7 @@ public record class Customer
         if (!IsValidPhone(phoneNumber))
             throw new ArgumentException("Invalid phone number.", nameof(phoneNumber));
         IdCustomer = idCustomer;
+        UserId = userId;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
