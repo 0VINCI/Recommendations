@@ -8,7 +8,7 @@ public record class Address
     public string PostalCode { get; }
     public string Country { get; }
 
-    public Address(Guid idAddress, string street, string city, string postalCode, string country)
+    private Address(Guid idAddress, string street, string city, string postalCode, string country)
     {
         if (string.IsNullOrWhiteSpace(street))
             throw new ArgumentException("Street is required.", nameof(street));
@@ -23,5 +23,9 @@ public record class Address
         City = city;
         PostalCode = postalCode;
         Country = country;
+    }
+    public static Address Create(string street, string city, string postalCode, string country)
+    {
+        return new Address(Guid.NewGuid(), street, city, postalCode, country);
     }
 }

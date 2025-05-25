@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Data\EF\Migrations\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AutoMapper" Version="14.0.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.3.25171.5" />

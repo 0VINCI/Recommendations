@@ -1,16 +1,20 @@
+using Recommendations.Purchase.Core.Types.Enums;
+
 namespace Recommendations.Purchase.Core.Types;
 
-public record class Order
+public class Order
 {
     public Guid IdOrder { get; }
     public Guid CustomerId { get; }
-    public IReadOnlyList<OrderItem> Items { get; }
+    private IReadOnlyList<OrderItem> Items { get; }
     public Guid ShippingAddressId { get; }
-    public OrderStatus Status { get; private set; }
+    private OrderStatus Status { get; set; }
     public DateTime CreatedAt { get; }
     public DateTime? PaidAt { get; private set; }
+    private List<Payment> Payments { get; init; }
 
-    private Order(Guid idOrder, Guid customerId, IReadOnlyCollection<OrderItem> items, Guid shippingAddressId)
+    private Order(Guid idOrder, Guid customerId, IReadOnlyCollection<OrderItem> items, 
+        Guid shippingAddressId, IEnumerable<Payment> payments)
     {
         if (items == null || items.Count == 0)
             throw new ArgumentException("Order must contain at least one item.", nameof(items));
@@ -20,6 +24,7 @@ public record class Order
         ShippingAddressId = shippingAddressId;
         Status = OrderStatus.Created;
         CreatedAt = DateTime.UtcNow;
+        Payments = payments?.ToList() ?? new List<Payment>();
     }
 
     public void MarkAsPaid(DateTime paidAt)
@@ -29,11 +34,15 @@ public record class Order
         Status = OrderStatus.Paid;
         PaidAt = paidAt;
     }
+    public void AddPayment(Payment payment)
+    {
+        Payments.Add(payment);
+    }
 
     public decimal GetTotalAmount() => Items.Sum(x => x.ProductPrice * x.Quantity);
     
-    public static Order Create(Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId)
+    public static Order Create(Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId, IEnumerable<Payment>? payments = null)
     {
-        return new Order(Guid.NewGuid(), customerId, items.ToList(), shippingAddressId);
+        return new Order(Guid.NewGuid(), customerId, items.ToList(), shippingAddressId, payments ?? Enumerable.Empty<Payment>());
     }
 }

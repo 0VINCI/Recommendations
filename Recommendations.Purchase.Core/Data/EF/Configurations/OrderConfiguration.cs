@@ -44,5 +44,17 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<OrderDbModel
         });
 
         builder.Property(o => o.ShippingAddressId).IsRequired();
+        builder.OwnsMany(c => c.Payments, payments =>
+        {
+            payments.ToTable("OrderPayments");
+            payments.WithOwner().HasForeignKey("IdOrder");
+            payments.Property<Guid>("IdPayment").ValueGeneratedNever();
+            payments.HasKey("IdPayment");
+            payments.Property(p => p.Method)
+                .HasConversion<string>()
+                .IsRequired();
+            payments.Property(p => p.PaymentDate).IsRequired();
+            payments.Property(p => p.Details).IsRequired().HasMaxLength(200);
+        });
     }
 }

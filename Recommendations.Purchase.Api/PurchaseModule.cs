@@ -29,7 +29,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromBody] CreateOrder command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
         
@@ -48,7 +48,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromBody] PayForOrder command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
         
@@ -57,17 +57,17 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromServices] ICommandDispatcher commandDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
-        app.MapGet("/{orderId}/status", async (
-            [FromRoute] Guid orderId,
+        app.MapPost("/status", async (
+            [FromBody] GetOrdersStatus query,
             [FromServices] IQueryDispatcher queryDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            var result = await queryDispatcher.QueryAsync(new GetOrderStatus(orderId), cancellationToken);
-            return result is null ? Results.NotFound() : Results.Ok(result);
+            var result = await queryDispatcher.QueryAsync(query, cancellationToken);
+            return Results.Ok(result);
         });
 
         app.MapPatch("/status", async (
@@ -75,7 +75,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromServices] ICommandDispatcher commandDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
@@ -92,7 +92,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromServices] ICommandDispatcher commandDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
@@ -101,7 +101,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromServices] ICommandDispatcher commandDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
@@ -110,7 +110,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromServices] ICommandDispatcher commandDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
@@ -119,7 +119,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             [FromServices] ICommandDispatcher commandDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
     }

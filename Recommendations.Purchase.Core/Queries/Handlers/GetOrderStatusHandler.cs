@@ -2,18 +2,16 @@ using Recommendations.Purchase.Core.Data.Repositories;
 using Recommendations.Purchase.Shared.DTO;
 using Recommendations.Purchase.Shared.Queries;
 using Recommendations.Shared.Abstractions.Queries;
-using Recommendations.Shared.Abstractions.UserContext;
 
 namespace Recommendations.Purchase.Core.Queries.Handlers;
 
-internal sealed class GetOrderStatusHandler(IPurchaseRepository purchaseRepository, 
-    IUserContext userContext) : IQueryHandler<GetOrderStatus, int?>
+internal sealed class GetOrdersStatusHandler(IPurchaseRepository purchaseRepository) : IQueryHandler<GetOrdersStatus, OrderStatusDto[]>
 {
-    public async Task<int?> HandleAsync(GetOrderStatus query,
+    public async Task<OrderStatusDto[]> HandleAsync(GetOrdersStatus query,
         CancellationToken cancellationToken = default)
     {
-        var order = await purchaseRepository.GetOrderStatus(query.OrderId, cancellationToken);
+        var statuses = await purchaseRepository.GetOrdersStatusById(query.OrderIds, cancellationToken);
         
-        return order;
+        return statuses;
     }
 }

@@ -1,4 +1,5 @@
 using Recommendations.Purchase.Core.Types;
+using Recommendations.Purchase.Core.Types.Enums;
 
 namespace Recommendations.Purchase.Core.Data.Models;
 

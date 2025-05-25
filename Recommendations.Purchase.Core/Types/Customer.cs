@@ -1,6 +1,6 @@
 namespace Recommendations.Purchase.Core.Types;
 
-public record class Customer
+public record Customer
 {
     public Guid IdCustomer { get; }
     public Guid UserId { get; }
@@ -8,19 +8,17 @@ public record class Customer
     public string LastName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
-    
-    public IReadOnlyList<Address> Addresses { get; init; }
-    public IReadOnlyList<Payment> Payments { get; init; }
 
-    public Customer(
+    private List<Address> Addresses { get; init; }
+
+    private Customer(
         Guid idCustomer,
         Guid userId,
         string firstName,
         string lastName,
         string email,
         string phoneNumber,
-        IEnumerable<Address> addresses,
-        IEnumerable<Payment> payments)
+        IEnumerable<Address> addresses)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new ArgumentException("First name cannot be empty.", nameof(firstName));
@@ -36,8 +34,7 @@ public record class Customer
         LastName = lastName;
         Email = email;
         PhoneNumber = phoneNumber;
-        Addresses = addresses?.ToList() ?? throw new ArgumentNullException(nameof(addresses));
-        Payments = payments?.ToList() ?? new List<Payment>();
+        Addresses = addresses?.ToList() ?? new List<Address>();
     }
 
     private static bool IsValidEmail(string email) =>
@@ -49,6 +46,11 @@ public record class Customer
     public Customer AddAddress(Address address)
         => this with { Addresses = Addresses.Append(address).ToList() };
 
-    public Customer AddPayment(Payment payment)
-        => this with { Payments = Payments.Append(payment).ToList() };
+
+    public static Customer Create(Guid userId, string firstName, string lastName, string email, string phoneNumber, 
+        IEnumerable<Address>? addresses = null)
+    {
+        return new Customer(Guid.NewGuid(), userId, firstName, lastName, email, phoneNumber,
+            addresses ?? Enumerable.Empty<Address>());
+    }
 }

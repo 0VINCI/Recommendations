@@ -2,4 +2,4 @@
 
 namespace Recommendations.Purchase.Shared.Commands;
 
-public sealed record UpdateCustomer(string dto, CancellationToken CancellationToken) : ICommand;
+public sealed record UpdateCustomer(string dto) : ICommand;

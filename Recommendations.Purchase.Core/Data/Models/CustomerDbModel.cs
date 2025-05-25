@@ -11,5 +11,4 @@ public class CustomerDbModel
 
 
     public ICollection<AddressDbModel> Addresses { get; set; } = new List<AddressDbModel>();
-    public ICollection<PaymentDbModel> Payments { get; set; } = new List<PaymentDbModel>();
 }

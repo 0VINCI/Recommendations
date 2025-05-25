@@ -7,6 +7,6 @@ public record CustomerDto(
     string Email,
     string PhoneNumber,
     Guid UserId,
-    IReadOnlyCollection<AddressDto> Addresses,
-    IReadOnlyCollection<PaymentDto> Payments
+    List<AddressDto>? Addresses = null,
+    List<PaymentDto>? Payments = null
     );

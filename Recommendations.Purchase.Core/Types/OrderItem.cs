@@ -1,6 +1,6 @@
 namespace Recommendations.Purchase.Core.Types;
 
-public record OrderItem
+public class OrderItem
 {
     public Guid IdOrderItem { get; }
     public Guid ProductId { get; }
@@ -27,6 +27,6 @@ public record OrderItem
         ProductPrice = productPrice;
         Quantity = quantity;
     }
-
+    
     public decimal GetTotalPrice() => ProductPrice * Quantity;
 }

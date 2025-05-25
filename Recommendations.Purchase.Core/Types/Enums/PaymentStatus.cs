@@ -1,4 +1,4 @@
-namespace Recommendations.Purchase.Core.Types;
+namespace Recommendations.Purchase.Core.Types.Enums;
 
 public enum PaymentStatus
 {

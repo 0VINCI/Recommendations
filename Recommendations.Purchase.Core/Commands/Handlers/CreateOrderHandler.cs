@@ -1,5 +1,4 @@
-﻿using Recommendations.Purchase.Core.Data.Models;
-using Recommendations.Purchase.Core.Data.Repositories;
+﻿using Recommendations.Purchase.Core.Data.Repositories;
 using Recommendations.Purchase.Core.Exceptions;
 using Recommendations.Purchase.Core.Types;
 using Recommendations.Purchase.Shared.Commands;
@@ -13,8 +12,9 @@ internal sealed class CreateOrderHandler(IPurchaseRepository purchaseRepository,
     public async Task HandleAsync(CreateOrder command, CancellationToken cancellationToken = default)
     {
         var customer = await purchaseRepository.GetCustomer(userContext.UserId, cancellationToken);
+        
         if (customer is null)
-            throw new ClientNotFoundException();
+            throw new CustomerNotFoundException();
 
         var orderItems = command.OrderDto.Items
             .Select(i => new OrderItem(

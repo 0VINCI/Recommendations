@@ -121,39 +121,7 @@ namespace Recommendations.Purchase.Core.Migrations
                                 .HasForeignKey("IdCustomer");
                         });
 
-                    b.OwnsMany("Recommendations.Purchase.Core.Data.Models.PaymentDbModel", "Payments", b1 =>
-                        {
-                            b1.Property<Guid>("IdPayment")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Details")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("character varying(200)");
-
-                            b1.Property<Guid>("IdCustomer")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Method")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<DateTime>("PaymentDate")
-                                .HasColumnType("timestamp with time zone");
-
-                            b1.HasKey("IdPayment");
-
-                            b1.HasIndex("IdCustomer");
-
-                            b1.ToTable("CustomerPayments", "Purchase");
-
-                            b1.WithOwner()
-                                .HasForeignKey("IdCustomer");
-                        });
-
                     b.Navigation("Addresses");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Recommendations.Purchase.Core.Data.Models.OrderDbModel", b =>
@@ -190,7 +158,39 @@ namespace Recommendations.Purchase.Core.Migrations
                                 .HasForeignKey("IdOrder");
                         });
 
+                    b.OwnsMany("Recommendations.Purchase.Core.Data.Models.PaymentDbModel", "Payments", b1 =>
+                        {
+                            b1.Property<Guid>("IdPayment")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Details")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)");
+
+                            b1.Property<Guid>("IdOrder")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Method")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<DateTime>("PaymentDate")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.HasKey("IdPayment");
+
+                            b1.HasIndex("IdOrder");
+
+                            b1.ToTable("OrderPayments", "Purchase");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IdOrder");
+                        });
+
                     b.Navigation("Items");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

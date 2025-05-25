@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Recommendations.Purchase.Core.Data.Models;
-using Recommendations.Purchase.Core.Types;
 
 namespace Recommendations.Purchase.Core.Data.EF.Configurations;
 
@@ -15,7 +14,7 @@ internal sealed class CustomerConfiguration : IEntityTypeConfiguration<CustomerD
 
         builder.Property(c => c.IdCustomer)
             .ValueGeneratedNever();
-        
+
         builder.Property(c => c.UserId);
 
         builder.Property(c => c.FirstName).IsRequired().HasMaxLength(100);
@@ -33,19 +32,6 @@ internal sealed class CustomerConfiguration : IEntityTypeConfiguration<CustomerD
             addresses.Property(a => a.City).IsRequired().HasMaxLength(100);
             addresses.Property(a => a.PostalCode).IsRequired().HasMaxLength(20);
             addresses.Property(a => a.Country).IsRequired().HasMaxLength(100);
-        });
-
-        builder.OwnsMany(c => c.Payments, payments =>
-        {
-            payments.ToTable("CustomerPayments");
-            payments.WithOwner().HasForeignKey("IdCustomer");
-            payments.Property<Guid>("IdPayment").ValueGeneratedNever();
-            payments.HasKey("IdPayment");
-            payments.Property(p => p.Method)
-                .HasConversion<string>()
-                .IsRequired();
-            payments.Property(p => p.PaymentDate).IsRequired();
-            payments.Property(p => p.Details).IsRequired().HasMaxLength(200);
         });
     }
 }
