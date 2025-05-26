@@ -51,15 +51,6 @@ internal sealed class PurchaseModule : ModuleDefinition
             await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
-        
-        app.MapPost("/cancel", async (//anuluj
-            [FromBody] CancelOrder command,
-            [FromServices] ICommandDispatcher commandDispatcher,
-            CancellationToken cancellationToken = default) =>
-        {
-            await commandDispatcher.SendAsync(command, cancellationToken);
-            return Results.StatusCode(StatusCodes.Status200OK);
-        });
 
         app.MapPost("/status", async (
             [FromBody] GetOrdersStatus query,

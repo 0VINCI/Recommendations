@@ -1,15 +1,15 @@
 namespace Recommendations.Purchase.Core.Types;
 
-public record Customer
+public class Customer
 {
     public Guid IdCustomer { get; }
     public Guid UserId { get; }
-    public string FirstName { get; }
-    public string LastName { get; }
-    public string Email { get; }
-    public string PhoneNumber { get; }
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public string Email { get; private set; }
+    public string PhoneNumber { get; private set; }
 
-    private List<Address> Addresses { get; init; }
+    public List<Address> Addresses { get; private set; }
 
     private Customer(
         Guid idCustomer,
@@ -20,6 +20,13 @@ public record Customer
         string phoneNumber,
         IEnumerable<Address> addresses)
     {
+        UpdateDetails(firstName, lastName, email, phoneNumber);
+        IdCustomer = idCustomer;
+        UserId = userId;
+        Addresses = addresses?.ToList() ?? new List<Address>();
+    }
+    public void UpdateDetails(string firstName, string lastName, string email, string phoneNumber)
+    {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new ArgumentException("First name cannot be empty.", nameof(firstName));
         if (string.IsNullOrWhiteSpace(lastName))
@@ -28,13 +35,11 @@ public record Customer
             throw new ArgumentException("Invalid email format.", nameof(email));
         if (!IsValidPhone(phoneNumber))
             throw new ArgumentException("Invalid phone number.", nameof(phoneNumber));
-        IdCustomer = idCustomer;
-        UserId = userId;
+
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         PhoneNumber = phoneNumber;
-        Addresses = addresses?.ToList() ?? new List<Address>();
     }
 
     private static bool IsValidEmail(string email) =>
@@ -43,9 +48,11 @@ public record Customer
     private static bool IsValidPhone(string phone) =>
         !string.IsNullOrWhiteSpace(phone) && phone.Length >= 7;
 
-    public Customer AddAddress(Address address)
-        => this with { Addresses = Addresses.Append(address).ToList() };
-
+    public void AddAddress(Address address)
+    {
+        ArgumentNullException.ThrowIfNull(address);
+        Addresses.Add(address);
+    }
 
     public static Customer Create(Guid userId, string firstName, string lastName, string email, string phoneNumber, 
         IEnumerable<Address>? addresses = null)

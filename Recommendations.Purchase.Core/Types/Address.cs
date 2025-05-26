@@ -1,14 +1,19 @@
 namespace Recommendations.Purchase.Core.Types;
 
-public record class Address
+public class Address
 {
     public Guid IdAddress { get; }
-    public string Street { get; }
-    public string City { get; }
-    public string PostalCode { get; }
-    public string Country { get; }
+    public string Street { get; private set; }
+    public string City { get; private set; }
+    public string PostalCode { get; private set; }
+    public string Country { get; private set; }
 
     private Address(Guid idAddress, string street, string city, string postalCode, string country)
+    {
+        IdAddress = idAddress;
+        UpdateAddress(street, city, postalCode, country);
+    }
+    public void UpdateAddress(string street, string city, string postalCode, string country)
     {
         if (string.IsNullOrWhiteSpace(street))
             throw new ArgumentException("Street is required.", nameof(street));
@@ -18,7 +23,7 @@ public record class Address
             throw new ArgumentException("Postal code is required.", nameof(postalCode));
         if (string.IsNullOrWhiteSpace(country))
             throw new ArgumentException("Country is required.", nameof(country));
-        IdAddress = idAddress;
+
         Street = street;
         City = city;
         PostalCode = postalCode;

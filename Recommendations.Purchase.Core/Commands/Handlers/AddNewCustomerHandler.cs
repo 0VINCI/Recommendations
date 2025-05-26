@@ -1,8 +1,6 @@
-﻿using Recommendations.Purchase.Core.Data.Models;
-using Recommendations.Purchase.Core.Data.Repositories;
+﻿using Recommendations.Purchase.Core.Data.Repositories;
 using Recommendations.Purchase.Core.Exceptions;
 using Recommendations.Purchase.Core.Types;
-using Recommendations.Purchase.Core.Types.Enums;
 using Recommendations.Purchase.Shared.Commands;
 using Recommendations.Shared.Abstractions.Commands;
 using Recommendations.Shared.Abstractions.UserContext;
