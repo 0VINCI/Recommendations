@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Recommendations.Cart.Core\Recommendations.Cart.Core.csproj" />
+        <ProjectReference Include="..\Recommendations.Cart.Infrastructure\Recommendations.Cart.Infrastructure.csproj" />
+        <ProjectReference Include="..\Recommendations.Cart.Shared\Recommendations.Cart.Shared.csproj" />
+        <ProjectReference Include="..\..\Shared\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="14.0.0" />
+    </ItemGroup>
+
+</Project>
