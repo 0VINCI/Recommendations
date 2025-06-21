@@ -68,5 +68,12 @@ internal sealed class CartModule : ModuleDefinition
             var cart = await queryDispatcher.QueryAsync(new GetCart(query.CartId), cancellationToken);
             return cart is null ? Results.NotFound() : Results.Ok(cart);
         });
+
+        app.MapGet("/user", async (
+            [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) =>
+        {
+            var cart = await queryDispatcher.QueryAsync(new GetUserCart(), cancellationToken);
+            return cart is null ? Results.NotFound() : Results.Ok(cart);
+        });
     }
 }

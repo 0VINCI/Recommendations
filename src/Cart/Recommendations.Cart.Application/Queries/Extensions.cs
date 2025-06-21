@@ -11,6 +11,7 @@ public static class Extensions
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
         services.AddScoped<IQueryHandler<GetCart, ShoppingCartDto?>, GetCartHandler>();
+        services.AddScoped<IQueryHandler<GetUserCart, ShoppingCartDto?>, GetUserCartHandler>();
         
         return services;
     }

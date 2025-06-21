@@ -22,6 +22,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Authorization\Recommendations.Authorization.Api\Recommendations.Authorization.Api.csproj" />
       <ProjectReference Include="..\..\Cart\Recommendations.Cart.Api\Recommendations.Cart.Api.csproj" />
+      <ProjectReference Include="..\..\Dictionaries\Recommendations.Dictionaries.Api\Recommendations.Dictionaries.Api.csproj" />
       <ProjectReference Include="..\..\Purchase\Recommendations.Purchase.Api\Recommendations.Purchase.Api.csproj" />
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />

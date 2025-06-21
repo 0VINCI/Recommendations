@@ -55,6 +55,12 @@ internal sealed class AuthorizationModule : ModuleDefinition
             return Results.Ok(signedInDto);
         });
 
+        app.MapPost("/signOut", (HttpContext httpContext) =>
+        {
+            httpContext.Response.Cookies.Delete("jwt-token");
+            return Results.Ok();
+        });
+
         app.MapPost("/signUp", async (
             [FromBody] SignUp command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
