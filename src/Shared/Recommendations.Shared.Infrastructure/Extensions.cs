@@ -56,7 +56,16 @@ public static class Extensions
             };
         });        
         
-        services.AddCors();
+        services.AddCors(options =>
+        {
+            options.AddPolicy("DefaultCorsPolicy", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials();
+            });
+        });
         services.AddAuthorization(options =>
         {
             options.AddPolicy("MustBeAdmin", policy =>
@@ -83,6 +92,7 @@ public static class Extensions
 
     public static WebApplication UseSharedFramework(this WebApplication app)
     {
+        app.UseCors("DefaultCorsPolicy");
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -94,7 +104,6 @@ public static class Extensions
         {
             app.UseHttpsRedirection();
         }
-        app.UseCors("DefaultCorsPolicy");
 
         return app;
     }

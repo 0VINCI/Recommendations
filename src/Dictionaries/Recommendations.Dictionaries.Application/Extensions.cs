@@ -10,6 +10,7 @@ public static class Extensions
     {
         services.AddCommands();
         services.AddQueries();
+        services.AddAutoMapper(typeof(DictionariesMappingProfile).Assembly);
 
         return services;
     }

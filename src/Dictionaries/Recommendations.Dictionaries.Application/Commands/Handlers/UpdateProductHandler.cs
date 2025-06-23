@@ -13,21 +13,11 @@ internal sealed class UpdateProductHandler(IProductRepository productRepository)
         if (existingProduct == null)
             throw new InvalidOperationException($"Product with ID {command.Product.Id} not found");
 
-        var updatedProduct = new Product(
-            command.Product.Id,
-            command.Product.Name,
-            command.Product.Price,
-            command.Product.OriginalPrice,
-            command.Product.Image,
-            command.Product.Category,
-            command.Product.Description,
-            command.Product.Sizes,
-            command.Product.Colors,
-            command.Product.Rating,
-            command.Product.Reviews,
-            command.Product.IsBestseller,
-            command.Product.IsNew);
+        existingProduct.UpdateRating(command.Product.Rating, command.Product.Reviews);
+        existingProduct.MarkAsBestseller(command.Product.IsBestseller);
+        existingProduct.MarkAsNew(command.Product.IsNew);
+        existingProduct.UpdatePrice(command.Product.Price, command.Product.OriginalPrice);
 
-        await productRepository.UpdateAsync(updatedProduct);
+        await productRepository.UpdateAsync(existingProduct);
     }
 } 

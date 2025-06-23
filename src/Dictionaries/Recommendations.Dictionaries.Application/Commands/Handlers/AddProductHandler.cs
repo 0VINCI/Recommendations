@@ -10,18 +10,17 @@ internal sealed class AddProductHandler(IProductRepository productRepository) : 
     public async Task HandleAsync(AddProduct command, CancellationToken cancellationToken = default)
     {
         var product = Product.Create(
-            command.Product.Name,
+            command.Product.ProductDisplayName,
+            command.Product.BrandName,
             command.Product.Price,
             command.Product.OriginalPrice,
-            command.Product.Image,
-            command.Product.Category,
-            command.Product.Description,
-            command.Product.Sizes,
-            command.Product.Colors,
             command.Product.Rating,
             command.Product.Reviews,
             command.Product.IsBestseller,
-            command.Product.IsNew);
+            command.Product.IsNew,
+            command.Product.SubCategoryId,
+            command.Product.ArticleTypeId,
+            command.Product.BaseColourId);
 
         await productRepository.AddAsync(product);
     }

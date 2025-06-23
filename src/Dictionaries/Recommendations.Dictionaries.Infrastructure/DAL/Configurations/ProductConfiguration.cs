@@ -4,65 +4,69 @@ using Recommendations.Dictionaries.Core.Types;
 
 namespace Recommendations.Dictionaries.Infrastructure.DAL.Configurations;
 
-internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
+public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
         builder.HasKey(p => p.Id);
-
-        builder.Property(p => p.Id)
-            .ValueGeneratedNever();
-
-        builder.Property(p => p.Name)
-            .IsRequired()
-            .HasMaxLength(200);
-
-        builder.Property(p => p.Price)
-            .IsRequired()
-            .HasColumnType("decimal(18,2)");
-
-        builder.Property(p => p.OriginalPrice)
-            .HasColumnType("decimal(18,2)");
-
-        builder.Property(p => p.Image)
+        
+        builder.Property(p => p.ProductDisplayName)
             .IsRequired()
             .HasMaxLength(500);
-
-        builder.Property(p => p.Category)
+            
+        builder.Property(p => p.BrandName)
             .IsRequired()
             .HasMaxLength(100);
-
-        builder.Property(p => p.Description)
-            .IsRequired()
-            .HasMaxLength(2000);
-
+            
+        builder.Property(p => p.Price)
+            .HasColumnType("decimal(18,2)")
+            .IsRequired();
+            
+        builder.Property(p => p.OriginalPrice)
+            .HasColumnType("decimal(18,2)");
+            
         builder.Property(p => p.Rating)
-            .IsRequired()
-            .HasColumnType("decimal(3,2)");
-
+            .HasColumnType("decimal(3,1)")
+            .IsRequired();
+            
         builder.Property(p => p.Reviews)
             .IsRequired();
-
+            
         builder.Property(p => p.IsBestseller)
-            .IsRequired()
-            .HasDefaultValue(false);
-
+            .IsRequired();
+            
         builder.Property(p => p.IsNew)
-            .IsRequired()
-            .HasDefaultValue(false);
+            .IsRequired();
 
-        // Configure Sizes as JSON array
-        builder.Property(p => p.Sizes)
-            .HasConversion(
-                v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList())
-            .HasMaxLength(500);
+        builder.HasOne(p => p.SubCategory)
+            .WithMany()
+            .HasForeignKey(p => p.SubCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        builder.HasOne(p => p.ArticleType)
+            .WithMany()
+            .HasForeignKey(p => p.ArticleTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        builder.HasOne(p => p.BaseColour)
+            .WithMany(bc => bc.Products)
+            .HasForeignKey(p => p.BaseColourId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        builder.HasOne(p => p.Details)
+            .WithOne(d => d.Product)
+            .HasForeignKey<ProductDetails>(d => d.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        builder.HasMany(p => p.Images)
+            .WithOne(i => i.Product)
+            .HasForeignKey(i => i.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        // Configure Colors as JSON array
-        builder.Property(p => p.Colors)
-            .HasConversion(
-                v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList())
-            .HasMaxLength(500);
+        builder.HasIndex(p => p.BrandName);
+        builder.HasIndex(p => p.IsBestseller);
+        builder.HasIndex(p => p.IsNew);
+        builder.HasIndex(p => p.Rating);
+        builder.HasIndex(p => p.Price);
     }
 } 
