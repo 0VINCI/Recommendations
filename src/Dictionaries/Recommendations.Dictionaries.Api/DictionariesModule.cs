@@ -227,5 +227,14 @@ internal sealed class DictionariesModule : ModuleDefinition
                 return Results.BadRequest(new { error = ex.Message });
             }
         });
+
+        app.MapGet("/products/{id}/full", async (
+            [FromRoute] Guid id,
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var product = await queryDispatcher.QueryAsync(new GetProductFullById(id), cancellationToken);
+            return product is null ? Results.NotFound() : Results.Ok(product);
+        });
     }
 }

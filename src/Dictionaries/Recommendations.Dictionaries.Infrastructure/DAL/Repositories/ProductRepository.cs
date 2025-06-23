@@ -92,4 +92,12 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
     {
         return await context.Products.AnyAsync(p => p.Id == id);
     }
+    
+    public async Task<Product?> GetByIdWithDetailsAsync(Guid id)
+    {
+        return await context.Products
+            .Include(p => p.Details)
+            .Include(p => p.Images)
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
 } 
