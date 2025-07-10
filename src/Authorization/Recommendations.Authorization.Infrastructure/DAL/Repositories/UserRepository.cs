@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Recommendations.Authorization.Application.Exceptions;
+using Recommendations.Authorization.Core.Exceptions;
 using Recommendations.Authorization.Core.Types;
 
 namespace Recommendations.Authorization.Infrastructure.DAL.Repositories;

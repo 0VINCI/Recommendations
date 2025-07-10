@@ -18,7 +18,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
-      <ProjectReference Include="..\Purchase\Recommendations.Purchase.Core\Recommendations.Purchase.Core.csproj" />
       <ProjectReference Include="..\Recommendations.Purchase.Core\Recommendations.Purchase.Core.csproj" />
     </ItemGroup>
 

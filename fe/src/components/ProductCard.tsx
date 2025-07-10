@@ -17,8 +17,8 @@ export function ProductCard({ product }: ProductCardProps) {
       type: "ADD_TO_CART",
       payload: {
         product,
-        size: product.sizes[0],
-        color: product.colors[0],
+        size: "",
+        color: "",
       },
     });
   };
@@ -114,45 +114,11 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        <div className="mt-2 flex flex-wrap gap-1">
-          {product.colors.slice(0, 4).map((color, index) => (
-            <div
-              key={index}
-              className="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600"
-              style={{
-                backgroundColor:
-                  color === "Biały"
-                    ? "#ffffff"
-                    : color === "Czarny"
-                    ? "#000000"
-                    : color === "Szary"
-                    ? "#6b7280"
-                    : color === "Niebieski"
-                    ? "#3b82f6"
-                    : color === "Czerwony"
-                    ? "#ef4444"
-                    : color === "Zielony"
-                    ? "#10b981"
-                    : color === "Żółty"
-                    ? "#f59e0b"
-                    : color === "Różowy"
-                    ? "#ec4899"
-                    : color === "Bordowy"
-                    ? "#991b1b"
-                    : color === "Granatowy"
-                    ? "#1e40af"
-                    : color === "Beżowy"
-                    ? "#d2b48c"
-                    : "#6b7280",
-              }}
-              title={color}
-            />
-          ))}
-          {product.colors.length > 4 && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              +{product.colors.length - 4}
-            </span>
-          )}
+        {/* Product Details */}
+        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          {product.category}
+          {product.gender && ` • ${product.gender}`}
+          {product.baseColour && ` • ${product.baseColour}`}
         </div>
       </div>
     </div>

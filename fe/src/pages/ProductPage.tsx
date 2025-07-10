@@ -14,8 +14,6 @@ import { useApp } from "../context/useApp";
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const { state, dispatch } = useApp();
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   const product = state.products.find((p) => p.id === id);
@@ -39,18 +37,13 @@ export function ProductPage() {
   }
 
   const addToCart = () => {
-    if (!selectedSize || !selectedColor) {
-      alert("Proszę wybrać rozmiar i kolor");
-      return;
-    }
-
     for (let i = 0; i < quantity; i++) {
       dispatch({
         type: "ADD_TO_CART",
         payload: {
           product,
-          size: selectedSize,
-          color: selectedColor,
+          size: "",
+          color: "",
         },
       });
     }
@@ -129,48 +122,72 @@ export function ProductPage() {
               </p>
             </div>
 
-            {/* Size Selection */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Rozmiar
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 border rounded-md font-medium transition-colors ${
-                      selectedSize === size
-                        ? "border-primary-600 bg-primary-600 text-white"
-                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-600 dark:hover:border-primary-400"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {/* Product Details */}
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Kategoria:
+                </span>
+                <span className="text-gray-900 dark:text-white">
+                  {product.category}
+                </span>
               </div>
-            </div>
-
-            {/* Color Selection */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Kolor
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {product.colors.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 border rounded-md font-medium transition-colors ${
-                      selectedColor === color
-                        ? "border-primary-600 bg-primary-600 text-white"
-                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-600 dark:hover:border-primary-400"
-                    }`}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
+              {product.gender && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Płeć:
+                  </span>
+                  <span className="text-gray-900 dark:text-white">
+                    {product.gender}
+                  </span>
+                </div>
+              )}
+              {product.subCategory && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Podkategoria:
+                  </span>
+                  <span className="text-gray-900 dark:text-white">
+                    {product.subCategory}
+                  </span>
+                </div>
+              )}
+              {product.articleType && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Typ:</span>
+                  <span className="text-gray-900 dark:text-white">
+                    {product.articleType}
+                  </span>
+                </div>
+              )}
+              {product.baseColour && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Kolor:
+                  </span>
+                  <span className="text-gray-900 dark:text-white">
+                    {product.baseColour}
+                  </span>
+                </div>
+              )}
+              {product.season && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Sezon:
+                  </span>
+                  <span className="text-gray-900 dark:text-white">
+                    {product.season}
+                  </span>
+                </div>
+              )}
+              {product.year && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Rok:</span>
+                  <span className="text-gray-900 dark:text-white">
+                    {product.year}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Quantity */}
