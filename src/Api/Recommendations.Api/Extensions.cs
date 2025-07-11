@@ -1,7 +1,8 @@
+using Recommendations.Middlewares;
 using Recommendations.Shared.Infrastructure;
 using Recommendations.Shared.ModuleDefinition;
 
-namespace recommendations;
+namespace Recommendations;
 
 public static class Extensions
 {

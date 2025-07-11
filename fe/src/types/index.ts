@@ -12,6 +12,15 @@ export interface Product {
   reviews: number;
   isBestseller?: boolean;
   isNew?: boolean;
+  // Additional fields from fashion dataset
+  gender?: string;
+  masterCategory?: string;
+  subCategory?: string;
+  articleType?: string;
+  baseColour?: string;
+  season?: string;
+  year?: number;
+  usage?: string;
 }
 
 export interface CartItem {
@@ -26,7 +35,7 @@ export interface Order {
   userId: string;
   items: CartItem[];
   total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  status: "pending" | "processing" | "shipped" | "delivered";
   createdAt: Date;
   shippingAddress: {
     street: string;
@@ -36,4 +45,4 @@ export interface Order {
   };
 }
 
-export type Theme = 'light' | 'dark';
+export type Theme = "light" | "dark";
