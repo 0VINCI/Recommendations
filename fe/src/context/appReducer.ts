@@ -1,4 +1,5 @@
-import type { Product, CartItem, User, Order, Theme } from "../types";
+import type { Product, CartItem, Order, Theme } from "../types";
+import type {User} from "../types/authorization/User.tsx";
 
 export interface AppState {
   products: Product[];

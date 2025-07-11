@@ -21,13 +21,6 @@ export interface CartItem {
   color: string;
 }
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-}
-
 export interface Order {
   id: string;
   userId: string;

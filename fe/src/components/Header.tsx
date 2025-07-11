@@ -1,6 +1,5 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, User, Sun, Moon, Search, Menu } from "lucide-react";
+import { ShoppingCart, Sun, Moon, Search, Menu } from "lucide-react";
 import { useApp } from "../context/useApp";
 
 export function Header() {

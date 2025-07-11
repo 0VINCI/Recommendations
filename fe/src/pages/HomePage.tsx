@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
@@ -93,8 +92,7 @@ export function HomePage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Polecane Produkty
           </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -1,41 +1,66 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { useApp } from "../context/useApp";
+import {signIn, signUp} from "../api/authorizationService.tsx";
 
 export function AuthModal() {
-  const { state, dispatch } = useApp();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-    confirmPassword: "",
-  });
+    const {state, dispatch} = useApp();
+    const [authError, setAuthError] = useState<string | null>(null);
 
-  const closeModal = () => {
-    dispatch({ type: "TOGGLE_AUTH_MODAL" });
-    setFormData({ email: "", password: "", name: "", confirmPassword: "" });
-  };
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+        name: "",
+        surname: "",
+        confirmPassword: "",
+    });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (state.authMode === "register") {
-      if (formData.password !== formData.confirmPassword) {
-        alert("Hasła nie są identyczne!");
-        return;
-      }
-    }
-
-    // Symulacja logowania/rejestracji
-    const user = {
-      id: Date.now().toString(),
-      email: formData.email,
-      name: formData.name || formData.email.split("@")[0],
+    const closeModal = () => {
+        dispatch({type: "TOGGLE_AUTH_MODAL"});
+        setFormData({email: "", password: "", name: "", surname: "", confirmPassword: ""});
+        setAuthError(null);
     };
 
-    dispatch({ type: "SET_USER", payload: user });
-    closeModal();
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (state.authMode === "register") {
+            if (formData.password !== formData.confirmPassword) {
+                alert("Hasła nie są identyczne!");
+                return;
+            }
+
+
+            const result = await signUp({
+                Name: formData.name,
+                Surname: formData.surname,
+                Email: formData.email,
+                Password: formData.password
+            });
+
+            if (result.status === 200) {
+                alert('Pomyślnie zarejestrowano, zaloguj się.')
+                closeModal();
+            } else {
+                setAuthError("Błąd rejestracji.");
+            }
+        }
+        else
+        {
+            // LOGIN
+            const result = await signIn({
+                Email: formData.email,
+                Password: formData.password,
+            });
+
+            if (result.status === 200) {
+                alert("Zalogowano.");
+                closeModal();
+            } else {
+                setAuthError("Błąd logowania.");
+            }
+        }
+    };
 
   const switchMode = () => {
     dispatch({
@@ -125,6 +150,9 @@ export function AuthModal() {
               />
             </div>
           )}
+            {authError && (
+                <div className="text-red-600 dark:text-red-400 text-sm">{authError}</div>
+            )}
 
           <button
             type="submit"

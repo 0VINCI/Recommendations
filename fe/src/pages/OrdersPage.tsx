@@ -30,7 +30,7 @@ export function OrdersPage() {
   }
 
   const userOrders = state.orders.filter(
-    (order) => order.userId === state.user?.id
+    (order) => order.userId === state.user?.IdUser
   );
 
   const getStatusColor = (status: string) => {

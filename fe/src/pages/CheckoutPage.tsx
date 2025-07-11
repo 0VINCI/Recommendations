@@ -9,7 +9,7 @@ export function CheckoutPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: state.user?.email || "",
+    email: state.user?.Email || "",
     phone: "",
     street: "",
     city: "",
@@ -47,7 +47,7 @@ export function CheckoutPage() {
       // Tworzenie zamówienia
       const order = {
         id: Date.now().toString(),
-        userId: state.user?.id || "guest",
+        userId: state.user?.IdUser || "guest",
         items: [...state.cart],
         total,
         status: "processing" as const,
