@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ShoppingCart, Sun, Moon, Search, Menu } from "lucide-react";
+import { ShoppingCart, Sun, Moon, Search, Menu, LogOut } from "lucide-react";
 import { useApp } from "../context/useApp";
+import { signOut } from "../api/authorizationService";
 
 export function Header() {
   const { state, dispatch } = useApp();
@@ -14,6 +15,15 @@ export function Header() {
 
   const openAuthModal = (mode: "login" | "register") => {
     dispatch({ type: "TOGGLE_AUTH_MODAL", payload: mode });
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      dispatch({ type: "SET_USER", payload: null });
+    } catch (error) {
+      console.error("Błąd podczas wylogowania:", error);
+    }
   };
 
   const cartItemsCount = state.cart.reduce(
@@ -65,16 +75,20 @@ export function Header() {
             {state.user ? (
               <div className="flex items-center space-x-2">
                 <img
-                  src={
-                    state.user.avatar ||
-                    `https://ui-avatars.com/api/?name=${state.user.name}&background=0ea5e9&color=fff`
-                  }
-                  alt={state.user.name}
+                  src={`https://ui-avatars.com/api/?name=${state.user.Name} ${state.user.Surname}&background=0ea5e9&color=fff`}
+                  alt={`${state.user.Name} ${state.user.Surname}`}
                   className="w-8 h-8 rounded-full"
                 />
                 <span className="hidden md:block text-sm text-gray-700 dark:text-gray-300">
-                  {state.user.name}
+                  {state.user.Name} {state.user.Surname}
                 </span>
+                <button
+                  onClick={handleSignOut}
+                  className="p-1 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  title="Wyloguj"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             ) : (
               <div className="flex items-center space-x-2">

@@ -1,66 +1,78 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { useApp } from "../context/useApp";
-import {signIn, signUp} from "../api/authorizationService.tsx";
+import { signIn, signUp } from "../api/authorizationService.tsx";
+import type { User } from "../types/authorization/User.tsx";
 
 export function AuthModal() {
-    const {state, dispatch} = useApp();
-    const [authError, setAuthError] = useState<string | null>(null);
+  const { state, dispatch } = useApp();
+  const [authError, setAuthError] = useState<string | null>(null);
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        name: "",
-        surname: "",
-        confirmPassword: "",
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    name: "",
+    surname: "",
+    confirmPassword: "",
+  });
+
+  const closeModal = () => {
+    dispatch({ type: "TOGGLE_AUTH_MODAL" });
+    setFormData({
+      email: "",
+      password: "",
+      name: "",
+      surname: "",
+      confirmPassword: "",
     });
+    setAuthError(null);
+  };
 
-    const closeModal = () => {
-        dispatch({type: "TOGGLE_AUTH_MODAL"});
-        setFormData({email: "", password: "", name: "", surname: "", confirmPassword: ""});
-        setAuthError(null);
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    if (state.authMode === "register") {
+      if (formData.password !== formData.confirmPassword) {
+        alert("Hasła nie są identyczne!");
+        return;
+      }
 
-        if (state.authMode === "register") {
-            if (formData.password !== formData.confirmPassword) {
-                alert("Hasła nie są identyczne!");
-                return;
-            }
+      const result = await signUp({
+        Name: formData.name,
+        Surname: formData.surname,
+        Email: formData.email,
+        Password: formData.password,
+      });
 
+      if (result.status === 200) {
+        alert("Pomyślnie zarejestrowano, zaloguj się.");
+        closeModal();
+      } else {
+        setAuthError("Błąd rejestracji.");
+      }
+    } else {
+      // LOGIN
+      const result = await signIn({
+        Email: formData.email,
+        Password: formData.password,
+      });
 
-            const result = await signUp({
-                Name: formData.name,
-                Surname: formData.surname,
-                Email: formData.email,
-                Password: formData.password
-            });
-
-            if (result.status === 200) {
-                alert('Pomyślnie zarejestrowano, zaloguj się.')
-                closeModal();
-            } else {
-                setAuthError("Błąd rejestracji.");
-            }
-        }
-        else
-        {
-            // LOGIN
-            const result = await signIn({
-                Email: formData.email,
-                Password: formData.password,
-            });
-
-            if (result.status === 200) {
-                alert("Zalogowano.");
-                closeModal();
-            } else {
-                setAuthError("Błąd logowania.");
-            }
-        }
-    };
+      if (result.status === 200 && result.data) {
+        // Zapisz dane użytkownika w kontekście
+        const userData: User = {
+          IdUser: result.data.userId,
+          Name: result.data.name,
+          Surname: result.data.surname,
+          Email: result.data.email,
+        };
+        dispatch({ type: "SET_USER", payload: userData });
+        alert("Zalogowano.");
+        closeModal();
+      } else {
+        setAuthError("Błąd logowania.");
+      }
+    }
+  };
 
   const switchMode = () => {
     dispatch({
@@ -150,9 +162,11 @@ export function AuthModal() {
               />
             </div>
           )}
-            {authError && (
-                <div className="text-red-600 dark:text-red-400 text-sm">{authError}</div>
-            )}
+          {authError && (
+            <div className="text-red-600 dark:text-red-400 text-sm">
+              {authError}
+            </div>
+          )}
 
           <button
             type="submit"
