@@ -1,4 +1,4 @@
-using Recommendations.Authorization.Application.Exceptions;
+using Recommendations.Authorization.Core.Exceptions;
 using Recommendations.Authorization.Core.Types;
 using Recommendations.Authorization.Infrastructure.DAL.Repositories;
 using Recommendations.Authorization.Shared.Commands;

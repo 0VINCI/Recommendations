@@ -52,7 +52,7 @@ internal sealed class AuthorizationModule : ModuleDefinition
 
             httpContext.Response.Cookies.Append("jwt-token", signedInDto.Token, cookieOptions);
 
-            return Results.Ok(signedInDto);
+            return Results.Ok();
         });
 
         app.MapPost("/signOut", (HttpContext httpContext) =>
@@ -65,7 +65,7 @@ internal sealed class AuthorizationModule : ModuleDefinition
             [FromBody] SignUp command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
@@ -73,7 +73,7 @@ internal sealed class AuthorizationModule : ModuleDefinition
             [FromBody] ChangePassword command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
@@ -81,7 +81,7 @@ internal sealed class AuthorizationModule : ModuleDefinition
             [FromBody] RemindPassword command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
     }

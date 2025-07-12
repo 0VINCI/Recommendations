@@ -13,6 +13,7 @@ using Recommendations.Shared.Infrastructure.Queries;
 using Recommendations.Shared.Infrastructure.Services;
 using Recommendations.Shared.Infrastructure.UserContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Recommendations.Shared.Infrastructure.Exceptions;
 
 namespace Recommendations.Shared.Infrastructure;
 
@@ -86,6 +87,7 @@ public static class Extensions
         services.AddServices();
         services.AddUserContext();
         services.AddCustomSwagger();
+        services.AddCustomException();
         
         return services;
     }

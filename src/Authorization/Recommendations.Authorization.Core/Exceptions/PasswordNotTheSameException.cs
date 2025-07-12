@@ -1,3 +1,5 @@
-namespace Recommendations.Authorization.Application.Exceptions;
+using Recommendations.Shared.Infrastructure.Exceptions;
 
-public sealed class PasswordNotTheSameException() : CustomException("Passwords are not the same.");
+namespace Recommendations.Authorization.Core.Exceptions;
+
+public sealed class PasswordNotTheSameException() : HumanPresentableException("Passwords are not the same.", ExceptionCategory.ValidationError);

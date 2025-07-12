@@ -2,7 +2,6 @@ using Recommendations;
 using Recommendations.Authorization.Api;
 using Recommendations.Cart.Api;
 using Recommendations.Dictionaries.Api;
-using Recommendations.Middlewares;
 using Recommendations.Purchase.Api;
 using Recommendations.Shared.ModuleDefinition;
 
@@ -16,7 +15,6 @@ RegistrationModules.RegisterModule<PurchaseModule>();
 builder.Services.AddApiDependencies(builder.Configuration);
 
 var app = builder.Build();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseApiDependencies();
 

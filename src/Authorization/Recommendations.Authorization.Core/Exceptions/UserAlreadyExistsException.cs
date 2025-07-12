@@ -1,3 +1,5 @@
-namespace Recommendations.Authorization.Application.Exceptions;
+using Recommendations.Shared.Infrastructure.Exceptions;
 
-public sealed class UserAlreadyExistsException() : CustomException("User already exists.");
+namespace Recommendations.Authorization.Core.Exceptions;
+
+public sealed class UserAlreadyExistsException() : HumanPresentableException("User already exists.", ExceptionCategory.AlreadyExists);

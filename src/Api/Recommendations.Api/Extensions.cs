@@ -1,5 +1,5 @@
-using Recommendations.Middlewares;
 using Recommendations.Shared.Infrastructure;
+using Recommendations.Shared.Infrastructure.Exceptions;
 using Recommendations.Shared.ModuleDefinition;
 
 namespace Recommendations;
@@ -17,7 +17,8 @@ public static class Extensions
     {
         app.UseSharedFramework();
         app.UseModulesEndpoints();
-
+        app.UseExceptions();
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseCustomSwagger();

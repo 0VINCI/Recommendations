@@ -1,3 +1,5 @@
-namespace Recommendations.Authorization.Application.Exceptions;
+using Recommendations.Shared.Infrastructure.Exceptions;
 
-public sealed class InvalidPasswordException() : CustomException("Invalid email or password.");
+namespace Recommendations.Authorization.Core.Exceptions;
+
+public sealed class InvalidPasswordException() : HumanPresentableException("Invalid email or password.", ExceptionCategory.Unauthorized);
