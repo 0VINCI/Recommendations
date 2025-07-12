@@ -17,7 +17,7 @@ export function AuthModal() {
   });
 
   const closeModal = () => {
-    dispatch({ type: "TOGGLE_AUTH_MODAL" });
+    dispatch({ type: "CLOSE_AUTH_MODAL" });
     setFormData({
       email: "",
       password: "",
@@ -58,16 +58,18 @@ export function AuthModal() {
       });
 
       if (result.status === 200 && result.data) {
+        console.log("Login successful, result.data:", result.data); // Debug
         // Zapisz dane użytkownika w kontekście
         const userData: User = {
-          IdUser: result.data.userId,
+          IdUser: result.data.idUser,
           Name: result.data.name,
           Surname: result.data.surname,
           Email: result.data.email,
         };
+        console.log("User data to save:", userData); // Debug
         dispatch({ type: "SET_USER", payload: userData });
-        alert("Zalogowano.");
         closeModal();
+        alert("Zalogowano.");
       } else {
         setAuthError("Błąd logowania.");
       }
@@ -113,18 +115,18 @@ export function AuthModal() {
                 }
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nazwisko
-                </label>
-                <input
-                    type="text"
-                    required
-                    value={formData.surname}
-                    onChange={(e) =>
-                        setFormData({ ...formData, surname: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Nazwisko
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.surname}
+                onChange={(e) =>
+                  setFormData({ ...formData, surname: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
             </div>
           )}
 
@@ -156,6 +158,18 @@ export function AuthModal() {
               }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
+            {state.authMode === "login" && (
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch({ type: "CLOSE_AUTH_MODAL" });
+                  dispatch({ type: "OPEN_REMIND_PASSWORD_MODAL" });
+                }}
+                className="text-sm text-primary-600 dark:text-primary-400 hover:underline mt-1"
+              >
+                Zapomniałeś hasła?
+              </button>
+            )}
           </div>
 
           {state.authMode === "register" && (
