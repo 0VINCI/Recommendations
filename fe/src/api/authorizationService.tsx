@@ -3,22 +3,24 @@ import {post} from "./client/httpClient.tsx";
 import type {User} from "../types/authorization/User.tsx";
 import type {ChangePassword} from "../types/authorization/ChangePassword.tsx";
 
+const modulePrefix = '/authorization';
+
 export const signIn = async (signIn: SignIn) => {
-    return await post<void>('/signIn', signIn);
+    return await post<void>(`${modulePrefix}/signIn`, signIn);
 }
 
 export const signUp = async (signUp: User) => {
-    return await post<void>('/signUp', signUp);
+    return await post<void>(`${modulePrefix}/signUp`, signUp);
 }
 
 export const signOut = async () => {
-    return await post<void>('/signUp', signUp);
+    return await post<void>(`${modulePrefix}/signUp`, signUp);
 }
 
 export const changePassword = async (changePasswordData: ChangePassword) => {
-    return await post<void>('/changePassword', changePasswordData);
+    return await post<void>(`${modulePrefix}/changePassword`, changePasswordData);
 }
 
 export const remindPassword = async (email: string) => {
-    return await post<void>('/remindPassword', email);
+    return await post<void>(`${modulePrefix}/remindPassword`, email);
 }
