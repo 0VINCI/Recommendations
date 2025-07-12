@@ -26,6 +26,6 @@ public sealed class SignInHandler(IUserRepository userRepository, IJwtTokenServi
         }
         var token = jwtTokenService.GenerateToken(user.IdUser.ToString(), user.Email);
 
-        return new SignedInDto(user.IdUser, token);
+        return new SignedInDto(user.IdUser, user.Name, user.Surname, user.Email, token);
     } 
 }
