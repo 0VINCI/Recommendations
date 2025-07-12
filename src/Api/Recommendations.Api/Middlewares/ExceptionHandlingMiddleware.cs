@@ -1,5 +1,4 @@
 using System.Net;
-using Recommendations.Authorization.Application.Exceptions;
 using Recommendations.Authorization.Core.Exceptions;
 
 namespace Recommendations.Middlewares;
