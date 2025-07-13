@@ -22,6 +22,11 @@ internal sealed class ChangePasswordHandler(IUserRepository userRepository) : IC
         {
             throw new InvalidPasswordException();
         }
+        
+        if (data.NewPassword == user.Password)
+        {
+            throw new PasswordMustBeNew();
+        }
 
         user.ChangePassword(data.NewPassword);
 
