@@ -68,10 +68,10 @@ internal sealed class AuthorizationModule : ModuleDefinition
         });
 
         app.MapPost("/signUp", async (
-            [FromBody] SignUp command,
+            [FromBody] SignUpDto dto,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command, cancellationToken);
+            await commandDispatcher.SendAsync(new SignUp(dto),cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
 
