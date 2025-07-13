@@ -1,37 +1,29 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { useApp } from "../context/useApp";
 import { changePassword } from "../api/authorizationService";
 import { useToast } from "../hooks/useToast";
 
-interface ChangePasswordModalProps {
+interface ResetPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
+  email: string;
 }
 
-export function ChangePasswordModal({
+export function ResetPasswordModal({
   isOpen,
   onClose,
-}: ChangePasswordModalProps) {
-  const { state } = useApp();
+  email,
+}: ResetPasswordModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const { showSuccess, showError } = useToast();
-
-  console.log("ChangePasswordModal state.user:", state.user); // Debug
-
   const [formData, setFormData] = useState({
-    oldPassword: "",
+    verificationCode: "",
     newPassword: "",
     confirmNewPassword: "",
   });
+  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("ChangePasswordModal handleSubmit called"); // Debug
-    setError(null);
-    setSuccess(false);
 
     if (formData.newPassword !== formData.confirmNewPassword) {
       showError("Nowe hasła nie są identyczne!");
@@ -43,46 +35,40 @@ export function ChangePasswordModal({
       return;
     }
 
-    if (!state.user?.Email) {
-      showError("Nie jesteś zalogowany!");
+    if (!formData.verificationCode) {
+      showError("Wprowadź kod weryfikacyjny!");
       return;
     }
-
-    console.log("About to call changePassword with:", {
-      Email: state.user.Email,
-      OldPassword: formData.oldPassword,
-      NewPassword: formData.newPassword,
-    }); // Debug
 
     setIsLoading(true);
 
     try {
+      // Używamy changePassword endpoint z kodem jako starym hasłem
       const result = await changePassword({
-        Email: state.user.Email,
-        OldPassword: formData.oldPassword,
+        Email: email,
+        OldPassword: formData.verificationCode, // Kod weryfikacyjny jako "stare" hasło
         NewPassword: formData.newPassword,
       });
 
-      console.log("changePassword result:", result); // Debug
-
       if (result.status === 200) {
-        showSuccess("Hasło zostało zmienione pomyślnie!");
+        showSuccess(
+          "Hasło zostało zmienione pomyślnie! Możesz się teraz zalogować."
+        );
         setFormData({
-          oldPassword: "",
+          verificationCode: "",
           newPassword: "",
           confirmNewPassword: "",
         });
         setTimeout(() => {
           onClose();
-        }, 2000);
+        }, 3000);
       } else {
         showError(
-          "Błąd podczas zmiany hasła. Sprawdź czy stare hasło jest poprawne."
+          "Nieprawidłowy kod weryfikacyjny lub błąd podczas zmiany hasła."
         );
       }
-    } catch (err) {
-      console.error("Error in changePassword:", err); // Debug
-      showError("Wystąpił błąd podczas zmiany hasła.");
+    } catch {
+      showError("Wystąpił błąd podczas resetowania hasła.");
     } finally {
       setIsLoading(false);
     }
@@ -90,12 +76,10 @@ export function ChangePasswordModal({
 
   const handleClose = () => {
     setFormData({
-      oldPassword: "",
+      verificationCode: "",
       newPassword: "",
       confirmNewPassword: "",
     });
-    setError(null);
-    setSuccess(false);
     onClose();
   };
 
@@ -106,7 +90,7 @@ export function ChangePasswordModal({
       <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Zmień hasło
+            Resetuj hasło
           </h2>
           <button
             onClick={handleClose}
@@ -116,24 +100,25 @@ export function ChangePasswordModal({
           </button>
         </div>
 
-        {success && (
-          <div className="mb-4 p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-md">
-            Hasło zostało zmienione pomyślnie!
-          </div>
-        )}
+        <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-md">
+          <p className="text-sm">
+            Kod weryfikacyjny został wysłany na adres: <strong>{email}</strong>
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Aktualne hasło
+              Kod weryfikacyjny
             </label>
             <input
-              type="password"
+              type="text"
               required
-              value={formData.oldPassword}
+              value={formData.verificationCode}
               onChange={(e) =>
-                setFormData({ ...formData, oldPassword: e.target.value })
+                setFormData({ ...formData, verificationCode: e.target.value })
               }
+              placeholder="Wprowadź kod z emaila"
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               disabled={isLoading}
             />
@@ -150,6 +135,7 @@ export function ChangePasswordModal({
               onChange={(e) =>
                 setFormData({ ...formData, newPassword: e.target.value })
               }
+              placeholder="Minimum 6 znaków"
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               disabled={isLoading}
             />
@@ -166,25 +152,26 @@ export function ChangePasswordModal({
               onChange={(e) =>
                 setFormData({ ...formData, confirmNewPassword: e.target.value })
               }
+              placeholder="Powtórz nowe hasło"
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               disabled={isLoading}
             />
           </div>
-
-          {error && (
-            <div className="text-red-600 dark:text-red-400 text-sm">
-              {error}
-            </div>
-          )}
 
           <button
             type="submit"
             disabled={isLoading}
             className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white py-2 px-4 rounded-md font-medium transition-colors"
           >
-            {isLoading ? "Zmienianie hasła..." : "Zmień hasło"}
+            {isLoading ? "Resetowanie hasła..." : "Resetuj hasło"}
           </button>
         </form>
+
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Wprowadź kod weryfikacyjny z emaila i ustaw nowe hasło.
+          </p>
+        </div>
       </div>
     </div>
   );

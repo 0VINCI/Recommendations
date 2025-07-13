@@ -1,9 +1,11 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 import { Header } from "./components/Header";
 import { Navigation } from "./components/Navigation";
 import { AuthModal } from "./components/AuthModal";
 import { ModalManager } from "./components/ModalManager";
+import { ToastManager } from "./components/ToastManager";
 import { HomePage } from "./pages/HomePage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { ProductPage } from "./pages/ProductPage";
@@ -32,6 +34,7 @@ function App() {
           </main>
           <AuthModal />
           <ModalManager />
+          <ToastManager />
         </div>
       </Router>
     </AppProvider>

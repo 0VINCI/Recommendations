@@ -3,6 +3,7 @@ import { post } from "./client/httpClient.tsx";
 import type { User } from "../types/authorization/User.tsx";
 import type { ChangePassword } from "../types/authorization/ChangePassword.tsx";
 import type { ApiResult } from "../types/api/ApiResult.tsx";
+import type { RemindPassword } from "../types/authorization/RemindPassword.tsx";
 
 const modulePrefix = "/authorization";
 
@@ -24,6 +25,6 @@ export const changePassword = async (changePasswordData: ChangePassword) => {
   return await post<void>(`${modulePrefix}/changePassword`, changePasswordData);
 };
 
-export const remindPassword = async (email: string) => {
-  return await post<void>(`${modulePrefix}/remindPassword`, email);
+export const remindPassword = async (remindPasswordData: RemindPassword) => {
+  return await post<void>(`${modulePrefix}/remindPassword`, remindPasswordData);
 };

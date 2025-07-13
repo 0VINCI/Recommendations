@@ -1,5 +1,6 @@
 import type { Product, CartItem, Order, Theme } from "../types";
 import type { User } from "../types/authorization/User.tsx";
+import type { ToastItem } from "../components/ToastContainer";
 
 export interface AppState {
   products: Product[];
@@ -11,6 +12,9 @@ export interface AppState {
   authMode: "login" | "register";
   isChangePasswordModalOpen: boolean;
   isRemindPasswordModalOpen: boolean;
+  isResetPasswordModalOpen: boolean;
+  resetPasswordEmail: string;
+  toasts: ToastItem[];
 }
 
 export type AppAction =
@@ -32,6 +36,10 @@ export type AppAction =
   | { type: "CLOSE_CHANGE_PASSWORD_MODAL" }
   | { type: "OPEN_REMIND_PASSWORD_MODAL" }
   | { type: "CLOSE_REMIND_PASSWORD_MODAL" }
+  | { type: "OPEN_RESET_PASSWORD_MODAL"; payload: string }
+  | { type: "CLOSE_RESET_PASSWORD_MODAL" }
+  | { type: "ADD_TOAST"; payload: ToastItem }
+  | { type: "REMOVE_TOAST"; payload: string }
   | { type: "ADD_ORDER"; payload: Order };
 
 export const initialState: AppState = {
@@ -44,6 +52,9 @@ export const initialState: AppState = {
   authMode: "login",
   isChangePasswordModalOpen: false,
   isRemindPasswordModalOpen: false,
+  isResetPasswordModalOpen: false,
+  resetPasswordEmail: "",
+  toasts: [],
 };
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -152,6 +163,32 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         isRemindPasswordModalOpen: false,
+      };
+
+    case "OPEN_RESET_PASSWORD_MODAL":
+      return {
+        ...state,
+        isResetPasswordModalOpen: true,
+        resetPasswordEmail: action.payload,
+      };
+
+    case "CLOSE_RESET_PASSWORD_MODAL":
+      return {
+        ...state,
+        isResetPasswordModalOpen: false,
+        resetPasswordEmail: "",
+      };
+
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [...state.toasts, action.payload],
+      };
+
+    case "REMOVE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.filter((toast) => toast.id !== action.payload),
       };
 
     case "ADD_ORDER":

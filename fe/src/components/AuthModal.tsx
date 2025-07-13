@@ -3,10 +3,12 @@ import { X } from "lucide-react";
 import { useApp } from "../context/useApp";
 import { signIn, signUp } from "../api/authorizationService.tsx";
 import type { User } from "../types/authorization/User.tsx";
+import { useToast } from "../hooks/useToast";
 
 export function AuthModal() {
   const { state, dispatch } = useApp();
   const [authError, setAuthError] = useState<string | null>(null);
+  const { showSuccess, showError } = useToast();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -33,7 +35,7 @@ export function AuthModal() {
 
     if (state.authMode === "register") {
       if (formData.password !== formData.confirmPassword) {
-        alert("Hasła nie są identyczne!");
+        showError("Hasła nie są identyczne!");
         return;
       }
 
@@ -45,7 +47,7 @@ export function AuthModal() {
       });
 
       if (result.status === 200) {
-        alert("Pomyślnie zarejestrowano, zaloguj się.");
+        showSuccess("Pomyślnie zarejestrowano, zaloguj się.");
         closeModal();
       } else {
         setAuthError("Błąd rejestracji.");
@@ -69,7 +71,7 @@ export function AuthModal() {
         console.log("User data to save:", userData); // Debug
         dispatch({ type: "SET_USER", payload: userData });
         closeModal();
-        alert("Zalogowano.");
+        showSuccess("Zalogowano pomyślnie!");
       } else {
         setAuthError("Błąd logowania.");
       }
