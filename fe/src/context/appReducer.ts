@@ -1,9 +1,10 @@
-import type { Product, CartItem, Order, Theme } from "../types";
+import type { CartItem, Order, Theme } from "../types/cart/index.ts";
+import type { ProductDto } from "../types/product/ProductDto";
 import type { User } from "../types/authorization/User.tsx";
-import type { ToastItem } from "../components/ToastContainer";
+import type { ToastItem } from "../components/common/ToastContainer";
 
 export interface AppState {
-  products: Product[];
+  products: ProductDto[];
   cart: CartItem[];
   user: User | null;
   orders: Order[];
@@ -20,7 +21,7 @@ export interface AppState {
 export type AppAction =
   | {
       type: "ADD_TO_CART";
-      payload: { product: Product; size: string; color: string };
+      payload: { product: ProductDto; size: string; color: string };
     }
   | { type: "REMOVE_FROM_CART"; payload: string }
   | {

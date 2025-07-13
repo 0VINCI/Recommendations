@@ -1,5 +1,4 @@
-import React from "react";
-import { useApp } from "../context/useApp";
+import { useApp } from "../../context/useApp";
 import { ToastContainer } from "./ToastContainer";
 
 export function ToastManager() {

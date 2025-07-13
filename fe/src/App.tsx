@@ -1,11 +1,10 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
-import { Header } from "./components/Header";
-import { Navigation } from "./components/Navigation";
-import { AuthModal } from "./components/AuthModal";
-import { ModalManager } from "./components/ModalManager";
-import { ToastManager } from "./components/ToastManager";
+import { Header } from "./components/common/Header";
+import { Navigation } from "./components/common/Navigation";
+import { AuthModal } from "./components/authorization/AuthModal";
+import { ModalManager } from "./components/authorization/ModalManager";
+import { ToastManager } from "./components/common/ToastManager";
 import { HomePage } from "./pages/HomePage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { ProductPage } from "./pages/ProductPage";

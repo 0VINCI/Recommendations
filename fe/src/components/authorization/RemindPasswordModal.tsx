@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { remindPassword } from "../api/authorizationService";
-import { useToast } from "../hooks/useToast";
-import { useApp } from "../context/useApp";
+import { remindPassword } from "../../api/authorizationService";
+import { useToast } from "../../hooks/useToast";
+import { useApp } from "../../context/useApp";
 
 interface RemindPasswordModalProps {
   isOpen: boolean;

@@ -1,15 +1,20 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
-import { useApp } from "../context/useApp";
+import { useProducts } from "../hooks/useProducts";
+import { useEffect } from "react";
 
 export function HomePage() {
   console.log("HomePage rendering");
-  const { state } = useApp();
+  const { products, loading, error, getProducts } = useProducts();
 
-  const bestsellers = state.products.filter((product) => product.isBestseller);
-  const newProducts = state.products.filter((product) => product.isNew);
-  const featuredProducts = state.products.slice(0, 8);
+  useEffect(() => {
+    getProducts(1, 20);
+  }, [getProducts]);
+
+  const bestsellers = products.filter((product) => product.isBestseller);
+  const newProducts = products.filter((product) => product.isNew);
+  const featuredProducts = products.slice(0, 8);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -52,11 +57,27 @@ export function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {bestsellers.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">
+                Ładowanie bestsellerów...
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center py-12">
+              <p className="text-red-500 dark:text-red-400 text-lg">{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {bestsellers.slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -92,7 +113,7 @@ export function HomePage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Polecane Produkty
           </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

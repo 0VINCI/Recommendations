@@ -1,19 +1,28 @@
-import  { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
-import { useApp } from "../context/useApp";
+import { useProducts } from "../hooks/useProducts";
 
 export function CategoryPage() {
   const { category } = useParams<{ category: string }>();
-  const { state } = useApp();
+  const { products, loading, error, getProducts, getProductsByCategory } =
+    useProducts();
   const [sortBy, setSortBy] = useState("name");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const filteredProducts = state.products.filter((product) => {
+  useEffect(() => {
+    if (category && category !== "wszystkie") {
+      getProductsByCategory(category);
+    } else {
+      getProducts();
+    }
+  }, [category, getProducts, getProductsByCategory]);
+
+  const filteredProducts = products.filter((product) => {
     if (category === "wszystkie") return true;
-    return product.category === category;
+    return product.subCategoryName.toLowerCase() === category?.toLowerCase();
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -26,7 +35,7 @@ export function CategoryPage() {
         return b.rating - a.rating;
       case "name":
       default:
-        return a.name.localeCompare(b.name);
+        return a.productDisplayName.localeCompare(b.productDisplayName);
     }
   });
 
@@ -180,18 +189,38 @@ export function CategoryPage() {
 
           {/* Products Grid */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-
-            {sortedProducts.length === 0 && (
+            {loading && (
               <div className="text-center py-12">
                 <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  Brak produktów w tej kategorii
+                  Ładowanie produktów...
                 </p>
               </div>
+            )}
+
+            {error && (
+              <div className="text-center py-12">
+                <p className="text-red-500 dark:text-red-400 text-lg">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {!loading && !error && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {sortedProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {sortedProducts.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 dark:text-gray-400 text-lg">
+                      Brak produktów w tej kategorii
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

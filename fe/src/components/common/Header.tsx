@@ -9,8 +9,8 @@ import {
   Settings,
   ChevronDown,
 } from "lucide-react";
-import { useApp } from "../context/useApp";
-import { signOut } from "../api/authorizationService";
+import { useApp } from "../../context/useApp";
+import { signOut } from "../../api/authorizationService";
 import { useState, useEffect, useRef } from "react";
 
 export function Header() {

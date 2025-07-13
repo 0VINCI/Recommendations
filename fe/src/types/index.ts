@@ -1,48 +1,45 @@
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  description: string;
-  sizes: string[];
-  colors: string[];
-  rating: number;
-  reviews: number;
-  isBestseller?: boolean;
-  isNew?: boolean;
-  // Additional fields from fashion dataset
-  gender?: string;
-  masterCategory?: string;
-  subCategory?: string;
-  articleType?: string;
-  baseColour?: string;
-  season?: string;
-  year?: number;
-  usage?: string;
-}
+// API types
+export type { ApiResult } from "./api/ApiResult";
 
-export interface CartItem {
-  product: Product;
-  quantity: number;
-  size: string;
-  color: string;
-}
+// Authorization types
+export type { User } from "./authorization/User";
+export type { SignIn, SignInResponse } from "./authorization/SignIn";
+export type { ChangePassword } from "./authorization/ChangePassword";
 
-export interface Order {
-  id: string;
-  userId: string;
-  items: CartItem[];
-  total: number;
-  status: "pending" | "processing" | "shipped" | "delivered";
-  createdAt: Date;
-  shippingAddress: {
-    street: string;
-    city: string;
-    postalCode: string;
-    country: string;
-  };
-}
+// Cart types
+export type { Product as CartProduct, CartItem, Order, Theme } from "./cart";
 
-export type Theme = "light" | "dark";
+export type {
+  AddItemToCartRequest,
+  RemoveItemFromCartRequest,
+  UpdateCartItemQuantityRequest,
+  GetCartRequest,
+  CartItemResponse,
+  ShoppingCartResponse,
+} from "./cart/CartApi";
+
+// Product types
+export type {
+  Product,
+  ProductDetails,
+  ProductImage,
+  SubCategory,
+  MasterCategory,
+  ArticleType,
+  BaseColour,
+} from "./product";
+
+export type {
+  GetProductsRequest,
+  GetProductsResponse,
+  GetProductByIdRequest,
+  GetProductByIdResponse,
+  GetMasterCategoriesRequest,
+  GetMasterCategoriesResponse,
+  GetSubCategoriesRequest,
+  GetSubCategoriesResponse,
+  GetArticleTypesRequest,
+  GetArticleTypesResponse,
+  GetBaseColoursResponse,
+  SearchProductsResponse,
+} from "./product/ProductApi";

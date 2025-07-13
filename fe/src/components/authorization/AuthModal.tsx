@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { useApp } from "../context/useApp";
-import { signIn, signUp } from "../api/authorizationService.tsx";
-import type { User } from "../types/authorization/User.tsx";
-import { useToast } from "../hooks/useToast";
+import { useApp } from "../../context/useApp";
+import { signIn, signUp } from "../../api/authorizationService.tsx";
+import type { User } from "../../types/authorization/User.tsx";
+import { useToast } from "../../hooks/useToast";
 
 export function AuthModal() {
   const { state, dispatch } = useApp();

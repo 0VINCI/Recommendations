@@ -1,5 +1,4 @@
 import React, { createContext, useReducer, useEffect } from "react";
-import { mockProducts } from "../data/mockProducts";
 import {
   appReducer,
   initialState,
@@ -13,10 +12,7 @@ const AppContext = createContext<{
 } | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(appReducer, {
-    ...initialState,
-    products: mockProducts,
-  });
+  const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as AppState["theme"];

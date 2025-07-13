@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -9,14 +9,53 @@ import {
   Shield,
   RotateCcw,
 } from "lucide-react";
+import { useProducts } from "../hooks/useProducts";
 import { useApp } from "../context/useApp";
+import type { Product as CartProduct } from "../types/cart";
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
-  const { state, dispatch } = useApp();
+  const { currentProduct, loading, error, getProductById } = useProducts();
+  const { dispatch } = useApp();
   const [quantity, setQuantity] = useState(1);
 
-  const product = state.products.find((p) => p.id === id);
+  useEffect(() => {
+    if (id) {
+      getProductById(id);
+    }
+  }, [id, getProductById]);
+
+  const product = currentProduct;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Ładowanie produktu...
+          </h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Błąd: {error}
+          </h2>
+          <Link
+            to="/"
+            className="text-primary-600 dark:text-primary-400 hover:underline"
+          >
+            Wróć do strony głównej
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -37,11 +76,32 @@ export function ProductPage() {
   }
 
   const addToCart = () => {
+    // Konwertuj ProductDto na Product dla koszyka
+    const cartProduct: CartProduct = {
+      id: product.id,
+      name: product.productDisplayName,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
+        product.productDisplayName
+      )}`,
+      category: product.subCategoryName,
+      description: `${product.brandName} - ${product.productDisplayName}`,
+      sizes: ["S", "M", "L", "XL"], // Placeholder
+      colors: [product.baseColourName || "Default"], // Placeholder
+      rating: product.rating,
+      reviews: product.reviews,
+      isBestseller: product.isBestseller,
+      isNew: product.isNew,
+      subCategory: product.subCategoryName,
+      baseColour: product.baseColourName,
+    };
+
     for (let i = 0; i < quantity; i++) {
       dispatch({
         type: "ADD_TO_CART",
         payload: {
-          product,
+          product: cartProduct,
           size: "",
           color: "",
         },
@@ -64,7 +124,9 @@ export function ProductPage() {
             Powrót
           </Link>
           <span className="text-gray-400 dark:text-gray-600">/</span>
-          <span className="text-gray-900 dark:text-white">{product.name}</span>
+          <span className="text-gray-900 dark:text-white">
+            {product.productDisplayName}
+          </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -72,8 +134,10 @@ export function ProductPage() {
           <div className="space-y-4">
             <div className="aspect-square bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
               <img
-                src={product.image}
-                alt={product.name}
+                src={`https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
+                  product.productDisplayName
+                )}`}
+                alt={product.productDisplayName}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -83,7 +147,7 @@ export function ProductPage() {
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {product.name}
+                {product.productDisplayName}
               </h1>
 
               <div className="flex items-center space-x-4 mb-4">
@@ -118,7 +182,7 @@ export function ProductPage() {
 
             <div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {product.description}
+                {product.brandName} - {product.productDisplayName}
               </p>
             </div>
 
@@ -129,63 +193,51 @@ export function ProductPage() {
                   Kategoria:
                 </span>
                 <span className="text-gray-900 dark:text-white">
-                  {product.category}
+                  {product.subCategoryName}
                 </span>
               </div>
-              {product.gender && (
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Marka:</span>
+                <span className="text-gray-900 dark:text-white">
+                  {product.brandName}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Typ artykułu:
+                </span>
+                <span className="text-gray-900 dark:text-white">
+                  {product.articleTypeName}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Kolor:</span>
+                <span className="text-gray-900 dark:text-white">
+                  {product.baseColourName}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Ocena:</span>
+                <span className="text-gray-900 dark:text-white">
+                  {product.rating}/5 ({product.reviews} opinii)
+                </span>
+              </div>
+              {product.isBestseller && (
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">
-                    Płeć:
+                    Status:
                   </span>
                   <span className="text-gray-900 dark:text-white">
-                    {product.gender}
+                    Bestseller
                   </span>
                 </div>
               )}
-              {product.subCategory && (
+              {product.isNew && (
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">
-                    Podkategoria:
+                    Status:
                   </span>
-                  <span className="text-gray-900 dark:text-white">
-                    {product.subCategory}
-                  </span>
-                </div>
-              )}
-              {product.articleType && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Typ:</span>
-                  <span className="text-gray-900 dark:text-white">
-                    {product.articleType}
-                  </span>
-                </div>
-              )}
-              {product.baseColour && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Kolor:
-                  </span>
-                  <span className="text-gray-900 dark:text-white">
-                    {product.baseColour}
-                  </span>
-                </div>
-              )}
-              {product.season && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Sezon:
-                  </span>
-                  <span className="text-gray-900 dark:text-white">
-                    {product.season}
-                  </span>
-                </div>
-              )}
-              {product.year && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Rok:</span>
-                  <span className="text-gray-900 dark:text-white">
-                    {product.year}
-                  </span>
+                  <span className="text-gray-900 dark:text-white">Nowość</span>
                 </div>
               )}
             </div>

@@ -1,4 +1,4 @@
-import type { Product, User, CartItem } from "../types";
+import type { Product, User, CartItem } from "../types/cart";
 
 const API_BASE_URL = "http://localhost:5051";
 

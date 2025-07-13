@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useApp } from "../context/useApp";
-import type { ToastType } from "../components/Toast";
+import type { ToastType } from "../components/common/Toast";
 
 export function useToast() {
   const { dispatch } = useApp();

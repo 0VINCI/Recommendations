@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, ShoppingCart } from "lucide-react";
-import type { Product } from "../types";
+import type { ProductDto } from "../types/product/ProductDto";
+import type { Product as CartProduct } from "../types/cart";
 import { useApp } from "../context/useApp";
 
 interface ProductCardProps {
-  product: Product;
+  product: ProductDto;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -13,10 +14,32 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const addToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    // Konwertuj ProductDto na Product dla koszyka z dostępnymi danymi z backendu
+    const cartProduct: CartProduct = {
+      id: product.id,
+      name: product.productDisplayName,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
+        product.productDisplayName
+      )}`,
+      category: product.subCategoryName,
+      description: `${product.brandName} - ${product.productDisplayName}`,
+      sizes: ["S", "M", "L", "XL"], // Placeholder - można dodać później
+      colors: [product.baseColourName || "Default"], // Placeholder - można dodać później
+      rating: product.rating,
+      reviews: product.reviews,
+      isBestseller: product.isBestseller,
+      isNew: product.isNew,
+      // Dodatkowe pola z backendu - używamy dostępnych pól
+      subCategory: product.subCategoryName,
+      baseColour: product.baseColourName,
+    };
+
     dispatch({
       type: "ADD_TO_CART",
       payload: {
-        product,
+        product: cartProduct,
         size: "",
         color: "",
       },
@@ -28,8 +51,10 @@ export function ProductCard({ product }: ProductCardProps) {
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden">
           <img
-            src={product.image}
-            alt={product.name}
+            src={`https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
+              product.productDisplayName
+            )}`}
+            alt={product.productDisplayName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
@@ -81,7 +106,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="p-4">
         <Link to={`/product/${product.id}`}>
           <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-            {product.name}
+            {product.productDisplayName}
           </h3>
         </Link>
 
@@ -116,9 +141,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Product Details */}
         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          {product.category}
-          {product.gender && ` • ${product.gender}`}
-          {product.baseColour && ` • ${product.baseColour}`}
+          {product.subCategoryName}
+          {product.brandName && ` • ${product.brandName}`}
+          {product.baseColourName && ` • ${product.baseColourName}`}
         </div>
       </div>
     </div>
