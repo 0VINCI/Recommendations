@@ -4,7 +4,7 @@ export interface SignIn {
 }
 
 export interface SignInResponse {
-  userId: string;
+  idUser: string;
   name: string;
   surname: string;
   email: string;

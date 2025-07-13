@@ -113,3 +113,14 @@ fe/node_modules/typescript/.DS_Store
 fe/node_modules/vite/.DS_Store
 fe/node_modules/yaml/.DS_Store
 src/Api/Recommendations.Api/.DS_Store
+fe/node_modules/.vite/deps/_metadata 2.json
+fe/node_modules/.vite/deps/lucide-react 2.js
+fe/node_modules/.vite/deps/lucide-react.js 2.map
+fe/node_modules/.vite/deps/react 2.js
+fe/node_modules/.vite/deps/react_jsx-runtime 2.js
+fe/node_modules/.vite/deps/react_jsx-runtime.js 2.map
+fe/node_modules/.vite/deps/react-dom 2.js
+fe/node_modules/.vite/deps/react-dom_client.js 2.map
+fe/node_modules/.vite/deps/react-dom.js 2.map
+fe/node_modules/.vite/deps/react-router-dom 2.js
+fe/node_modules/.vite/deps/react-router-dom.js 2.map

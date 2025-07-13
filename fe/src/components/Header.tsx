@@ -1,10 +1,40 @@
 import { Link } from "react-router-dom";
-import { ShoppingCart, Sun, Moon, Search, Menu, LogOut } from "lucide-react";
+import {
+  ShoppingCart,
+  Sun,
+  Moon,
+  Search,
+  Menu,
+  LogOut,
+  Settings,
+  ChevronDown,
+} from "lucide-react";
 import { useApp } from "../context/useApp";
 import { signOut } from "../api/authorizationService";
+import { useState, useEffect, useRef } from "react";
 
 export function Header() {
   const { state, dispatch } = useApp();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  console.log("Header state.user:", state.user); // Debug
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleTheme = () => {
     dispatch({
@@ -24,6 +54,11 @@ export function Header() {
     } catch (error) {
       console.error("Błąd podczas wylogowania:", error);
     }
+  };
+
+  const openChangePasswordModal = () => {
+    setIsUserMenuOpen(false);
+    dispatch({ type: "OPEN_CHANGE_PASSWORD_MODAL" });
   };
 
   const cartItemsCount = state.cart.reduce(
@@ -73,22 +108,40 @@ export function Header() {
 
             {/* User Menu */}
             {state.user ? (
-              <div className="flex items-center space-x-2">
-                <img
-                  src={`https://ui-avatars.com/api/?name=${state.user.Name} ${state.user.Surname}&background=0ea5e9&color=fff`}
-                  alt={`${state.user.Name} ${state.user.Surname}`}
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="hidden md:block text-sm text-gray-700 dark:text-gray-300">
-                  {state.user.Name} {state.user.Surname}
-                </span>
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={handleSignOut}
-                  className="p-1 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                  title="Wyloguj"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${state.user.Name} ${state.user.Surname}&background=0ea5e9&color=fff`}
+                    alt={`${state.user.Name} ${state.user.Surname}`}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <span className="hidden md:block text-sm">
+                    {state.user.Name} {state.user.Surname}
+                  </span>
+                  <ChevronDown className="w-4 h-4" />
                 </button>
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={openChangePasswordModal}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Settings className="w-4 h-4 mr-2" />
+                      Zmień hasło
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Wyloguj
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex items-center space-x-2">
