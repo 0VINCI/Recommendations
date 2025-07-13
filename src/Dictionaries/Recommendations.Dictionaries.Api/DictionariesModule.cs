@@ -18,7 +18,8 @@ using Recommendations.Shared.ModuleDefinition;
 
 namespace Recommendations.Dictionaries.Api;
 
-internal sealed class DictionariesModule : ModuleDefinition
+internal sealed class 
+    DictionariesModule : ModuleDefinition
 {
     public override string ModulePrefix => "/dic";
 
@@ -35,7 +36,7 @@ internal sealed class DictionariesModule : ModuleDefinition
             [FromServices] IQueryDispatcher queryDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            var products = await queryDispatcher.QueryAsync(new GetAllProducts(), cancellationToken);
+            var products = await queryDispatcher.QueryAsync(new GetProducts(), cancellationToken);
             return Results.Ok(products);
         });
 

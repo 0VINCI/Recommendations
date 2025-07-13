@@ -15,4 +15,5 @@ public interface IProductRepository
     Task DeleteAsync(Guid id);
     Task<bool> ExistsAsync(Guid id);
     Task<Product?> GetByIdWithDetailsAsync(Guid id);
+    IQueryable<Product> AsQueryable();
 } 

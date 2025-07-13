@@ -100,4 +100,13 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
+    
+    public IQueryable<Product> AsQueryable()
+    {
+        return context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .AsNoTracking();
+    }
 } 
