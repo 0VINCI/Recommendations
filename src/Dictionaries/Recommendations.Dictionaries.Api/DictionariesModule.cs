@@ -90,6 +90,14 @@ internal sealed class DictionariesModule : ModuleDefinition
             var products = await queryDispatcher.QueryAsync(new GetBestsellers(), cancellationToken);
             return Results.Ok(products);
         });
+        
+        app.MapGet("/products/recommended", async (
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var products = await queryDispatcher.QueryAsync(new GetProducts(), cancellationToken);
+            return Results.Ok(products);
+        });
 
         app.MapGet("/products/new", async (
             [FromServices] IQueryDispatcher queryDispatcher,
