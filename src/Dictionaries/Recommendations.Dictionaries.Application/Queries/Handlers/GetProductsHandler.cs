@@ -48,12 +48,14 @@ internal sealed class GetProductsHandler(
         var totalCount = await productsQuery.CountAsync(cancellationToken);
 
         var products = await productsQuery
+            .Include(x => x.Images) 
             .OrderBy(p => p.ProductDisplayName) 
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync(cancellationToken);
 
         var productDtos = mapper.Map<IReadOnlyCollection<ProductDto>>(products);
+        
         var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
 
         return new FilteredProductDto(productDtos, totalCount, query.Page, query.PageSize, totalPages);

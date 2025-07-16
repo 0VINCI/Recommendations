@@ -18,8 +18,7 @@ using Recommendations.Shared.ModuleDefinition;
 
 namespace Recommendations.Dictionaries.Api;
 
-internal sealed class 
-    DictionariesModule : ModuleDefinition
+internal sealed class DictionariesModule : ModuleDefinition
 {
     public override string ModulePrefix => "/dic";
 
@@ -34,9 +33,35 @@ internal sealed class
     {
         app.MapGet("/products", async (
             [FromServices] IQueryDispatcher queryDispatcher,
+            int page = 1,
+            int pageSize = 20,
+            string? subCategoryId = null,
+            string? masterCategoryId = null,
+            string? articleTypeId = null,
+            string? baseColourId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            bool? isBestseller = null,
+            bool? isNew = null,
+            string? searchTerm = null,
             CancellationToken cancellationToken = default) =>
         {
-            var products = await queryDispatcher.QueryAsync(new GetProducts(), cancellationToken);
+            var products = await queryDispatcher.QueryAsync(
+                new GetProducts(
+                    Page: page,
+                    PageSize: pageSize,
+                    SubCategoryId: subCategoryId,
+                    MasterCategoryId: masterCategoryId,
+                    ArticleTypeId: articleTypeId,
+                    BaseColourId: baseColourId,
+                    MinPrice: minPrice,
+                    MaxPrice: maxPrice,
+                    IsBestseller: isBestseller,
+                    IsNew: isNew,
+                    SearchTerm: searchTerm
+                ),
+                cancellationToken);
+
             return Results.Ok(products);
         });
 
