@@ -15,4 +15,5 @@ public sealed record ProductDto(
     decimal Rating,
     int Reviews,
     bool IsBestseller,
-    bool IsNew); 
+    bool IsNew,
+    IReadOnlyCollection<ProductImageDto> Images); 

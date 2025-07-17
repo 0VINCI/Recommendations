@@ -33,9 +33,35 @@ internal sealed class DictionariesModule : ModuleDefinition
     {
         app.MapGet("/products", async (
             [FromServices] IQueryDispatcher queryDispatcher,
+            int page = 1,
+            int pageSize = 20,
+            string? subCategoryId = null,
+            string? masterCategoryId = null,
+            string? articleTypeId = null,
+            string? baseColourId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            bool? isBestseller = null,
+            bool? isNew = null,
+            string? searchTerm = null,
             CancellationToken cancellationToken = default) =>
         {
-            var products = await queryDispatcher.QueryAsync(new GetAllProducts(), cancellationToken);
+            var products = await queryDispatcher.QueryAsync(
+                new GetProducts(
+                    Page: page,
+                    PageSize: pageSize,
+                    SubCategoryId: subCategoryId,
+                    MasterCategoryId: masterCategoryId,
+                    ArticleTypeId: articleTypeId,
+                    BaseColourId: baseColourId,
+                    MinPrice: minPrice,
+                    MaxPrice: maxPrice,
+                    IsBestseller: isBestseller,
+                    IsNew: isNew,
+                    SearchTerm: searchTerm
+                ),
+                cancellationToken);
+
             return Results.Ok(products);
         });
 
@@ -62,6 +88,14 @@ internal sealed class DictionariesModule : ModuleDefinition
             CancellationToken cancellationToken = default) =>
         {
             var products = await queryDispatcher.QueryAsync(new GetBestsellers(), cancellationToken);
+            return Results.Ok(products);
+        });
+        
+        app.MapGet("/products/recommended", async (
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var products = await queryDispatcher.QueryAsync(new GetProducts(), cancellationToken);
             return Results.Ok(products);
         });
 
