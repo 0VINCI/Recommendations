@@ -93,6 +93,15 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
         return await context.Products.AnyAsync(p => p.Id == id);
     }
     
+    public IQueryable<Product> AsQueryable()
+    {
+        return context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .AsNoTracking();
+    }
+    
     public async Task<Product?> GetByIdWithDetailsAsync(Guid id)
     {
         return await context.Products
