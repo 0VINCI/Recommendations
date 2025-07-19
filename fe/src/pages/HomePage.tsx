@@ -5,16 +5,31 @@ import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
 
 export function HomePage() {
-  console.log("HomePage rendering");
-  const { products, loading, error, getProducts } = useProducts();
+  console.log("HomePage component rendering");
+
+  const {
+    products,
+    bestsellers,
+    bestsellersLoading,
+    bestsellersError,
+    newProducts,
+    newProductsLoading,
+    newProductsError,
+    getProducts,
+    getBestsellers,
+    getNewProducts,
+  } = useProducts();
+
+  console.log("HomePage after useProducts hook");
 
   useEffect(() => {
+    // Load all products for featured section
     getProducts(1, 20);
-  }, [getProducts]);
+    getBestsellers(1, 20);
+    getNewProducts(1, 20);
+  }, []);
 
-  const bestsellers = products.filter((product) => product.isBestseller);
-  const newProducts = products.filter((product) => product.isNew);
-  const featuredProducts = products.slice(0, 8);
+  const featuredProducts = products?.slice(0, 8) || [];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -38,7 +53,6 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Bestsellers Section */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +71,7 @@ export function HomePage() {
             </Link>
           </div>
 
-          {loading && (
+          {bestsellersLoading && (
             <div className="text-center py-12">
               <p className="text-gray-500 dark:text-gray-400 text-lg">
                 Ładowanie bestsellerów...
@@ -65,22 +79,23 @@ export function HomePage() {
             </div>
           )}
 
-          {error && (
+          {bestsellersError && (
             <div className="text-center py-12">
-              <p className="text-red-500 dark:text-red-400 text-lg">{error}</p>
+              <p className="text-red-500 dark:text-red-400 text-lg">
+                {bestsellersError}
+              </p>
             </div>
           )}
 
-          {!loading && !error && (
+          {!bestsellersLoading && !bestsellersError && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {bestsellers.slice(0, 4).map((product) => (
+              {(bestsellers || []).slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           )}
         </div>
       </section>
-
       {/* New Products Section */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,14 +114,31 @@ export function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {newProducts.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {newProductsLoading && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">
+                Ładowanie nowości...
+              </p>
+            </div>
+          )}
+
+          {newProductsError && (
+            <div className="text-center py-12">
+              <p className="text-red-500 dark:text-red-400 text-lg">
+                {newProductsError}
+              </p>
+            </div>
+          )}
+
+          {!newProductsLoading && !newProductsError && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {(newProducts || []).slice(0, 4).map((newProducts) => (
+                <ProductCard key={newProducts.id} product={newProducts} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
-
       {/* Featured Products */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,7 +152,6 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
       {/* Newsletter Section */}
       <section className="py-16 bg-primary-50 dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

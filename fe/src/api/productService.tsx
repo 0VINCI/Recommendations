@@ -26,7 +26,6 @@ function toQueryString(params: object): string {
     .join("&");
 }
 
-// Product operations
 export const getProducts = async (
   params: GetProductsRequest
 ): Promise<ApiResult<GetProductsResponse>> => {
@@ -58,16 +57,22 @@ export const getProductsByCategory = async (
   );
 };
 
-export const getBestsellers = async (): Promise<
-  ApiResult<GetProductsResponse>
-> => {
-  return await get<GetProductsResponse>(`${modulePrefix}/products/bestsellers`);
+export const getBestsellers = async (
+  params: GetProductsRequest
+): Promise<ApiResult<GetProductsResponse>> => {
+  const query = toQueryString(params).toString();
+  return await get<GetProductsResponse>(
+    `${modulePrefix}/products/bestsellers?${query}`
+  );
 };
 
-export const getNewProducts = async (): Promise<
-  ApiResult<GetProductsResponse>
-> => {
-  return await get<GetProductsResponse>(`${modulePrefix}/products/new`);
+export const getNewProducts = async (
+  params: GetProductsRequest
+): Promise<ApiResult<GetProductsResponse>> => {
+  const query = toQueryString(params).toString();
+  return await get<GetProductsResponse>(
+    `${modulePrefix}/products/new?${query}`
+  );
 };
 
 // Category operations

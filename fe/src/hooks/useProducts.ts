@@ -16,12 +16,30 @@ interface UseProductsReturn {
   // Products state
   products: ProductDto[];
   currentProduct: ProductDto | null;
-  totalCount: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  totalProductCount: number;
+  productPage: number;
+  productPageSize: number;
+  totalProductPages: number;
   loading: boolean;
   error: string | null;
+
+  // Bestsellers state
+  bestsellers: ProductDto[];
+  bestsellersLoading: boolean;
+  bestsellersError: string | null;
+  totalBestsellersCount: number;
+  bestsellersPage: number;
+  bestsellersPageSize: number;
+  totalBestsellersPages: number;
+
+  // New products state
+  newProducts: ProductDto[];
+  newProductsLoading: boolean;
+  newProductsError: string | null;
+  totalNewProductsCount: number;
+  newProductsPage: number;
+  newProductsPageSize: number;
+  totalNewProductsPages: number;
 
   // Categories state
   masterCategories: GetMasterCategoriesResponse["masterCategories"];
@@ -34,12 +52,20 @@ interface UseProductsReturn {
   // Actions
   getProducts: (pageNumber?: number, pageSizeNumber?: number) => Promise<void>;
   getProductById: (productId: string) => Promise<void>;
-  getBestsellers: () => Promise<void>;
-  getNewProducts: () => Promise<void>;
+  getBestsellers: (
+    pageNumber?: number,
+    pageSizeNumber?: number
+  ) => Promise<void>;
+  getNewProducts: (
+    pageNumber?: number,
+    pageSizeNumber?: number
+  ) => Promise<void>;
   getProductsByCategory: (category: string) => Promise<void>;
   searchProducts: (query: string) => Promise<void>;
   loadCategories: () => Promise<void>;
   clearError: () => void;
+  clearBestsellersError: () => void;
+  clearNewProductsError: () => void;
   clearCategoriesError: () => void;
 }
 
@@ -47,12 +73,30 @@ export const useProducts = (): UseProductsReturn => {
   // Products state
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [currentProduct, setCurrentProduct] = useState<ProductDto | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalProductCount, setProductTotalCount] = useState(0);
+  const [productPage, setProductPage] = useState(1);
+  const [productPageSize, setProductPageSize] = useState(20);
+  const [totalProductPages, setProductTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Bestsellers state
+  const [bestsellers, setBestsellers] = useState<ProductDto[]>([]);
+  const [bestsellersLoading, setBestsellersLoading] = useState(false);
+  const [bestsellersError, setBestsellersError] = useState<string | null>(null);
+  const [totalBestsellersCount, setBestsellersTotalCount] = useState(0);
+  const [bestsellersPage, setBestsellersPage] = useState(1);
+  const [bestsellersPageSize, setBestsellersPageSize] = useState(20);
+  const [totalBestsellersPages, setBestsellersTotalPages] = useState(0);
+
+  // New products state
+  const [newProducts, setNewProducts] = useState<ProductDto[]>([]);
+  const [newProductsLoading, setNewProductsLoading] = useState(false);
+  const [newProductsError, setNewProductsError] = useState<string | null>(null);
+  const [totalNewProductsCount, setNewProductsTotalCount] = useState(0);
+  const [newProductsPage, setnNewProductsPage] = useState(1);
+  const [newProductsPageSize, setNewProductsPageSize] = useState(20);
+  const [totalNewProductsPages, setNewProductsTotalPages] = useState(0);
 
   // Categories state
   const [masterCategories, setMasterCategories] = useState<
@@ -72,6 +116,14 @@ export const useProducts = (): UseProductsReturn => {
 
   const clearError = useCallback(() => {
     setError(null);
+  }, []);
+
+  const clearBestsellersError = useCallback(() => {
+    setBestsellersError(null);
+  }, []);
+
+  const clearNewProductsError = useCallback(() => {
+    setNewProductsError(null);
   }, []);
 
   const clearCategoriesError = useCallback(() => {
@@ -100,10 +152,10 @@ export const useProducts = (): UseProductsReturn => {
         if (result.status === 200 && result.data) {
           const response: GetProductsResponse = result.data;
           setProducts(response.products);
-          setTotalCount(response.totalCount);
-          setPage(response.page);
-          setPageSize(response.pageSize);
-          setTotalPages(response.totalPages);
+          setProductTotalCount(response.totalCount);
+          setProductPage(response.page);
+          setProductPageSize(response.pageSize);
+          setProductTotalPages(response.totalPages);
         } else {
           setError(result.message || "Nie udało się pobrać produktów");
         }
@@ -138,55 +190,89 @@ export const useProducts = (): UseProductsReturn => {
     }
   }, []);
 
-  const getBestsellers = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const getBestsellers = useCallback(
+    async (
+      pageNumber: number = 1,
+      pageSizeNumber: number = 20,
+      filters: Partial<Omit<GetProductsRequest, "page" | "pageSize">> = {}
+    ) => {
+      setBestsellersLoading(true);
+      setBestsellersError(null);
 
-    try {
-      const result = await productService.getBestsellers();
-
-      if (result.status === 200 && result.data) {
-        const response: GetProductsResponse = result.data;
-        setProducts(response.products);
-        setTotalCount(response.totalCount);
-        setPage(response.page);
-        setPageSize(response.pageSize);
-        setTotalPages(response.totalPages);
-      } else {
-        setError(result.message || "Nie udało się pobrać bestsellerów");
+      try {
+        const params: GetProductsRequest = {
+          page: pageNumber,
+          pageSize: pageSizeNumber,
+          ...filters,
+        };
+        const result = await productService.getBestsellers(params);
+        if (result.status === 200 && result.data) {
+          const response: GetProductsResponse = result.data;
+          setBestsellersTotalCount(response.totalCount);
+          setBestsellersPage(response.page);
+          setBestsellersPageSize(response.pageSize);
+          setBestsellersTotalPages(response.totalPages);
+          setBestsellers(response.products);
+        } else {
+          console.log("getBestsellers error:", result.message);
+          setBestsellersError(
+            result.message || "Nie udało się pobrać bestsellerów"
+          );
+        }
+      } catch (err) {
+        console.error("getBestsellers catch error:", err);
+        setBestsellersError("Błąd podczas pobierania bestsellerów");
+        console.error("Error fetching bestsellers:", err);
+      } finally {
+        setBestsellersLoading(false);
       }
-    } catch (err) {
-      setError("Błąd podczas pobierania bestsellerów");
-      console.error("Error fetching bestsellers:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
-  const getNewProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const getNewProducts = useCallback(
+    async (
+      pageNumber: number = 1,
+      pageSizeNumber: number = 20,
+      filters: Partial<Omit<GetProductsRequest, "page" | "pageSize">> = {}
+    ) => {
+      setNewProductsLoading(true);
+      setNewProductsError(null);
 
-    try {
-      const result = await productService.getNewProducts();
+      try {
+        const params: GetProductsRequest = {
+          page: pageNumber,
+          pageSize: pageSizeNumber,
+          ...filters,
+        };
 
-      if (result.status === 200 && result.data) {
-        const response: GetProductsResponse = result.data;
-        setProducts(response.products);
-        setTotalCount(response.totalCount);
-        setPage(response.page);
-        setPageSize(response.pageSize);
-        setTotalPages(response.totalPages);
-      } else {
-        setError(result.message || "Nie udało się pobrać nowych produktów");
+        const result = await productService.getNewProducts(params);
+        console.log("getNewProducts result:", result);
+
+        if (result.status === 200 && result.data) {
+          const response: GetProductsResponse = result.data;
+
+          setNewProductsTotalCount(response.totalCount);
+          setnNewProductsPage(response.page);
+          setNewProductsPageSize(response.pageSize);
+          setNewProductsTotalPages(response.totalPages);
+          setNewProducts(response.products);
+        } else {
+          console.log("getNewProducts error:", result.message);
+          setNewProductsError(
+            result.message || "Nie udało się pobrać nowych produktów"
+          );
+        }
+      } catch (err) {
+        console.error("getNewProducts catch error:", err);
+        setNewProductsError("Błąd podczas pobierania nowych produktów");
+        console.error("Error fetching new products:", err);
+      } finally {
+        setNewProductsLoading(false);
       }
-    } catch (err) {
-      setError("Błąd podczas pobierania nowych produktów");
-      console.error("Error fetching new products:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   const getProductsByCategory = useCallback(async (category: string) => {
     setLoading(true);
@@ -198,10 +284,10 @@ export const useProducts = (): UseProductsReturn => {
       if (result.status === 200 && result.data) {
         const response: GetProductsResponse = result.data;
         setProducts(response.products);
-        setTotalCount(response.totalCount);
-        setPage(response.page);
-        setPageSize(response.pageSize);
-        setTotalPages(response.totalPages);
+        setProductTotalCount(response.totalCount);
+        setProductPage(response.page);
+        setProductPageSize(response.pageSize);
+        setProductTotalPages(response.totalPages);
       } else {
         setError(
           result.message || "Nie udało się pobrać produktów z kategorii"
@@ -225,10 +311,10 @@ export const useProducts = (): UseProductsReturn => {
       if (result.status === 200 && result.data) {
         const response: SearchProductsResponse = result.data;
         setProducts(response.products);
-        setTotalCount(response.totalCount);
-        setPage(response.page);
-        setPageSize(response.pageSize);
-        setTotalPages(response.totalPages);
+        setProductTotalCount(response.totalCount);
+        setProductPage(response.page);
+        setProductPageSize(response.pageSize);
+        setProductTotalPages(response.totalPages);
       } else {
         setError(result.message || "Nie udało się wyszukać produktów");
       }
@@ -295,12 +381,30 @@ export const useProducts = (): UseProductsReturn => {
     // Products state
     products,
     currentProduct,
-    totalCount,
-    page,
-    pageSize,
-    totalPages,
+    totalProductCount,
+    productPage,
+    productPageSize,
+    totalProductPages,
     loading,
     error,
+
+    // Bestsellers state
+    bestsellers,
+    bestsellersLoading,
+    bestsellersError,
+    totalBestsellersCount,
+    bestsellersPage,
+    bestsellersPageSize,
+    totalBestsellersPages,
+
+    // New products state
+    newProducts,
+    newProductsLoading,
+    newProductsError,
+    totalNewProductsCount,
+    newProductsPage,
+    newProductsPageSize,
+    totalNewProductsPages,
 
     // Categories state
     masterCategories,
@@ -319,6 +423,8 @@ export const useProducts = (): UseProductsReturn => {
     searchProducts,
     loadCategories,
     clearError,
+    clearBestsellersError,
+    clearNewProductsError,
     clearCategoriesError,
   };
 };
