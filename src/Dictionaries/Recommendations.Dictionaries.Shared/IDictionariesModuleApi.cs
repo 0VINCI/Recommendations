@@ -9,8 +9,8 @@ public interface IDictionariesModuleApi
     Task<IReadOnlyCollection<ProductDto>> GetAllProducts();
     Task<ProductDto?> GetProductById(Guid id);
     Task<IReadOnlyCollection<ProductDto>> GetProductsByCategory(string category);
-    Task<IReadOnlyCollection<ProductDto>> GetBestsellers();
-    Task<IReadOnlyCollection<ProductDto>> GetNewProducts();
+    Task<FilteredProductDto> GetBestsellers();
+    Task<FilteredProductDto> GetNewProducts();
     Task<IReadOnlyCollection<ProductDto>> SearchProducts(string searchTerm);
     
     Task AddProduct(AddProduct command);
