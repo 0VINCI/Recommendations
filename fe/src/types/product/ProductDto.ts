@@ -15,6 +15,7 @@ export interface ProductDto {
   reviews: number;
   isBestseller: boolean;
   isNew: boolean;
+  images: ProductImageDto[];
 }
 
 export interface ProductDetailsDto {
@@ -62,17 +63,6 @@ export interface ProductFullDto {
   images: ProductImageDto[];
 }
 
-export interface MasterCategoryDto {
-  id: string;
-  name: string;
-  active: boolean;
-  socialSharingEnabled: boolean;
-  isReturnable: boolean;
-  isExchangeable: boolean;
-  pickupEnabled: boolean;
-  isTryAndBuyEnabled: boolean;
-}
-
 export interface SubCategoryDto {
   id: string;
   name: string;
@@ -84,6 +74,18 @@ export interface SubCategoryDto {
   isExchangeable: boolean;
   pickupEnabled: boolean;
   isTryAndBuyEnabled: boolean;
+}
+
+export interface MasterCategoryDto {
+  id: string;
+  name: string;
+  active: boolean;
+  socialSharingEnabled: boolean;
+  isReturnable: boolean;
+  isExchangeable: boolean;
+  pickupEnabled: boolean;
+  isTryAndBuyEnabled: boolean;
+  subCategories: SubCategoryDto[];
 }
 
 export interface ArticleTypeDto {

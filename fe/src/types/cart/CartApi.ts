@@ -1,15 +1,17 @@
 // Request types
 export interface AddItemToCartRequest {
-  ProductId: string;
+  ProductId: string; // Guid
+  Name: string;
+  Price: number;
   Quantity: number;
 }
 
 export interface RemoveItemFromCartRequest {
-  ProductId: string;
+  ProductId: string; // Guid
 }
 
 export interface UpdateCartItemQuantityRequest {
-  ProductId: string;
+  ProductId: string; // Guid
   Quantity: number;
 }
 
@@ -31,4 +33,34 @@ export interface ShoppingCartResponse {
   CreatedAt: string;
   Total: number;
   Items: CartItemResponse[];
+}
+
+// Extended types for database cart operations
+export interface AddItemToCartDbRequest {
+  ProductId: string;
+  Name: string;
+  Price: number;
+  Quantity: number;
+}
+
+export interface UpdateCartItemQuantityDbRequest {
+  ProductId: string;
+  Quantity: number;
+}
+
+export interface CartItemDbResponse {
+  productId: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+  size?: string;
+  color?: string;
+}
+
+export interface ShoppingCartDbResponse {
+  idCart: string;
+  createdAt: string;
+  total: number;
+  items: CartItemDbResponse[];
 }

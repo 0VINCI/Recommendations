@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreditCard, MapPin, User } from "lucide-react";
 import { useApp } from "../context/useApp";
+import { useToast } from "../hooks/useToast";
 
 export function CheckoutPage() {
   const { state, dispatch } = useApp();
   const navigate = useNavigate();
+  const { showSuccess } = useToast();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -63,7 +65,7 @@ export function CheckoutPage() {
       dispatch({ type: "ADD_ORDER", payload: order });
       dispatch({ type: "CLEAR_CART" });
 
-      alert("Płatność została zrealizowana! Zamówienie zostało złożone.");
+      showSuccess("Płatność została zrealizowana! Zamówienie zostało złożone.");
       navigate("/orders");
     }
   };

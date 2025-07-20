@@ -14,7 +14,6 @@ import { OrdersPage } from "./pages/OrdersPage";
 import "./index.css";
 
 function App() {
-  console.log("App component rendering");
   return (
     <AppProvider>
       <Router>

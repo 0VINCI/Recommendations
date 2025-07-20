@@ -1,11 +1,13 @@
 import { get } from "./client/httpClient.tsx";
 import type { ApiResult } from "../types/api/ApiResult.tsx";
+import type { ProductDto } from "../types/product/ProductDto";
 import type {
   GetProductsResponse,
   GetProductByIdRequest,
   GetProductByIdResponse,
   GetMasterCategoriesRequest,
   GetMasterCategoriesResponse,
+  MasterCategoriesResponse,
   GetSubCategoriesRequest,
   GetSubCategoriesResponse,
   GetArticleTypesRequest,
@@ -36,9 +38,40 @@ export const getProducts = async (
 export const getProductById = async (
   request: GetProductByIdRequest
 ): Promise<ApiResult<GetProductByIdResponse>> => {
-  return await get<GetProductByIdResponse>(
+  const result = await get<GetProductByIdResponse>(
     `${modulePrefix}/products/${request.productId}`
   );
+
+  if (result.status === 200) {
+    const productData = result.data as unknown as ProductDto;
+    if (productData.id) {
+      return {
+        status: 200,
+        data: { product: productData },
+        message: "Success",
+      };
+    }
+    return result;
+  }
+
+  const productsResult = await get<GetProductsResponse>(
+    `${modulePrefix}/products?page=1&pageSize=1000`
+  );
+
+  if (productsResult.status === 200 && productsResult.data) {
+    const product = productsResult.data.products.find(
+      (p) => p.id === request.productId
+    );
+    if (product) {
+      return {
+        status: 200,
+        data: { product },
+        message: "Success",
+      };
+    }
+  }
+
+  return result;
 };
 
 export const getProductFullById = async (
@@ -50,11 +83,19 @@ export const getProductFullById = async (
 };
 
 export const getProductsByCategory = async (
-  category: string
+  masterCategoryId?: string,
+  subCategoryId?: string,
+  page: number = 1,
+  pageSize: number = 20
 ): Promise<ApiResult<GetProductsResponse>> => {
-  return await get<GetProductsResponse>(
-    `${modulePrefix}/products/category/${category}`
-  );
+  const params = new URLSearchParams();
+  if (masterCategoryId) params.append("masterCategoryId", masterCategoryId);
+  if (subCategoryId) params.append("subCategoryId", subCategoryId);
+  params.append("page", page.toString());
+  params.append("pageSize", pageSize.toString());
+
+  const url = `${modulePrefix}/products/category?${params.toString()}`;
+  return await get<GetProductsResponse>(url);
 };
 
 export const getBestsellers = async (
@@ -78,16 +119,16 @@ export const getNewProducts = async (
 // Category operations
 export const getMasterCategories = async (
   request: GetMasterCategoriesRequest = {}
-): Promise<ApiResult<GetMasterCategoriesResponse>> => {
+): Promise<ApiResult<MasterCategoriesResponse>> => {
   const params = new URLSearchParams();
   if (request.active !== undefined) {
     params.append("active", request.active.toString());
   }
   const queryString = params.toString();
   const url = queryString
-    ? `${modulePrefix}/masterCategories?${queryString}`
-    : `${modulePrefix}/masterCategories`;
-  return await get<GetMasterCategoriesResponse>(url);
+    ? `${modulePrefix}/products/categories?${queryString}`
+    : `${modulePrefix}/products/categories`;
+  return await get<MasterCategoriesResponse>(url);
 };
 
 export const getSubCategories = async (

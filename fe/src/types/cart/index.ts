@@ -23,8 +23,10 @@ export interface Product {
   usage?: string;
 }
 
+import type { ProductDto } from "../product/ProductDto";
+
 export interface CartItem {
-  product: Product;
+  product: Product | ProductDto;
   quantity: number;
   size: string;
   color: string;

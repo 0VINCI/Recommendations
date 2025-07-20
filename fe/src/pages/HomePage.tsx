@@ -3,10 +3,9 @@ import { ArrowRight, Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
+import { Loader } from "../components/common/Loader";
 
 export function HomePage() {
-  console.log("HomePage component rendering");
-
   const {
     products,
     bestsellers,
@@ -20,16 +19,22 @@ export function HomePage() {
     getNewProducts,
   } = useProducts();
 
-  console.log("HomePage after useProducts hook");
-
   useEffect(() => {
     // Load all products for featured section
-    getProducts(1, 20);
-    getBestsellers(1, 20);
-    getNewProducts(1, 20);
+    getProducts(1, 20); // Dla featured products zawsze 20
+    getBestsellers(1, 20); // Dla bestsellers zawsze 20
+    getNewProducts(1, 20); // Dla new products zawsze 20
   }, []);
 
   const featuredProducts = products?.slice(0, 8) || [];
+
+  if (bestsellersLoading || newProductsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -44,7 +49,7 @@ export function HomePage() {
               Najnowsze trendy w modzie damskiej i męskiej
             </p>
             <Link
-              to="/category/wszystkie"
+              to="/category/wszystkie?page=1&pageSize=20"
               className="inline-flex items-center bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Przeglądaj Kolekcję
@@ -64,20 +69,12 @@ export function HomePage() {
               </h2>
             </div>
             <Link
-              to="/bestsellers"
+              to="/category/bestsellers?page=1&pageSize=20"
               className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
             >
               Zobacz wszystkie
             </Link>
           </div>
-
-          {bestsellersLoading && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400 text-lg">
-                Ładowanie bestsellerów...
-              </p>
-            </div>
-          )}
 
           {bestsellersError && (
             <div className="text-center py-12">
@@ -107,20 +104,12 @@ export function HomePage() {
               </h2>
             </div>
             <Link
-              to="/new"
+              to="/category/new?page=1&pageSize=20"
               className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
             >
               Zobacz wszystkie
             </Link>
           </div>
-
-          {newProductsLoading && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400 text-lg">
-                Ładowanie nowości...
-              </p>
-            </div>
-          )}
 
           {newProductsError && (
             <div className="text-center py-12">
@@ -132,8 +121,8 @@ export function HomePage() {
 
           {!newProductsLoading && !newProductsError && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(newProducts || []).slice(0, 4).map((newProducts) => (
-                <ProductCard key={newProducts.id} product={newProducts} />
+              {(newProducts || []).slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           )}

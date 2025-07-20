@@ -3,10 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 
-console.log("main.tsx executing");
-
 const rootElement = document.getElementById("root");
-console.log("Root element:", rootElement);
 
 if (!rootElement) {
   throw new Error("Root element not found");

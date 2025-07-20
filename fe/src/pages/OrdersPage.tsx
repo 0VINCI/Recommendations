@@ -1,10 +1,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Package, Calendar, MapPin, CreditCard } from "lucide-react";
+import { Package, Calendar, MapPin } from "lucide-react";
 import { useApp } from "../context/useApp";
+import { Loader } from "../components/common/Loader";
 
 export function OrdersPage() {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
+
+  const [loading, setLoading] = React.useState(false);
+  React.useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
 
   if (!state.user) {
     return (
@@ -18,7 +33,7 @@ export function OrdersPage() {
           </p>
           <button
             onClick={() =>
-              state.dispatch({ type: "TOGGLE_AUTH_MODAL", payload: "login" })
+              dispatch({ type: "TOGGLE_AUTH_MODAL", payload: "login" })
             }
             className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
           >

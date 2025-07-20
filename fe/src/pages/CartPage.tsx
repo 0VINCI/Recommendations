@@ -1,38 +1,100 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useApp } from "../context/useApp";
+import { useCart } from "../hooks/useCart";
+import { useEffect } from "react";
+import { getUserCartDb } from "../api/cartService";
+import { getProductById } from "../api/productService";
 
 export function CartPage() {
   const { state, dispatch } = useApp();
+  const {
+    updateQuantity: updateCartQuantity,
+    removeFromCart,
+    cartTotal,
+  } = useCart();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state.user) {
+      getUserCartDb().then(async (backendCart) => {
+        if (
+          backendCart.data &&
+          backendCart.data.items &&
+          backendCart.data.items.length > 0
+        ) {
+          const newCart = await Promise.all(
+            backendCart.data.items.map(async (item: any) => {
+              let image = `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
+                item.name
+              )}`;
+              try {
+                const productRes = await getProductById({
+                  productId: item.productId,
+                });
+                if (
+                  productRes.status === 200 &&
+                  productRes.data &&
+                  productRes.data.product &&
+                  productRes.data.product.images &&
+                  productRes.data.product.images.length > 0
+                ) {
+                  image =
+                    productRes.data.product.images.find(
+                      (img: any) => img.isPrimary
+                    )?.imageUrl || productRes.data.product.images[0].imageUrl;
+                }
+              } catch (e) {
+                // zostaw placeholder
+              }
+              return {
+                product: {
+                  id: item.productId,
+                  name: item.name,
+                  price: item.unitPrice,
+                  image,
+                  category: "",
+                  description: "",
+                  sizes: [],
+                  colors: [],
+                  rating: 0,
+                  reviews: 0,
+                },
+                quantity: item.quantity,
+                size: "",
+                color: "",
+              };
+            })
+          );
+          dispatch({ type: "SET_CART", payload: newCart });
+        } else {
+          dispatch({ type: "CLEAR_CART" });
+        }
+      });
+    }
+  }, [state.user, dispatch]);
 
   const updateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity === 0) {
-      dispatch({ type: "REMOVE_FROM_CART", payload: productId });
+      removeFromCart(productId);
     } else {
-      dispatch({
-        type: "UPDATE_CART_QUANTITY",
-        payload: { productId, quantity: newQuantity },
-      });
+      updateCartQuantity(productId, newQuantity);
     }
   };
 
-  const removeItem = (index: number) => {
-    dispatch({ type: "REMOVE_FROM_CART", payload: index.toString() });
+  const removeItem = (productId: string) => {
+    removeFromCart(productId);
   };
 
-  const total = state.cart.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  const total = cartTotal;
 
   const proceedToCheckout = () => {
     if (!state.user) {
       dispatch({ type: "TOGGLE_AUTH_MODAL", payload: "login" });
       return;
     }
-
-    // Redirect to checkout
-    window.location.href = "/checkout";
+    // SPA redirect
+    navigate("/checkout");
   };
 
   if (state.cart.length === 0) {
@@ -71,14 +133,26 @@ export function CartPage() {
               className="flex items-center p-6 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
             >
               <img
-                src={item.product.image}
-                alt={item.product.name}
+                src={
+                  "image" in item.product
+                    ? item.product.image
+                    : `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
+                        item.product.productDisplayName
+                      )}`
+                }
+                alt={
+                  "name" in item.product
+                    ? item.product.name
+                    : item.product.productDisplayName
+                }
                 className="w-20 h-20 object-cover rounded-lg"
               />
 
               <div className="flex-1 ml-4">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                  {item.product.name}
+                  {"name" in item.product
+                    ? item.product.name
+                    : item.product.productDisplayName}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Rozmiar: {item.size} | Kolor: {item.color}
@@ -119,7 +193,7 @@ export function CartPage() {
               </div>
 
               <button
-                onClick={() => removeItem(index)}
+                onClick={() => removeItem(item.product.id)}
                 className="ml-4 p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
               >
                 <Trash2 className="w-5 h-5" />

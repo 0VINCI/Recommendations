@@ -10,14 +10,15 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useProducts } from "../hooks/useProducts";
-import { useApp } from "../context/useApp";
-import type { Product as CartProduct } from "../types/cart";
+import { useCart } from "../hooks/useCart";
+import { Loader } from "../components/common/Loader";
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const { currentProduct, loading, error, getProductById } = useProducts();
-  const { dispatch } = useApp();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -25,16 +26,17 @@ export function ProductPage() {
     }
   }, [id, getProductById]);
 
+  // Reset image index when product changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [currentProduct?.id]);
+
   const product = currentProduct;
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Ładowanie produktu...
-          </h2>
-        </div>
+        <Loader />
       </div>
     );
   }
@@ -75,40 +77,12 @@ export function ProductPage() {
     );
   }
 
-  const addToCart = () => {
-    // Konwertuj ProductDto na Product dla koszyka
-    const cartProduct: CartProduct = {
-      id: product.id,
-      name: product.productDisplayName,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-        product.productDisplayName
-      )}`,
-      category: product.subCategoryName,
-      description: `${product.brandName} - ${product.productDisplayName}`,
-      sizes: ["S", "M", "L", "XL"], // Placeholder
-      colors: [product.baseColourName || "Default"], // Placeholder
-      rating: product.rating,
-      reviews: product.reviews,
-      isBestseller: product.isBestseller,
-      isNew: product.isNew,
-      subCategory: product.subCategoryName,
-      baseColour: product.baseColourName,
-    };
+  const handleAddToCart = () => {
+    if (!product) return;
 
     for (let i = 0; i < quantity; i++) {
-      dispatch({
-        type: "ADD_TO_CART",
-        payload: {
-          product: cartProduct,
-          size: "",
-          color: "",
-        },
-      });
+      addToCart(product);
     }
-
-    alert("Produkt został dodany do koszyka!");
   };
 
   return (
@@ -134,13 +108,57 @@ export function ProductPage() {
           <div className="space-y-4">
             <div className="aspect-square bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
               <img
-                src={`https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-                  product.productDisplayName
-                )}`}
+                src={(() => {
+                  const currentImage =
+                    product.images?.[currentImageIndex] ||
+                    product.images?.find((img) => img.isPrimary) ||
+                    product.images?.[0];
+                  return (
+                    currentImage?.imageUrl ||
+                    `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
+                      product.productDisplayName
+                    )}`
+                  );
+                })()}
                 alt={product.productDisplayName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
+                    product.productDisplayName
+                  )}`;
+                }}
               />
             </div>
+
+            {/* Image Gallery */}
+            {product.images && product.images.length > 1 && (
+              <div className="flex space-x-2 overflow-x-auto">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`w-20 h-20 rounded border-2 overflow-hidden flex-shrink-0 transition-all duration-200 hover:scale-105 ${
+                      currentImageIndex === index
+                        ? "border-primary-500 ring-2 ring-primary-300"
+                        : "border-gray-300 dark:border-gray-600 hover:border-primary-300"
+                    }`}
+                  >
+                    <img
+                      src={image.imageUrl}
+                      alt={`${product.productDisplayName} - ${image.imageType}`}
+                      className="w-full h-full object-contain bg-white dark:bg-gray-800"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://via.placeholder.com/80x80/cccccc/666666?text=${
+                          index + 1
+                        }`;
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
@@ -269,7 +287,7 @@ export function ProductPage() {
             {/* Actions */}
             <div className="flex space-x-4">
               <button
-                onClick={addToCart}
+                onClick={handleAddToCart}
                 className="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors"
               >
                 <ShoppingCart className="w-5 h-5" />

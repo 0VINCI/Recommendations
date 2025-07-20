@@ -1,49 +1,49 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Star, Heart, ShoppingCart } from "lucide-react";
+import { Star, Heart, ShoppingCart, TrendingUp, Sparkles } from "lucide-react";
 import type { ProductDto } from "../types/product/ProductDto";
-import type { Product as CartProduct } from "../types/cart";
-import { useApp } from "../context/useApp";
+import { useCart } from "../hooks/useCart";
 
 interface ProductCardProps {
   product: ProductDto;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { dispatch } = useApp();
+  const { addToCart } = useCart();
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+  const [imageError, setImageError] = React.useState(false);
 
-  const addToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Konwertuj ProductDto na Product dla koszyka z dostępnymi danymi z backendu
-    const cartProduct: CartProduct = {
-      id: product.id,
-      name: product.productDisplayName,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
+  React.useEffect(() => {
+    setCurrentImageIndex(0);
+    setImageError(false);
+  }, [product.id]);
+
+  const primaryImage =
+    product.images?.find((img) => img.isPrimary) || product.images?.[0];
+  const defaultImageUrl =
+    primaryImage?.imageUrl ||
+    `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
+      product.productDisplayName
+    )}`;
+
+  // Aktualnie wyświetlany obraz
+  const currentImage = product.images?.[currentImageIndex] || primaryImage;
+  const imageUrl = imageError
+    ? `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
         product.productDisplayName
-      )}`,
-      category: product.subCategoryName,
-      description: `${product.brandName} - ${product.productDisplayName}`,
-      sizes: ["S", "M", "L", "XL"], // Placeholder - można dodać później
-      colors: [product.baseColourName || "Default"], // Placeholder - można dodać później
-      rating: product.rating,
-      reviews: product.reviews,
-      isBestseller: product.isBestseller,
-      isNew: product.isNew,
-      // Dodatkowe pola z backendu - używamy dostępnych pól
-      subCategory: product.subCategoryName,
-      baseColour: product.baseColourName,
-    };
+      )}`
+    : currentImage?.imageUrl || defaultImageUrl;
 
-    dispatch({
-      type: "ADD_TO_CART",
-      payload: {
-        product: cartProduct,
-        size: "",
-        color: "",
-      },
-    });
+  // Funkcja do zmiany obrazu
+  const changeImage = (e: React.MouseEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex(index);
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product);
   };
 
   return (
@@ -51,27 +51,36 @@ export function ProductCard({ product }: ProductCardProps) {
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden">
           <img
-            src={`https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
-              product.productDisplayName
-            )}`}
+            src={imageUrl}
             alt={product.productDisplayName}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 bg-white dark:bg-gray-800"
+            onError={() => {
+              // Ustaw flagę błędu żeby zapobiec pętli
+              setImageError(true);
+            }}
           />
 
           {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col space-y-1">
+          <div className="absolute top-2 left-2 flex flex-col space-y-1 z-10">
+            {/* Bestseller badge */}
             {product.isBestseller && (
-              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                Bestseller
+              <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold flex items-center space-x-1 shadow-lg border border-red-400">
+                <TrendingUp className="w-3 h-3" />
+                <span>Bestseller</span>
               </span>
             )}
+
+            {/* New product badge */}
             {product.isNew && (
-              <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                Nowość
+              <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold flex items-center space-x-1 shadow-lg border border-green-400">
+                <Sparkles className="w-3 h-3" />
+                <span>Nowość</span>
               </span>
             )}
+
+            {/* Discount badge */}
             {product.originalPrice && (
-              <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+              <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold shadow-lg border border-orange-400">
                 -
                 {Math.round(
                   ((product.originalPrice - product.price) /
@@ -91,15 +100,54 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Quick Add to Cart */}
-          <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
             <button
-              onClick={addToCart}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md flex items-center justify-center space-x-2 transition-colors"
+              onClick={handleAddToCart}
+              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-2 rounded-md flex items-center justify-center transition-colors shadow-lg min-w-[40px]"
+              aria-label="Dodaj do koszyka"
+              title="Dodaj do koszyka"
             >
-              <ShoppingCart className="w-4 h-4" />
-              <span className="text-sm font-medium">Dodaj do koszyka</span>
+              <ShoppingCart className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Image Gallery Thumbnails */}
+          {product.images && product.images.length > 1 && (
+            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+              <div className="flex space-x-1 bg-white/80 dark:bg-gray-900/80 p-1 rounded-md shadow-md">
+                {product.images.slice(0, 3).map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => changeImage(e, index)}
+                    className={`w-8 h-8 rounded border-2 overflow-hidden transition-all duration-200 hover:scale-110 ${
+                      currentImageIndex === index
+                        ? "border-primary-500 ring-2 ring-primary-300"
+                        : "border-white hover:border-primary-300"
+                    }`}
+                  >
+                    <img
+                      src={image.imageUrl}
+                      alt={`${product.productDisplayName} - ${image.imageType}`}
+                      className="w-full h-full object-contain bg-white dark:bg-gray-800"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://via.placeholder.com/32x32/cccccc/666666?text=${
+                          index + 1
+                        }`;
+                      }}
+                    />
+                  </button>
+                ))}
+                {product.images.length > 3 && (
+                  <div className="w-8 h-8 rounded border-2 border-white shadow-md bg-gray-800 text-white text-xs flex items-center justify-center">
+                    +{product.images.length - 3}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* USUNIĘTO DOT INDICATORS */}
         </div>
       </Link>
 

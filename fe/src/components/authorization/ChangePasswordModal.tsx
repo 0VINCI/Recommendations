@@ -19,8 +19,6 @@ export function ChangePasswordModal({
   const [success, setSuccess] = useState(false);
   const { showSuccess, showError } = useToast();
 
-  console.log("ChangePasswordModal state.user:", state.user); // Debug
-
   const [formData, setFormData] = useState({
     oldPassword: "",
     newPassword: "",
@@ -29,7 +27,6 @@ export function ChangePasswordModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("ChangePasswordModal handleSubmit called"); // Debug
     setError(null);
     setSuccess(false);
 
@@ -62,8 +59,6 @@ export function ChangePasswordModal({
         OldPassword: formData.oldPassword,
         NewPassword: formData.newPassword,
       });
-
-      console.log("changePassword result:", result); // Debug
 
       if (result.status === 200) {
         showSuccess("Hasło zostało zmienione pomyślnie!");

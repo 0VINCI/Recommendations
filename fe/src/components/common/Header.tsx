@@ -18,8 +18,6 @@ export function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  console.log("Header state.user:", state.user); // Debug
-
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

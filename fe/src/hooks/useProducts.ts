@@ -11,6 +11,7 @@ import type {
   SearchProductsResponse,
   GetProductsRequest,
 } from "../types/product/ProductApi";
+import type { MasterCategoryDto } from "../types/product/ProductDto";
 
 interface UseProductsReturn {
   // Products state
@@ -42,7 +43,7 @@ interface UseProductsReturn {
   totalNewProductsPages: number;
 
   // Categories state
-  masterCategories: GetMasterCategoriesResponse["masterCategories"];
+  masterCategories: MasterCategoryDto[];
   subCategories: GetSubCategoriesResponse["subCategories"];
   articleTypes: GetArticleTypesResponse["articleTypes"];
   baseColours: GetBaseColoursResponse["baseColours"];
@@ -60,7 +61,12 @@ interface UseProductsReturn {
     pageNumber?: number,
     pageSizeNumber?: number
   ) => Promise<void>;
-  getProductsByCategory: (category: string) => Promise<void>;
+  getProductsByCategory: (
+    masterCategoryId?: string,
+    subCategoryId?: string,
+    page?: number,
+    pageSize?: number
+  ) => Promise<void>;
   searchProducts: (query: string) => Promise<void>;
   loadCategories: () => Promise<void>;
   clearError: () => void;
@@ -94,7 +100,7 @@ export const useProducts = (): UseProductsReturn => {
   const [newProductsLoading, setNewProductsLoading] = useState(false);
   const [newProductsError, setNewProductsError] = useState<string | null>(null);
   const [totalNewProductsCount, setNewProductsTotalCount] = useState(0);
-  const [newProductsPage, setnNewProductsPage] = useState(1);
+  const [newProductsPage, setNewProductsPage] = useState(1);
   const [newProductsPageSize, setNewProductsPageSize] = useState(20);
   const [totalNewProductsPages, setNewProductsTotalPages] = useState(0);
 
@@ -214,13 +220,11 @@ export const useProducts = (): UseProductsReturn => {
           setBestsellersTotalPages(response.totalPages);
           setBestsellers(response.products);
         } else {
-          console.log("getBestsellers error:", result.message);
           setBestsellersError(
             result.message || "Nie udało się pobrać bestsellerów"
           );
         }
       } catch (err) {
-        console.error("getBestsellers catch error:", err);
         setBestsellersError("Błąd podczas pobierania bestsellerów");
         console.error("Error fetching bestsellers:", err);
       } finally {
@@ -247,24 +251,21 @@ export const useProducts = (): UseProductsReturn => {
         };
 
         const result = await productService.getNewProducts(params);
-        console.log("getNewProducts result:", result);
 
         if (result.status === 200 && result.data) {
           const response: GetProductsResponse = result.data;
 
           setNewProductsTotalCount(response.totalCount);
-          setnNewProductsPage(response.page);
+          setNewProductsPage(response.page);
           setNewProductsPageSize(response.pageSize);
           setNewProductsTotalPages(response.totalPages);
           setNewProducts(response.products);
         } else {
-          console.log("getNewProducts error:", result.message);
           setNewProductsError(
             result.message || "Nie udało się pobrać nowych produktów"
           );
         }
       } catch (err) {
-        console.error("getNewProducts catch error:", err);
         setNewProductsError("Błąd podczas pobierania nowych produktów");
         console.error("Error fetching new products:", err);
       } finally {
@@ -274,32 +275,45 @@ export const useProducts = (): UseProductsReturn => {
     []
   );
 
-  const getProductsByCategory = useCallback(async (category: string) => {
-    setLoading(true);
-    setError(null);
+  const getProductsByCategory = useCallback(
+    async (
+      masterCategoryId?: string,
+      subCategoryId?: string,
+      page: number = 1,
+      pageSize: number = 20
+    ) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await productService.getProductsByCategory(category);
-
-      if (result.status === 200 && result.data) {
-        const response: GetProductsResponse = result.data;
-        setProducts(response.products);
-        setProductTotalCount(response.totalCount);
-        setProductPage(response.page);
-        setProductPageSize(response.pageSize);
-        setProductTotalPages(response.totalPages);
-      } else {
-        setError(
-          result.message || "Nie udało się pobrać produktów z kategorii"
+      try {
+        const result = await productService.getProductsByCategory(
+          masterCategoryId,
+          subCategoryId,
+          page,
+          pageSize
         );
+
+        if (result.status === 200 && result.data) {
+          const response: GetProductsResponse = result.data;
+          setProducts(response.products);
+          setProductTotalCount(response.totalCount);
+          setProductPage(response.page);
+          setProductPageSize(response.pageSize);
+          setProductTotalPages(response.totalPages);
+        } else {
+          setError(
+            result.message || "Nie udało się pobrać produktów z kategorii"
+          );
+        }
+      } catch (err) {
+        setError("Błąd podczas pobierania produktów z kategorii");
+        console.error("Error fetching products by category:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError("Błąd podczas pobierania produktów z kategorii");
-      console.error("Error fetching products by category:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   const searchProducts = useCallback(async (query: string) => {
     setLoading(true);
@@ -331,47 +345,17 @@ export const useProducts = (): UseProductsReturn => {
     setCategoriesError(null);
 
     try {
-      // Load all categories in parallel
-      const [masterResult, subResult, articleResult, coloursResult] =
-        await Promise.all([
-          productService.getMasterCategories(),
-          productService.getSubCategories(),
-          productService.getArticleTypes(),
-          productService.getBaseColours(),
-        ]);
+      const masterResult = await productService.getMasterCategories();
 
       if (masterResult.status === 200 && masterResult.data) {
-        setMasterCategories(masterResult.data.masterCategories);
-      }
-
-      if (subResult.status === 200 && subResult.data) {
-        setSubCategories(subResult.data.subCategories);
-      }
-
-      if (articleResult.status === 200 && articleResult.data) {
-        setArticleTypes(articleResult.data.articleTypes);
-      }
-
-      if (coloursResult.status === 200 && coloursResult.data) {
-        setBaseColours(coloursResult.data.baseColours);
-      }
-
-      // Check for errors
-      const errors = [
-        masterResult.message,
-        subResult.message,
-        articleResult.message,
-        coloursResult.message,
-      ].filter(Boolean);
-
-      if (errors.length > 0) {
+        setMasterCategories(masterResult.data || []);
+      } else {
         setCategoriesError(
-          `Błędy podczas ładowania kategorii: ${errors.join(", ")}`
+          masterResult.message || "Nie udało się załadować kategorii"
         );
       }
     } catch (err) {
       setCategoriesError("Błąd podczas ładowania kategorii");
-      console.error("Error loading categories:", err);
     } finally {
       setCategoriesLoading(false);
     }

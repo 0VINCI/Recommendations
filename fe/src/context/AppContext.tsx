@@ -5,6 +5,7 @@ import {
   type AppState,
   type AppAction,
 } from "./appReducer";
+import { getCurrentUser } from "../api/authorizationService";
 
 const AppContext = createContext<{
   state: AppState;
@@ -29,6 +30,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.remove("dark");
     }
   }, [state.theme]);
+
+  useEffect(() => {
+    getCurrentUser().then((res) => {
+      if (res.status === 200 && res.data) {
+        const user = {
+          IdUser: res.data.idUser,
+          Name: res.data.name,
+          Surname: res.data.surname,
+          Email: res.data.email,
+        };
+        dispatch({ type: "SET_USER", payload: user });
+      }
+    });
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

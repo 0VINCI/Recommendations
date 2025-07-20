@@ -81,7 +81,6 @@ export function AuthModal() {
   const switchMode = () => {
     dispatch({
       type: "TOGGLE_AUTH_MODAL",
-      payload: state.authMode === "login" ? "register" : "login",
     });
   };
 

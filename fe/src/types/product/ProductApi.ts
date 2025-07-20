@@ -52,6 +52,9 @@ export interface GetMasterCategoriesResponse {
   masterCategories: MasterCategoryDto[];
 }
 
+// Alternatywny typ dla bezpośredniej odpowiedzi z API
+export type MasterCategoriesResponse = MasterCategoryDto[];
+
 export interface GetSubCategoriesRequest {
   masterCategoryId?: string;
   active?: boolean;

@@ -28,3 +28,7 @@ export const changePassword = async (changePasswordData: ChangePassword) => {
 export const remindPassword = async (remindPasswordData: RemindPassword) => {
   return await post<void>(`${modulePrefix}/remindPassword`, remindPasswordData);
 };
+
+export const getCurrentUser = async (): Promise<ApiResult<SignInResponse>> => {
+  return await post<SignInResponse>(`${modulePrefix}/me`);
+};
