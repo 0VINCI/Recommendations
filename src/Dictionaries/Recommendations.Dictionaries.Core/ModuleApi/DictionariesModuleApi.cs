@@ -25,10 +25,10 @@ internal class DictionariesModuleApi(ICommandDispatcher commands,
         int pageSize = 20)
         => queries.QueryAsync(new GetProductsByCategory(masterCategoryId, subCategoryId, page, pageSize));
 
-    public Task<IReadOnlyCollection<ProductDto>> GetBestsellers()
+    public Task<FilteredProductDto> GetBestsellers()
         => queries.QueryAsync(new GetBestsellers());
 
-    public Task<IReadOnlyCollection<ProductDto>> GetNewProducts()
+    public Task<FilteredProductDto> GetNewProducts()
         => queries.QueryAsync(new GetNewProducts());
 
     public Task<IReadOnlyCollection<ProductDto>> SearchProducts(string searchTerm)

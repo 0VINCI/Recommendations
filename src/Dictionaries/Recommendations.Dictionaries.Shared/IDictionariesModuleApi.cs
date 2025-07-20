@@ -13,8 +13,8 @@ public interface IDictionariesModuleApi
         string? subCategoryId = null,
         int page = 1,
         int pageSize = 20);
-    Task<IReadOnlyCollection<ProductDto>> GetBestsellers();
-    Task<IReadOnlyCollection<ProductDto>> GetNewProducts();
+    Task<FilteredProductDto> GetBestsellers();
+    Task<FilteredProductDto> GetNewProducts();
     Task<IReadOnlyCollection<ProductDto>> SearchProducts(string searchTerm);
     
     Task AddProduct(AddProduct command);
