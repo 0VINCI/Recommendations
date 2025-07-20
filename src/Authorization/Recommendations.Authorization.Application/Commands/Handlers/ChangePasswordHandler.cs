@@ -11,7 +11,7 @@ internal sealed class ChangePasswordHandler(IUserRepository userRepository) : IC
     {
         var data = command.ChangePasswordDto;
 
-        var user = await userRepository.GetUser(data.Email);
+        var user = await userRepository.GetUserByEmail(data.Email);
 
         if (user is null)
         {

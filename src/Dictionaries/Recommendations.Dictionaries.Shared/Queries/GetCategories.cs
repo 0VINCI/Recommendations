@@ -3,8 +3,4 @@ using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.Dictionaries.Shared.Queries;
 
-public sealed record GetNewProducts(
-    int Page = 1,
-    int PageSize = 20,
-    string? SearchTerm = null
-) : IQuery<FilteredProductDto>;
+public sealed record GetCategories() : IQuery<IReadOnlyCollection<CategoriesDto>>;

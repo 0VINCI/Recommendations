@@ -4,7 +4,8 @@ namespace Recommendations.Authorization.Infrastructure.DAL.Repositories;
 
 public interface IUserRepository
 {
-    public Task<User> GetUser(string email);
+    public Task<User> GetUserByEmail(string email);
+    public Task<User> GetUserById(Guid userId);
     public Task<IReadOnlyCollection<User>> GetAllUsers();
     public Task AddAsync(User user);
     public Task Update(User user);

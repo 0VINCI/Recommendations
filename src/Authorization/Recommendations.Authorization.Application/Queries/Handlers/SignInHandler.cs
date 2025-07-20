@@ -13,7 +13,7 @@ public sealed class SignInHandler(IUserRepository userRepository, IJwtTokenServi
     {
         var data = query.SignInDto;
 
-        var user = await userRepository.GetUser(data.Email);
+        var user = await userRepository.GetUserByEmail(data.Email);
 
         if (user is null)
         {

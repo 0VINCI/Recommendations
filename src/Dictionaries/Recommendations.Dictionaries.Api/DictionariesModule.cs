@@ -74,20 +74,41 @@ internal sealed class DictionariesModule : ModuleDefinition
             return product is null ? Results.NotFound() : Results.Ok(product);
         });
 
-        app.MapGet("/products/category/{category}", async (
-            [FromRoute] string category,
+        app.MapGet("/products/categories", async (
             [FromServices] IQueryDispatcher queryDispatcher,
             CancellationToken cancellationToken = default) =>
         {
-            var products = await queryDispatcher.QueryAsync(new GetProductsByCategory(category), cancellationToken);
+            var products = await queryDispatcher.QueryAsync(new GetCategories(), cancellationToken);
             return Results.Ok(products);
+        });
+
+        app.MapGet("/products/category", async (
+            [FromQuery] string? masterCategoryId,
+            [FromQuery] string? subCategoryId,
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetProductsByCategory(
+                MasterCategoryId: masterCategoryId,
+                SubCategoryId: subCategoryId,
+                Page: page ?? 1,
+                PageSize: pageSize ?? 20
+            );
+            var result = await queryDispatcher.QueryAsync(query, cancellationToken);
+            return Results.Ok(result);
         });
 
         app.MapGet("/products/bestsellers", async (
             [FromServices] IQueryDispatcher queryDispatcher,
+            int page = 1,
+            int pageSize = 20,
+            string? searchTerm = null,
             CancellationToken cancellationToken = default) =>
         {
-            var products = await queryDispatcher.QueryAsync(new GetBestsellers(), cancellationToken);
+            var products = await queryDispatcher.QueryAsync(
+                new GetBestsellers(Page: page, PageSize: pageSize), cancellationToken);
             return Results.Ok(products);
         });
         
@@ -101,9 +122,13 @@ internal sealed class DictionariesModule : ModuleDefinition
 
         app.MapGet("/products/new", async (
             [FromServices] IQueryDispatcher queryDispatcher,
+            int page = 1,
+            int pageSize = 20,
+            string? searchTerm = null,
             CancellationToken cancellationToken = default) =>
         {
-            var products = await queryDispatcher.QueryAsync(new GetNewProducts(), cancellationToken);
+            var products = await queryDispatcher.QueryAsync(
+                new GetNewProducts(Page: page, PageSize: pageSize), cancellationToken);
             return Results.Ok(products);
         });
 

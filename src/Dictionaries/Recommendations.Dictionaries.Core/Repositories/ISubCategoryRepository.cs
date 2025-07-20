@@ -11,4 +11,6 @@ public interface ISubCategoryRepository
     Task UpdateAsync(SubCategory subCategory);
     Task DeleteAsync(Guid id);
     Task<bool> ExistsAsync(Guid id);
+    Task<IReadOnlyCollection<SubCategory>> GetByMasterCategoryIdAsync(Guid masterCategoryId);
+
 } 

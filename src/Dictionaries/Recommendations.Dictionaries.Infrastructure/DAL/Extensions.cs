@@ -21,6 +21,7 @@ internal static class Extensions
         
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+        services.AddScoped<IMasterCategoryRepository, MasterCategoryRepository>();
         services.AddScoped<IArticleTypeRepository, ArticleTypeRepository>();
         services.AddScoped<IBaseColourRepository, BaseColourRepository>();
         services.AddScoped<IDataImportService, DataImportService>();

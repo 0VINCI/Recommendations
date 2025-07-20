@@ -47,4 +47,10 @@ internal sealed class SubCategoryRepository(DictionariesDbContext context) : ISu
     {
         return await context.SubCategories.AnyAsync(sc => sc.Id == id);
     }
+    public async Task<IReadOnlyCollection<SubCategory>> GetByMasterCategoryIdAsync(Guid masterCategoryId)
+    {
+        return await context.SubCategories
+            .Where(sc => sc.MasterCategoryId == masterCategoryId)
+            .ToListAsync();
+    }
 } 

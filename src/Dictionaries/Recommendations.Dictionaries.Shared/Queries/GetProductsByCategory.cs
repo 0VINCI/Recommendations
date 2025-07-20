@@ -3,4 +3,9 @@ using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.Dictionaries.Shared.Queries;
 
-public sealed record GetProductsByCategory(string Category) : IQuery<IReadOnlyCollection<ProductDto>>; 
+public sealed record GetProductsByCategory(
+    string? MasterCategoryId = null,
+    string? SubCategoryId = null,
+    int Page = 1,
+    int PageSize = 20
+) : IQuery<FilteredProductDto>;

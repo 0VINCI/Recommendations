@@ -12,6 +12,7 @@ public static class Extensions
     {
         services.AddScoped<IQueryHandler<GetAllUsers, IReadOnlyCollection<UserDto>>, GetAllUsersHandler>();
         services.AddScoped<IQueryHandler<SignIn, SignedInDto>, SignInHandler>();
+        services.AddScoped<IQueryHandler<GetUserById, UserInfoDto>, GetUserBydHandler>();
 
         return services;
     }

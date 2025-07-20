@@ -45,14 +45,20 @@ internal sealed class GetProductsHandler(
                 p.SubCategory.Name.Contains(query.SearchTerm) ||
                 p.ArticleType.Name.Contains(query.SearchTerm));
 
-        var totalCount = await productsQuery.CountAsync(cancellationToken);
+        var (products, totalCount) = await productRepository.GetFilteredAsync(
+            query.SubCategoryId,
+            query.MasterCategoryId,
+            query.ArticleTypeId,
+            query.BaseColourId,
+            query.MinPrice,
+            query.MaxPrice,
+            query.IsBestseller,
+            query.IsNew,
+            query.SearchTerm,
+            query.Page,
+            query.PageSize,
+            cancellationToken);
 
-        var products = await productsQuery
-            .Include(x => x.Images) 
-            .OrderBy(p => p.ProductDisplayName) 
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .ToListAsync(cancellationToken);
 
         var productDtos = mapper.Map<IReadOnlyCollection<ProductDto>>(products);
         

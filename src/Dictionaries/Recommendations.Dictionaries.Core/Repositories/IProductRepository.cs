@@ -15,4 +15,33 @@ public interface IProductRepository
     Task DeleteAsync(Guid id);
     Task<bool> ExistsAsync(Guid id);
     Task<Product?> GetByIdWithDetailsAsync(Guid id);
+    IQueryable<Product> AsQueryable();
+    Task<(IReadOnlyCollection<Product> Products, int TotalCount)> GetFilteredAsync(
+        string? subCategoryId,
+        string? masterCategoryId,
+        string? articleTypeId,
+        string? baseColourId,
+        decimal? minPrice,
+        decimal? maxPrice,
+        bool? isBestseller,
+        bool? isNew,
+        string? searchTerm,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    Task<(IReadOnlyCollection<Product> Products, int TotalCount)> GetBestsellersPagedAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    Task<(IReadOnlyCollection<Product> Products, int TotalCount)> GetNewProductsPagedAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+    Task<(IReadOnlyCollection<Product> Products, int TotalCount)> SearchPagedAsync(
+        string searchTerm,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
 } 

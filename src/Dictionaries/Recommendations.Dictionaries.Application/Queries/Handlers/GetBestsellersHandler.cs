@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Recommendations.Dictionaries.Core.Repositories;
 using Recommendations.Dictionaries.Shared.DTO;
 using Recommendations.Dictionaries.Shared.Queries;
@@ -8,11 +9,28 @@ namespace Recommendations.Dictionaries.Application.Queries.Handlers;
 
 internal sealed class GetBestsellersHandler(
     IProductRepository productRepository,
-    IMapper mapper) : IQueryHandler<GetBestsellers, IReadOnlyCollection<ProductDto>>
+    IMapper mapper) : IQueryHandler<GetBestsellers, FilteredProductDto>
 {
-    public async Task<IReadOnlyCollection<ProductDto>> HandleAsync(GetBestsellers query, CancellationToken cancellationToken = default)
+    public async Task<FilteredProductDto> HandleAsync(GetBestsellers query, CancellationToken cancellationToken = default)
     {
-        var products = await productRepository.GetBestsellersAsync();
-        return mapper.Map<IReadOnlyCollection<ProductDto>>(products);
+        var result = await productRepository.GetFilteredAsync(
+            subCategoryId: null,
+            masterCategoryId: null,
+            articleTypeId: null,
+            baseColourId: null,
+            minPrice: null,
+            maxPrice: null,
+            isBestseller: true,
+            isNew: null,
+            searchTerm: query.SearchTerm,
+            page: query.Page,
+            pageSize: query.PageSize,
+            cancellationToken
+        );
+
+        var productDtos = mapper.Map<IReadOnlyCollection<ProductDto>>(result.Products);
+        var totalPages = (int)Math.Ceiling((double)result.TotalCount / query.PageSize);
+
+        return new FilteredProductDto(productDtos, result.TotalCount, query.Page, query.PageSize, totalPages);
     }
-} 
+}

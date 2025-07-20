@@ -6,7 +6,7 @@ namespace Recommendations.Authorization.Infrastructure.DAL.Repositories;
 
 internal sealed class UserRepository(AuthorizationDbContext dbContext) : IUserRepository
 {
-    public async Task<User> GetUser(string email)
+    public async Task<User> GetUserByEmail(string email)
     {
         var user = await dbContext.Users.SingleOrDefaultAsync(x => x.Email.Equals(email));
         if (user is null)
@@ -17,6 +17,17 @@ internal sealed class UserRepository(AuthorizationDbContext dbContext) : IUserRe
         return user;
     }
     
+    public async Task<User> GetUserById(Guid userId)
+    {
+        var user = await dbContext.Users.SingleOrDefaultAsync(x => x.IdUser.Equals(userId));
+        if (user is null)
+        {
+            throw new UserNotFoundException();
+        }
+
+        return user;
+    }
+
     public async Task<IReadOnlyCollection<User>> GetAllUsers()
     {
         var users = await dbContext.Users.ToListAsync();

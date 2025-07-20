@@ -90,5 +90,20 @@ internal sealed class AuthorizationModule : ModuleDefinition
             await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
+        
+        app.MapPost("/me", async (
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var userInfo = await queryDispatcher.QueryAsync(new GetUserById(), cancellationToken);
+            
+            return Results.Ok(new
+            {
+                userInfo.IdUser,
+                userInfo.Name,
+                userInfo.Surname,
+                userInfo.Email,
+            });
+        });
     }
 }

@@ -13,7 +13,7 @@ internal sealed class RemindPasswordHandler(IUserRepository userRepository,
     {
         var data = command.Email;
 
-        var user = await userRepository.GetUser(data);
+        var user = await userRepository.GetUserByEmail(data);
 
         if (user is null)
         {

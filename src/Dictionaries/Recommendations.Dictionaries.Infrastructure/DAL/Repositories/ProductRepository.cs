@@ -21,6 +21,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -93,11 +94,145 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
         return await context.Products.AnyAsync(p => p.Id == id);
     }
     
+    public IQueryable<Product> AsQueryable()
+    {
+        return context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .AsNoTracking();
+    }
+    
     public async Task<Product?> GetByIdWithDetailsAsync(Guid id)
     {
         return await context.Products
             .Include(p => p.Details)
             .Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Id == id);
+    }
+    
+    public async Task<(IReadOnlyCollection<Product> Products, int TotalCount)> GetFilteredAsync(
+        string? subCategoryId,
+        string? masterCategoryId,
+        string? articleTypeId,
+        string? baseColourId,
+        decimal? minPrice,
+        decimal? maxPrice,
+        bool? isBestseller,
+        bool? isNew,
+        string? searchTerm,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var query = context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(subCategoryId))
+            query = query.Where(p => p.SubCategory.Id == Guid.Parse(subCategoryId));
+
+        if (!string.IsNullOrWhiteSpace(masterCategoryId))
+            query = query.Where(p => p.SubCategory.MasterCategoryId == Guid.Parse(masterCategoryId));
+
+        if (!string.IsNullOrWhiteSpace(articleTypeId))
+            query = query.Where(p => p.ArticleType.Id == Guid.Parse(articleTypeId));
+
+        if (!string.IsNullOrWhiteSpace(baseColourId))
+            query = query.Where(p => p.BaseColour.Id == Guid.Parse(baseColourId));
+
+        if (minPrice.HasValue)
+            query = query.Where(p => p.Price >= minPrice.Value);
+
+        if (maxPrice.HasValue)
+            query = query.Where(p => p.Price <= maxPrice.Value);
+
+        if (isBestseller.HasValue)
+            query = query.Where(p => p.IsBestseller == isBestseller.Value);
+
+        if (isNew.HasValue)
+            query = query.Where(p => p.IsNew == isNew.Value);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+            query = query.Where(p =>
+                p.ProductDisplayName.Contains(searchTerm) ||
+                p.SubCategory.Name.Contains(searchTerm) ||
+                p.ArticleType.Name.Contains(searchTerm));
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var products = await query
+            .OrderBy(p => p.ProductDisplayName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (products, totalCount);
+    }
+    public async Task<(IReadOnlyCollection<Product>, int)> GetBestsellersPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .AsNoTracking()
+            .Where(p => p.IsBestseller);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var products = await query.OrderByDescending(p => p.ProductDisplayName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (products, totalCount);
+    }
+    public async Task<(IReadOnlyCollection<Product>, int)> GetNewProductsPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .AsNoTracking()
+            .Where(p => p.IsNew);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var products = await query.OrderByDescending(p => p.ProductDisplayName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (products, totalCount);
+    }
+    public async Task<(IReadOnlyCollection<Product> Products, int TotalCount)> SearchPagedAsync(
+        string searchTerm,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var query = context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .AsNoTracking()
+            .Where(p =>
+                p.ProductDisplayName.Contains(searchTerm) ||
+                p.SubCategory.Name.Contains(searchTerm) ||
+                p.ArticleType.Name.Contains(searchTerm)
+            );
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var products = await query
+            .OrderBy(p => p.ProductDisplayName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (products, totalCount);
     }
 } 

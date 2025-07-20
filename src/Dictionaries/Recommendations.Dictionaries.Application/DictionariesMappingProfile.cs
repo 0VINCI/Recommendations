@@ -17,7 +17,9 @@ public class DictionariesMappingProfile : Profile
         CreateMap<ProductImage, ProductImageDto>();
 
         CreateMap<MasterCategory, MasterCategoryDto>();
-        
+        CreateMap<MasterCategory, CategoriesDto>()
+            .ForMember(dest => dest.SubCategories, opt => opt.MapFrom(src => src.SubCategories));
+
         CreateMap<SubCategory, SubCategoryDto>()
             .ForMember(dest => dest.MasterCategoryName, opt => opt.MapFrom(src => src.MasterCategory.Name));
         
