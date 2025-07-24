@@ -7,12 +7,12 @@ public class Order
 {
     public Guid IdOrder { get; }
     public Guid CustomerId { get; }
-    private IReadOnlyList<OrderItem> Items { get; }
+    internal IReadOnlyList<OrderItem> Items { get; }
     public Guid ShippingAddressId { get; }
-    private OrderStatus Status { get; set; }
+    internal OrderStatus Status { get; set; }
     public DateTime CreatedAt { get; }
     public DateTime? PaidAt { get; private set; }
-    private List<Payment> Payments { get; init; }
+    internal List<Payment> Payments { get; init; }
 
     private Order(Guid idOrder, Guid customerId, IReadOnlyCollection<OrderItem> items, 
         Guid shippingAddressId, IEnumerable<Payment> payments)

@@ -16,13 +16,18 @@ internal sealed class AddNewCustomerHandler(IPurchaseRepository purchaseReposito
             throw new CustomerAlreadyExistsException();
 
         var data = command.CustomerDto;
-        
         var addresses = data.Addresses?
             .Select(a => Address.Create(a.Street, a.City, a.PostalCode, a.Country))
             .ToList() ?? new List<Address>();
-        
-        var newCustomer = Customer.Create(userContext.UserId,data.FirstName, data.LastName, 
-            data.Email, data.PhoneNumber, addresses);
+
+        var newCustomer = Customer.Create(
+            userContext.UserId,
+            data.FirstName,
+            data.LastName,
+            data.Email,
+            data.PhoneNumber,
+            addresses
+        );
    
         await purchaseRepository.AddNewCustomer(newCustomer, cancellationToken);
     }

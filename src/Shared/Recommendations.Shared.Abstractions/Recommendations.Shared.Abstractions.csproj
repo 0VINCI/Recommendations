@@ -20,6 +20,10 @@
         <ProjectReference Include="..\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Commands\CommandWithResult\" />
+    </ItemGroup>
+
 
 </Project>
 

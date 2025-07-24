@@ -16,6 +16,7 @@ internal static class Extensions
             options.UseNpgsql(dbOptions.Value.DatabaseConnection);
         });
         services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+        services.AddAutoMapper(typeof(PurchaseMappingProfile).Assembly);
 
         return services;
     }

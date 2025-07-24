@@ -5,6 +5,6 @@ public record CustomerDto(
     string LastName,
     string Email,
     string PhoneNumber,
-    Guid UserId,
+    string UserId,
     Guid? IdCustomer = null,
     List<AddressDto>? Addresses = null);

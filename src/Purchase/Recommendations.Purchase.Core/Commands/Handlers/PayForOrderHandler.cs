@@ -11,7 +11,7 @@ internal sealed class PayForOrderHandler(IPurchaseRepository purchaseRepository)
 {
     public async Task HandleAsync(PayForOrder command, CancellationToken cancellationToken = default)
     {
-        var data = command.PaymentDto;
+        var data = command;
         var order = await purchaseRepository.GetOrderById(data.OrderId, cancellationToken);
         
         if (order is null)

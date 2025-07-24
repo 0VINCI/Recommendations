@@ -27,6 +27,10 @@ public class OrderItem
         ProductPrice = productPrice;
         Quantity = quantity;
     }
-    
+    public static OrderItem Create(Guid productId, string productName, decimal productPrice, int quantity)
+    {
+        return new OrderItem(Guid.NewGuid(), productId, productName, productPrice, quantity);
+    }
+
     public decimal GetTotalPrice() => ProductPrice * Quantity;
 }

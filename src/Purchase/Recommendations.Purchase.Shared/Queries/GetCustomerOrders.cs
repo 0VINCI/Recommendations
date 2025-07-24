@@ -3,4 +3,4 @@ using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.Purchase.Shared.Queries;
 
-public sealed record GetCustomerOrders() : IQuery<IReadOnlyCollection<OrderDto>?>;
+public sealed record GetCustomerOrders() : IQuery<IReadOnlyCollection<OrderDto>>;

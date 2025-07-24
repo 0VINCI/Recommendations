@@ -1,6 +1,5 @@
-﻿using Recommendations.Purchase.Shared.DTO;
-using Recommendations.Shared.Abstractions.Commands;
+﻿using Recommendations.Shared.Abstractions.Commands;
 
 namespace Recommendations.Purchase.Shared.Commands;
 
-public sealed record PayForOrder(PaymentDto PaymentDto) : ICommand;
+public sealed record PayForOrder(Guid OrderId, uint Method, DateTime PaymentDate, string Details) : ICommand;

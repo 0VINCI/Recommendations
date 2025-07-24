@@ -3,8 +3,8 @@ namespace Recommendations.Purchase.Core.Types.Enums;
 public enum PaymentMethod
 {
     Undefined = 0,
-    Card = 1,
-    Blik = 2,
-    BankTransfer = 3,
-    CashOnDelivery = 4
+    Blik = 1,
+    BankTransfer = 2,
+    ApplePay = 3,
+    AndroidPay = 4
 }

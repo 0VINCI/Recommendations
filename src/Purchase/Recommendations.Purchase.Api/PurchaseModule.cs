@@ -8,6 +8,7 @@ using Recommendations.Purchase.Core;
 using Recommendations.Purchase.Shared.Commands;
 using Recommendations.Purchase.Shared.Queries;
 using Recommendations.Shared.Abstractions.Commands;
+using Recommendations.Shared.Abstractions.Commands.CommandWithResult;
 using Recommendations.Shared.Abstractions.Queries;
 using Recommendations.Shared.ModuleDefinition;
 
@@ -27,10 +28,10 @@ internal sealed class PurchaseModule : ModuleDefinition
     {
         app.MapPost("/create", async (
             [FromBody] CreateOrder command,
-            [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
+            [FromServices] ICommandDispatcherWithResult commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command, cancellationToken);
-            return Results.StatusCode(StatusCodes.Status200OK);
+            var orderId = await commandDispatcher.SendAsync<CreateOrder, Guid>(command, cancellationToken);
+            return Results.Ok(orderId);
         });
         
         app.MapGet("/mine", async (
@@ -44,7 +45,7 @@ internal sealed class PurchaseModule : ModuleDefinition
             CancellationToken cancellationToken = default) => 
             Results.Ok(await queryDispatcher.QueryAsync(new GetOrderById(orderId), cancellationToken)));
 
-        app.MapPost("/pay", async (//zapłać 
+        app.MapPost("/pay", async (
             [FromBody] PayForOrder command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {

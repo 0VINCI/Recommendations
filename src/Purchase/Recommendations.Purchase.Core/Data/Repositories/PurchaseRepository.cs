@@ -17,6 +17,7 @@ internal sealed class PurchaseRepository(PurchaseDbContext dbContext, IMapper ma
             return null;
 
         var orders = await dbContext.Orders
+            .AsNoTracking()
             .Include(o => o.Items)
             .Where(o => o.CustomerId == customer.IdCustomer)
             .OrderByDescending(o => o.CreatedAt)
@@ -27,6 +28,7 @@ internal sealed class PurchaseRepository(PurchaseDbContext dbContext, IMapper ma
     public async Task<Customer?> GetCustomer(Guid userId, CancellationToken cancellationToken = default)
     {
         var customer = await dbContext.Customers
+            .Include(c => c.Addresses)
             .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
         
         return customer is null ? null : mapper.Map<Customer?>(customer);
@@ -35,6 +37,7 @@ internal sealed class PurchaseRepository(PurchaseDbContext dbContext, IMapper ma
     public async Task<Order?> GetOrderById(Guid orderId, CancellationToken cancellationToken = default)
     {
         var orders = await dbContext.Orders
+            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.IdOrder == orderId, cancellationToken);
         
         return mapper.Map<Order>(orders);
@@ -43,6 +46,7 @@ internal sealed class PurchaseRepository(PurchaseDbContext dbContext, IMapper ma
     public async Task<OrderStatusDto[]> GetOrdersStatusById(Guid[] orderIds, CancellationToken cancellationToken = default)
     {
         var orders = await dbContext.Orders
+            .AsNoTracking()
             .Where(o => orderIds.Contains(o.IdOrder))
             .ToListAsync(cancellationToken);
 
@@ -58,8 +62,18 @@ internal sealed class PurchaseRepository(PurchaseDbContext dbContext, IMapper ma
     }
     public async Task SaveOrder(Order order, CancellationToken cancellationToken = default)
     {
-        var dbModel = mapper.Map<OrderDbModel>(order);
-        dbContext.Orders.Update(dbModel);
+        var dbModel = await dbContext.Orders
+            .Include(o => o.Items)
+            .Include(o => o.Payments)
+            .FirstOrDefaultAsync(o => o.IdOrder == order.IdOrder, cancellationToken);
+
+        if (dbModel == null)
+            throw new InvalidOperationException("Order not found in DB");
+
+        dbModel.Status = order.Status;
+        dbModel.PaidAt = order.PaidAt;
+        dbModel.ShippingAddressId = order.ShippingAddressId;
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -72,8 +86,41 @@ internal sealed class PurchaseRepository(PurchaseDbContext dbContext, IMapper ma
 
     public async Task SaveCustomer(Customer customer, CancellationToken cancellationToken = default)
     {
-        var dbModel = mapper.Map<CustomerDbModel>(customer);
-        dbContext.Customers.Update(dbModel);
+        var dbModel = await dbContext.Customers
+            .Include(c => c.Addresses)
+            .FirstOrDefaultAsync(c => c.IdCustomer == customer.IdCustomer, cancellationToken);
+
+        if (dbModel == null)
+            throw new InvalidOperationException("Customer not found in DB");
+
+        dbModel.FirstName = customer.FirstName;
+        dbModel.LastName = customer.LastName;
+        dbModel.Email = customer.Email;
+        dbModel.PhoneNumber = customer.PhoneNumber;
+
+        foreach (var address in customer.Addresses)
+        {
+            var dbAddress = dbModel.Addresses.FirstOrDefault(a => a.IdAddress == address.IdAddress);
+            if (dbAddress == null)
+            {
+                dbModel.Addresses.Add(new AddressDbModel
+                {
+                    IdAddress = address.IdAddress,
+                    Street = address.Street,
+                    City = address.City,
+                    PostalCode = address.PostalCode,
+                    Country = address.Country
+                });
+            }
+            else
+            {
+                dbAddress.Street = address.Street;
+                dbAddress.City = address.City;
+                dbAddress.PostalCode = address.PostalCode;
+                dbAddress.Country = address.Country;
+            }
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
