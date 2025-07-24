@@ -30,7 +30,6 @@ export function ProductsPage() {
       .finally(() => setLoading(false));
   }, [currentPage]);
 
-  // Numerki do paginacji: poprzednia, aktualna, następna (jeśli istnieje)
   const pageNumbers = [];
   if (page > 1) pageNumbers.push(page - 1);
   pageNumbers.push(page);

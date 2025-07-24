@@ -20,7 +20,6 @@ export function HomePage() {
   } = useProducts();
 
   useEffect(() => {
-    // Load all products for featured section
     getProducts(1, 20); // Dla featured products zawsze 20
     getBestsellers(1, 20); // Dla bestsellers zawsze 20
     getNewProducts(1, 20); // Dla new products zawsze 20

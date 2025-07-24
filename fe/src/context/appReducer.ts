@@ -1,12 +1,7 @@
-import type {
-  CartItem,
-  Order,
-  Theme,
-  Product as CartProduct,
-} from "../types/cart/index.ts";
 import type { ProductDto } from "../types/product/ProductDto";
 import type { User } from "../types/authorization/User.tsx";
 import type { ToastItem } from "../components/common/ToastContainer";
+import type { CartItem, Order, Theme, CartProduct } from "../types/index.ts";
 
 export interface AppState {
   products: ProductDto[];
@@ -39,6 +34,10 @@ export type AppAction =
   | {
       type: "UPDATE_CART_QUANTITY";
       payload: { productId: string; quantity: number };
+    }
+  | {
+      type: "SET_ORDERS";
+      payload: Order[];
     }
   | { type: "CLEAR_CART" }
   | { type: "SET_USER"; payload: User | null }
@@ -156,6 +155,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
             ? { ...item, quantity: action.payload.quantity }
             : item
         ),
+      };
+
+    case "SET_ORDERS":
+      return {
+        ...state,
+        orders: action.payload,
       };
 
     case "CLEAR_CART":

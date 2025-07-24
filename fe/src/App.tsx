@@ -1,41 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
-import { Header } from "./components/common/Header";
-import { Navigation } from "./components/common/Navigation";
-import { AuthModal } from "./components/authorization/AuthModal";
-import { ModalManager } from "./components/authorization/ModalManager";
-import { ToastManager } from "./components/common/ToastManager";
-import { HomePage } from "./pages/HomePage";
-import { CategoryPage } from "./pages/CategoryPage";
-import { ProductPage } from "./pages/ProductPage";
-import { CartPage } from "./pages/CartPage";
-import { CheckoutPage } from "./pages/CheckoutPage";
-import { OrdersPage } from "./pages/OrdersPage";
 import "./index.css";
+import AppContent from "./components/AppContent";
 
 function App() {
   return (
-    <AppProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <Header />
-          <Navigation />
-          <main>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/category/:category" element={<CategoryPage />} />
-              <Route path="/product/:id" element={<ProductPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/orders" element={<OrdersPage />} />
-            </Routes>
-          </main>
-          <AuthModal />
-          <ModalManager />
-          <ToastManager />
-        </div>
-      </Router>
-    </AppProvider>
+    <Router>
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
+    </Router>
   );
 }
 
