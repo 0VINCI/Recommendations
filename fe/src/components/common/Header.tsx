@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ShoppingCart,
   Sun,
@@ -8,6 +8,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  ClipboardList,
 } from "lucide-react";
 import { useApp } from "../../context/useApp";
 import { signOut } from "../../api/authorizationService";
@@ -17,6 +18,7 @@ export function Header() {
   const { state, dispatch } = useApp();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -57,6 +59,11 @@ export function Header() {
   const openChangePasswordModal = () => {
     setIsUserMenuOpen(false);
     dispatch({ type: "OPEN_CHANGE_PASSWORD_MODAL" });
+  };
+
+  const handleGoToOrders = () => {
+    setIsUserMenuOpen(false);
+    navigate("/orders");
   };
 
   const cartItemsCount = state.cart.reduce(
@@ -124,6 +131,13 @@ export function Header() {
 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={handleGoToOrders}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <ClipboardList className="w-4 h-4 mr-2" />
+                      Moje zamówienia
+                    </button>
                     <button
                       onClick={openChangePasswordModal}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"

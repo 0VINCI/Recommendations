@@ -1,18 +1,65 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Package, Calendar, MapPin } from "lucide-react";
 import { useApp } from "../context/useApp";
 import { Loader } from "../components/common/Loader";
+import { getMyOrders } from "../api/purchaseService";
+import type { OrderItem } from "../types/purchase/OrderItem";
+import { getProductById } from "../api/productService";
 
 export function OrdersPage() {
   const { state, dispatch } = useApp();
-
   const [loading, setLoading] = React.useState(false);
-  React.useEffect(() => {
+
+  useEffect(() => {
+    if (!state.user) return;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
+
+    getMyOrders()
+      .then(async (res) => {
+        const orders = res.data ?? [];
+        const productIds = [
+          ...new Set(
+            orders.flatMap((order) => order.items.map((item) => item.productId))
+          ),
+        ];
+        const productsWithImages: Record<string, string> = {};
+        await Promise.all(
+          productIds.map(async (productId) => {
+            try {
+              const res = await getProductById({ productId });
+              if (
+                res.status === 200 &&
+                res.data &&
+                res.data.product &&
+                res.data.product.images &&
+                res.data.product.images.length > 0
+              ) {
+                productsWithImages[productId] =
+                  res.data.product.images.find((img) => img.isPrimary)
+                    ?.imageUrl || res.data.product.images[0].imageUrl;
+              } else {
+                productsWithImages[productId] = "/placeholder.png";
+              }
+            } catch {
+              productsWithImages[productId] = "/placeholder.png";
+            }
+          })
+        );
+        const mappedOrders = orders.map((order) => ({
+          ...order,
+          createdAt: new Date(order.createdAt),
+          paidAt: order.paidAt ? new Date(order.paidAt) : null,
+          items: order.items.map((item) => ({
+            ...item,
+            image: productsWithImages[item.productId] || "/placeholder.png",
+          })),
+        }));
+        dispatch({ type: "SET_ORDERS", payload: mappedOrders });
+      })
+      .finally(() => setLoading(false));
+  }, [state.user, dispatch]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -44,37 +91,40 @@ export function OrdersPage() {
     );
   }
 
-  const userOrders = state.orders.filter(
-    (order) => order.userId === state.user?.IdUser
-  );
+  const userOrders = state.orders;
 
-  const getStatusColor = (status: string) => {
+  const getStatusInfo = (status: number) => {
     switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "processing":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "shipped":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
-      case "delivered":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      case 0:
+        return {
+          text: "Oczekuje",
+          color:
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+        };
+      case 1:
+        return {
+          text: "W realizacji",
+          color:
+            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+        };
+      case 2:
+        return {
+          text: "Wysłane",
+          color:
+            "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+        };
+      case 3:
+        return {
+          text: "Dostarczone",
+          color:
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+        };
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Oczekuje";
-      case "processing":
-        return "W realizacji";
-      case "shipped":
-        return "Wysłane";
-      case "delivered":
-        return "Dostarczone";
-      default:
-        return status;
+        return {
+          text: String(status),
+          color:
+            "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+        };
     }
   };
 
@@ -85,7 +135,6 @@ export function OrdersPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
             Moje zamówienia
           </h1>
-
           <div className="text-center py-12">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
@@ -112,16 +161,21 @@ export function OrdersPage() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
           Moje zamówienia ({userOrders.length})
         </h1>
-
         <div className="space-y-6">
-          {userOrders.map((order) => (
-            <div
-              key={order.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
-            >
-              {/* Order Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
+          {userOrders.map((order) => {
+            const total = order.items.reduce(
+              (sum: number, item: OrderItem) =>
+                sum + item.productPrice * item.quantity,
+              0
+            );
+            const status = getStatusInfo(order.status);
+            return (
+              <div
+                key={order.id}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+              >
+                {/* Order Header */}
+                <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                       Zamówienie #{order.id}
@@ -131,69 +185,67 @@ export function OrdersPage() {
                       <span>{order.createdAt.toLocaleDateString("pl-PL")}</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="text-right">
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                      order.status
-                    )}`}
-                  >
-                    {getStatusText(order.status)}
-                  </span>
-                  <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                    {order.total.toFixed(2)} zł
-                  </p>
-                </div>
-              </div>
-
-              {/* Order Items */}
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
-                <div className="space-y-3">
-                  {order.items.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <img
-                        src={item.product.image}
-                        alt={item.product.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                          {item.product.name}
-                        </h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {item.size} | {item.color} | Ilość: {item.quantity}
-                        </p>
-                      </div>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {(item.product.price * item.quantity).toFixed(2)} zł
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Shipping Address */}
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                <div className="flex items-start space-x-2">
-                  <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Adres dostawy:
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {order.shippingAddress.street}
-                      <br />
-                      {order.shippingAddress.postalCode}{" "}
-                      {order.shippingAddress.city}
-                      <br />
-                      {order.shippingAddress.country}
+                  <div className="text-right">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.color}`}
+                    >
+                      {status.text}
+                    </span>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                      {total.toFixed(2)} zł
                     </p>
                   </div>
                 </div>
+
+                {/* Order Items */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+                  <div className="space-y-3">
+                    {order.items.map((item: OrderItem, idx: number) => (
+                      <div key={idx} className="flex items-center space-x-3">
+                        <img
+                          src={item.image}
+                          alt={item.productName}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                            {item.productName}
+                          </h4>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            Ilość: {item.quantity}
+                          </p>
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {(item.productPrice * item.quantity).toFixed(2)} zł
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shipping Address Placeholder */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <div className="flex items-start space-x-2">
+                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        Adres dostawy:
+                      </p>
+                      {order.address && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {order.address.street}
+                          <br />
+                          {order.address.postalCode} {order.address.city}
+                          <br />
+                          {order.address.country}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

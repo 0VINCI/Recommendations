@@ -1,72 +1,117 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, MapPin, User } from "lucide-react";
 import { useApp } from "../context/useApp";
 import { useToast } from "../hooks/useToast";
+import {
+  createOrder,
+  payForOrder,
+  getCustomer,
+  addNewCustomer,
+} from "../api/purchaseService";
+import type { Customer } from "../types/purchase/Customer";
+import type { OrderItem } from "../types/purchase/OrderItem";
+import { CustomerCheckoutPage } from "./checkout/CustomerCheckoutPage";
+import type { AddAddress } from "../types/purchase/AddAddress";
+import { CreditCard } from "lucide-react";
+import { clearCart } from "../api/cartService";
 
 export function CheckoutPage() {
   const { state, dispatch } = useApp();
   const navigate = useNavigate();
-  const { showSuccess } = useToast();
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+  const { showSuccess, showError } = useToast();
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [customerForm, setCustomerForm] = useState({
+    firstName: state.user?.Name || "",
+    lastName: state.user?.Surname || "",
     email: state.user?.Email || "",
-    phone: "",
-    street: "",
-    city: "",
-    postalCode: "",
-    country: "Polska",
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    cardName: "",
+    phoneNumber: "",
   });
+  const [customerLoading, setCustomerLoading] = useState(true);
+
+  const [newAddressForm, setNewAddressForm] = useState<AddAddress>({
+    Street: "",
+    City: "",
+    PostalCode: "",
+    Country: "",
+  });
+
+  const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<number>(1);
+
+  const handleSaveCustomer = async () => {
+    try {
+      await addNewCustomer({
+        FirstName: customerForm.firstName,
+        LastName: customerForm.lastName,
+        Email: customerForm.email,
+        PhoneNumber: customerForm.phoneNumber,
+        UserId: state.user?.IdUser || "",
+        Addresses: [],
+      });
+      showSuccess("Dane klienta zapisane!");
+
+      setCustomerLoading(true);
+      await getCustomer()
+        .then((res) => setCustomer(res.data || null))
+        .catch(() => setCustomer(null))
+        .finally(() => setCustomerLoading(false));
+    } catch {
+      showError("Nie udało się zapisać danych klienta!");
+    }
+  };
 
   const total = state.cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleCreateOrder = async () => {
+    if (!customer || !selectedAddressId) {
+      showError("Wybierz adres dostawy!");
+      return;
+    }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    const orderItems: OrderItem[] = state.cart.map((item) => ({
+      ProductId: item.product.id,
+      ProductName: item.product.name,
+      ProductPrice: item.product.price,
+      Quantity: item.quantity,
+    }));
+    let error = "Wystąpił błąd";
 
-    // Symulacja płatności
-    const confirmPayment = window.confirm(
-      `Czy na pewno chcesz zapłacić ${total.toFixed(2)} zł za swoje zamówienie?`
-    );
+    try {
+      const resp = await createOrder({
+        CustomerId: customer.idCustomer,
+        ShippingAddressId: selectedAddressId,
+        Status: 0,
+        CreatedAt: new Date(),
+        PaidAt: new Date(),
+        Items: orderItems,
+        Payments: [],
+      });
+      if (resp.status !== 200) {
+        error = "Błąd podczas tworzenia zamówienia.";
+        throw new Error(error);
+      }
+      console.log(resp.data);
+      const payResp = await payForOrder({
+        OrderId: resp.data,
+        Method: paymentMethod,
+        PaymentDate: new Date(),
+        Details: "Symulowana płatność edukacyjna",
+      });
 
-    if (confirmPayment) {
-      // Tworzenie zamówienia
-      const order = {
-        id: Date.now().toString(),
-        userId: state.user?.IdUser || "guest",
-        items: [...state.cart],
-        total,
-        status: "processing" as const,
-        createdAt: new Date(),
-        shippingAddress: {
-          street: formData.street,
-          city: formData.city,
-          postalCode: formData.postalCode,
-          country: formData.country,
-        },
-      };
+      if (payResp.status !== 200) {
+        error = "Błąd podczas realizacji płatności.";
+        throw new Error(error);
+      }
 
-      dispatch({ type: "ADD_ORDER", payload: order });
+      showSuccess("Zamówienie złożone i opłacone!");
       dispatch({ type: "CLEAR_CART" });
-
-      showSuccess("Płatność została zrealizowana! Zamówienie zostało złożone.");
+      clearCart();
       navigate("/orders");
+    } catch {
+      showError(error);
     }
   };
 
@@ -83,261 +128,94 @@ export function CheckoutPage() {
         </h1>
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCreateOrder();
+          }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
         >
-          {/* Left Column - Forms */}
-          <div className="space-y-6">
-            {/* Personal Information */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <User className="w-5 h-5 text-primary-600" />
-                <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-                  Dane osobowe
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Imię *
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    required
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Nazwisko *
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    required
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Telefon *
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Shipping Address */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <MapPin className="w-5 h-5 text-primary-600" />
-                <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-                  Adres dostawy
-                </h2>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Ulica i numer *
-                  </label>
-                  <input
-                    type="text"
-                    name="street"
-                    required
-                    value={formData.street}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Miasto *
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      required
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Kod pocztowy *
-                    </label>
-                    <input
-                      type="text"
-                      name="postalCode"
-                      required
-                      value={formData.postalCode}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Information */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <CreditCard className="w-5 h-5 text-primary-600" />
-                <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-                  Dane płatności
-                </h2>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Numer karty *
-                  </label>
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    required
-                    placeholder="1234 5678 9012 3456"
-                    value={formData.cardNumber}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Data ważności *
-                    </label>
-                    <input
-                      type="text"
-                      name="expiryDate"
-                      required
-                      placeholder="MM/YY"
-                      value={formData.expiryDate}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      CVV *
-                    </label>
-                    <input
-                      type="text"
-                      name="cvv"
-                      required
-                      placeholder="123"
-                      value={formData.cvv}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Imię i nazwisko na karcie *
-                  </label>
-                  <input
-                    type="text"
-                    name="cardName"
-                    required
-                    value={formData.cardName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Order Summary */}
           <div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 sticky top-4">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Podsumowanie zamówienia
-              </h2>
-
-              <div className="space-y-4 mb-6">
-                {state.cart.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <img
-                      src={item.product.image}
-                      alt={item.product.name}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                        {item.product.name}
-                      </h4>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {item.size} | {item.color} | x{item.quantity}
-                      </p>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {(item.product.price * item.quantity).toFixed(2)} zł
-                    </span>
+            {/* Left Column - Forms */}
+            <div className="space-y-6"></div>
+            <CustomerCheckoutPage
+              customer={customer}
+              customerForm={customerForm}
+              newAddressForm={newAddressForm}
+              customerLoading={customerLoading}
+              paymentMethod={paymentMethod}
+              selectedAddressId={selectedAddressId}
+              setCustomer={setCustomer}
+              setCustomerForm={setCustomerForm}
+              handleSaveCustomer={handleSaveCustomer}
+              setNewAddressForm={setNewAddressForm}
+              setPaymentMethod={setPaymentMethod}
+              setCustomerLoading={setCustomerLoading}
+              setSelectedAddressId={setSelectedAddressId}
+            />
+          </div>
+          {/* Right Column - Order Summary */}
+          <div className="p-0 sticky top-4">
+            {" "}
+            {/* Usunięte tło */}
+            <h2 className="flex items-center gap-2 text-lg font-semibold dark:text-white mb-4">
+              <CreditCard className="w-5 h-5 text-primary-600" />
+              Podsumowanie zamówienia
+            </h2>
+            <div className="space-y-4 mb-6">
+              {state.cart.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700
+          bg-white dark:bg-gray-800 gap-4"
+                >
+                  <img
+                    src={item.product.image}
+                    alt={item.product.name}
+                    className="w-14 h-14 object-cover rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white break-words">
+                      {item.product.name}
+                    </h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {item.size} | {item.color} |{" "}
+                      <span className="font-semibold">x{item.quantity}</span>
+                    </p>
                   </div>
-                ))}
-              </div>
-
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Suma częściowa:
-                  </span>
-                  <span className="text-gray-900 dark:text-white">
-                    {total.toFixed(2)} zł
+                  <span className="text-base font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                    {(item.product.price * item.quantity).toFixed(2)} zł
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Dostawa:
-                  </span>
-                  <span className="text-green-600">Darmowa</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold">
-                  <span className="text-gray-900 dark:text-white">Razem:</span>
-                  <span className="text-gray-900 dark:text-white">
-                    {total.toFixed(2)} zł
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full mt-6 bg-primary-600 hover:bg-primary-700 text-white py-3 px-6 rounded-lg font-medium transition-colors"
-              >
-                Zapłać {total.toFixed(2)} zł
-              </button>
+              ))}
             </div>
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Suma częściowa:
+                </span>
+                <span className="text-gray-900 dark:text-white">
+                  {total.toFixed(2)} zł
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Dostawa:
+                </span>
+                <span className="text-green-600 font-medium">Darmowa</span>
+              </div>
+              <div className="flex justify-between text-lg font-bold pt-2">
+                <span className="text-gray-900 dark:text-white">Razem:</span>
+                <span className="text-gray-900 dark:text-white">
+                  {total.toFixed(2)} zł
+                </span>
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full mt-6 py-3 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg shadow-lg transition-colors"
+            >
+              Zapłać {total.toFixed(2)} zł
+            </button>
           </div>
         </form>
       </div>

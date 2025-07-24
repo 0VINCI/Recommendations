@@ -40,7 +40,7 @@ export function Toast({
   const getBackgroundColor = () => {
     switch (type) {
       case "success":
-        return "bg-green-50 dark:bg-green-900/80 border-green-200 dark:border-green-800";
+        return "bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-800";
       case "error":
         return "bg-red-50 dark:bg-red-900/80 border-red-200 dark:border-red-800";
       case "info":
