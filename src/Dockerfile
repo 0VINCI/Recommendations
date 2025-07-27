@@ -11,7 +11,7 @@ WORKDIR /src/Api
 RUN dotnet ef database update --configuration Release --no-build --context DictionariesDbContext --project /src/Dictionaries/Recommendations.Dictionaries.Infrastructure/Recommendations.Dictionaries.Infrastructure.csproj --startup-project /src/Api/Recommendations.Api/Recommendations.Api.csproj
 RUN dotnet ef database update --configuration Release --no-build --context AuthorizationDbContext --project /src/Authorization/Recommendations.Authorization.Infrastructure/Recommendations.Authorization.Infrastructure.csproj --startup-project /src/Api/Recommendations.Api/Recommendations.Api.csproj
 RUN dotnet ef database update --configuration Release --no-build --context CartDbContext --project /src/Cart/Recommendations.Cart.Infrastructure/Recommendations.Cart.Infrastructure.csproj --startup-project /src/Api/Recommendations.Api/Recommendations.Api.csproj
-RUN dotnet ef database update --configuration Release --no-build --context PurchaseDbContext --project /src/Purchase/Recommendations.Purchase.Infrastructure/Recommendations.Purchase.Infrastructure.csproj --startup-project /src/Api/Recommendations.Api/Recommendations.Api.csproj
+RUN dotnet ef database update --configuration Release --no-build --context PurchaseDbContext --project /src/Purchase/Recommendations.Purchase.Core/Recommendations.Purchase.Core.csproj --startup-project /src/Api/Recommendations.Api/Recommendations.Api.csproj
 
 WORKDIR /src
 RUN dotnet publish -c Release -o /app/out
