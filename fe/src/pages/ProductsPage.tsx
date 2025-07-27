@@ -1,36 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
-import type { ProductDto } from "../types/product/ProductDto";
 
 export function ProductsPage() {
-  const { getProducts } = useProducts();
+  const {
+    getProducts,
+    products,
+    productPage: page,
+    totalProductPages: totalPages,
+    loading,
+    error,
+  } = useProducts();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = Number(searchParams.get("page") || 1);
 
-  const [products, setProducts] = useState<ProductDto[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
-    setLoading(true);
-    getProducts(currentPage, 20)
-      .then((response) => {
-        setProducts(response.products);
-        setPage(response.page);
-        setTotalPages(response.totalPages);
-        setError(null);
-      })
-      .catch((err) => {
-        setError(err.message || "Błąd podczas pobierania produktów");
-      })
-      .finally(() => setLoading(false));
-  }, [currentPage]);
+    getProducts(currentPage, 20);
+  }, [currentPage, getProducts]);
 
-  const pageNumbers = [];
+  const pageNumbers: number[] = [];
   if (page > 1) pageNumbers.push(page - 1);
   pageNumbers.push(page);
   if (page < totalPages) pageNumbers.push(page + 1);

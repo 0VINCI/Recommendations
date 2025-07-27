@@ -55,7 +55,19 @@ export function OrdersPage() {
             image: productsWithImages[item.productId] || "/placeholder.png",
           })),
         }));
-        dispatch({ type: "SET_ORDERS", payload: mappedOrders });
+
+        const mappedOrdersFixed = mappedOrders.map((order) => ({
+          ...order,
+          createdAt:
+            order.createdAt instanceof Date
+              ? order.createdAt.toISOString()
+              : order.createdAt,
+          paidAt:
+            order.paidAt instanceof Date
+              ? order.paidAt.toISOString()
+              : order.paidAt,
+        }));
+        dispatch({ type: "SET_ORDERS", payload: mappedOrdersFixed });
       })
       .finally(() => setLoading(false));
   }, [state.user, dispatch]);
@@ -170,80 +182,86 @@ export function OrdersPage() {
             );
             const status = getStatusInfo(order.status);
             return (
-              <div
-                key={order.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
-              >
-                {/* Order Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                      Zamówienie #{order.id}
-                    </h3>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                      <Calendar className="w-4 h-4" />
-                      <span>{order.createdAt.toLocaleDateString("pl-PL")}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.color}`}
-                    >
-                      {status.text}
-                    </span>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                      {total.toFixed(2)} zł
-                    </p>
-                  </div>
-                </div>
-
-                {/* Order Items */}
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
-                  <div className="space-y-3">
-                    {order.items.map((item: OrderItem, idx: number) => (
-                      <div key={idx} className="flex items-center space-x-3">
-                        <img
-                          src={item.image}
-                          alt={item.productName}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                        <div className="flex-1">
-                          <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                            {item.productName}
-                          </h4>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            Ilość: {item.quantity}
-                          </p>
-                        </div>
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {(item.productPrice * item.quantity).toFixed(2)} zł
+              <>
+                <div
+                  key={order.idOrder}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+                >
+                  {/* Order Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                        Zamówienie #{order.idOrder}
+                      </h3>
+                      <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {new Date(order.createdAt).toLocaleDateString(
+                            "pl-PL"
+                          )}
                         </span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Shipping Address Placeholder */}
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <div className="flex items-start space-x-2">
-                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Adres dostawy:
+                    </div>
+                    <div className="text-right">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.color}`}
+                      >
+                        {status.text}
+                      </span>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                        {total.toFixed(2)} zł
                       </p>
-                      {order.address && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {order.address.street}
-                          <br />
-                          {order.address.postalCode} {order.address.city}
-                          <br />
-                          {order.address.country}
+                    </div>
+                  </div>
+
+                  {/* Order Items */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+                    <div className="space-y-3">
+                      {order.items.map((item: OrderItem, idx: number) => (
+                        <div key={idx} className="flex items-center space-x-3">
+                          <img
+                            src={item.image}
+                            alt={item.productName}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                              {item.productName}
+                            </h4>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                              Ilość: {item.quantity}
+                            </p>
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {(item.productPrice * item.quantity).toFixed(2)} zł
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Shipping Address Placeholder */}
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <div className="flex items-start space-x-2">
+                      <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          Adres dostawy:
                         </p>
-                      )}
+                        {order.address && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {order.address.street}
+                            <br />
+                            {order.address.postalCode} {order.address.city}
+                            <br />
+                            {order.address.country}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </>
             );
           })}
         </div>

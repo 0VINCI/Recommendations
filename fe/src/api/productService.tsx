@@ -6,7 +6,6 @@ import type {
   GetProductByIdRequest,
   GetProductByIdResponse,
   GetMasterCategoriesRequest,
-  GetMasterCategoriesResponse,
   MasterCategoriesResponse,
   GetSubCategoriesRequest,
   GetSubCategoriesResponse,

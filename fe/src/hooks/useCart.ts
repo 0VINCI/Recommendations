@@ -10,7 +10,7 @@ import {
 } from "../api/cartService";
 import { getProductById } from "../api/productService";
 import type { ProductDto } from "../types/product/ProductDto";
-import type { CartItem } from "../types/cart";
+import type { CartItem } from "../types/cart/Cart";
 
 export function useCart() {
   const { state, dispatch } = useApp();
@@ -128,7 +128,7 @@ export function useCart() {
               );
               await addItemToCartDb({
                 ProductId: product.id,
-                Name: name,
+                Name: String(name),
                 Price: product.price,
                 Quantity: item.quantity,
               });
@@ -166,7 +166,7 @@ export function useCart() {
                     )?.imageUrl || productRes.data.product.images[0].imageUrl;
                 }
               } catch (e) {
-                // zostaw placeholder
+                console.log(e);
               }
               console.log("[useCart] Użyty obrazek:", image);
               return {
