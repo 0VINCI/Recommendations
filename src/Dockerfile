@@ -1,19 +1,21 @@
-# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
-
-# Zainstaluj EF CLI
 RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-
+ENV PATH="$PATH:/root/.dotnet/tools:$PATH"
 RUN dotnet restore
 RUN dotnet build -c Release
-RUN dotnet ef database update --no-build --verbose --project ./Api/Recommendations.Api.csproj --startup-project ./Api/Recommendations.Api.csproj
 
+# Wykonaj migracje dla każdego contextu!
+WORKDIR /src/Api
+RUN dotnet ef database update --no-build --context DictionariesDbContext
+RUN dotnet ef database update --no-build --context AuthorizationDbContext
+RUN dotnet ef database update --no-build --context CartDbContext
+RUN dotnet ef database update --no-build --context PurchaseDbContext
+
+WORKDIR /src
 RUN dotnet publish -c Release -o /app/out
 
-# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out ./
