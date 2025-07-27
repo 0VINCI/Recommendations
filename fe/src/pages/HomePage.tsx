@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Star, TrendingUp } from "lucide-react";
+import { ArrowRight, Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
@@ -57,9 +57,13 @@ export function HomePage() {
           <p className="text-2xl text-blue-100 mb-8 text-center drop-shadow-lg">
             Najnowsze trendy w modzie damskiej i męskiej
           </p>
-          <button className="bg-white/70 text-primary-600 px-8 py-3 rounded-xl font-semibold hover:bg-white transition">
+          <Link
+            to="/category/wszystkie?page=1&pageSize=20"
+            className="inline-flex items-center bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
             Przeglądaj Kolekcję
-          </button>
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Link>
         </div>
       </section>
       {/* Bestsellers Section */}
