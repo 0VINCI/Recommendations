@@ -45,7 +45,7 @@ export function CartPage() {
                     )?.imageUrl || productRes.data.product.images[0].imageUrl;
                 }
               } catch (e) {
-                // zostaw placeholder
+                console.log(e);
               }
               return {
                 product: {
@@ -137,22 +137,16 @@ export function CartPage() {
                   "image" in item.product
                     ? item.product.image
                     : `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-                        item.product.productDisplayName
+                        ""
                       )}`
                 }
-                alt={
-                  "name" in item.product
-                    ? item.product.name
-                    : item.product.productDisplayName
-                }
+                alt={"name" in item.product ? item.product.name : ""}
                 className="w-20 h-20 object-cover rounded-lg"
               />
 
               <div className="flex-1 ml-4">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                  {"name" in item.product
-                    ? item.product.name
-                    : item.product.productDisplayName}
+                  {"name" in item.product ? item.product.name : ""}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Rozmiar: {item.size} | Kolor: {item.color}

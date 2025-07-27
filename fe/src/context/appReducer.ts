@@ -1,7 +1,7 @@
 import type { ProductDto } from "../types/product/ProductDto";
 import type { User } from "../types/authorization/User.tsx";
 import type { ToastItem } from "../components/common/ToastContainer";
-import type { CartItem } from "../types/cart/Cart.ts";
+import type { CartItem, Product } from "../types/cart/Cart.ts";
 import type { Order } from "../types/purchase/Order.ts";
 
 export interface AppState {
@@ -23,7 +23,7 @@ export type AppAction =
   | {
       type: "ADD_TO_CART";
       payload: {
-        product: ProductDto | CartItem;
+        product: ProductDto;
         size: string;
         color: string;
       };
@@ -42,7 +42,7 @@ export type AppAction =
     }
   | { type: "CLEAR_CART" }
   | { type: "SET_USER"; payload: User | null }
-  | { type: "SET_THEME"; payload: Theme }
+  | { type: "SET_THEME"; payload: "light" | "dark" }
   | { type: "TOGGLE_AUTH_MODAL"; payload?: "login" | "register" }
   | { type: "CLOSE_AUTH_MODAL" }
   | { type: "OPEN_CHANGE_PASSWORD_MODAL" }
@@ -95,7 +95,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
               isNew: action.payload.product.isNew,
               subCategory: action.payload.product.subCategoryName,
               baseColour: action.payload.product.baseColourName,
-            } as CartProduct)
+            } as Product)
           : action.payload.product;
 
       const existingItem = state.cart.find(

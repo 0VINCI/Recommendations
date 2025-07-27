@@ -55,7 +55,19 @@ export function OrdersPage() {
             image: productsWithImages[item.productId] || "/placeholder.png",
           })),
         }));
-        dispatch({ type: "SET_ORDERS", payload: mappedOrders });
+
+        const mappedOrdersFixed = mappedOrders.map((order) => ({
+          ...order,
+          createdAt:
+            order.createdAt instanceof Date
+              ? order.createdAt.toISOString()
+              : order.createdAt,
+          paidAt:
+            order.paidAt instanceof Date
+              ? order.paidAt.toISOString()
+              : order.paidAt,
+        }));
+        dispatch({ type: "SET_ORDERS", payload: mappedOrdersFixed });
       })
       .finally(() => setLoading(false));
   }, [state.user, dispatch]);
@@ -172,19 +184,21 @@ export function OrdersPage() {
             return (
               <>
                 <div
-                  key={order.id}
+                  key={order.idOrder}
                   className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
                 >
                   {/* Order Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                        Zamówienie #{order.id}
+                        Zamówienie #{order.idOrder}
                       </h3>
                       <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar className="w-4 h-4" />
                         <span>
-                          {order.createdAt.toLocaleDateString("pl-PL")}
+                          {new Date(order.createdAt).toLocaleDateString(
+                            "pl-PL"
+                          )}
                         </span>
                       </div>
                     </div>
