@@ -81,7 +81,7 @@ export function Header() {
               <span className="text-white font-bold text-lg">S</span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              StyleShop
+              Sklep z drogimi ciuszkami
             </span>
           </Link>
 
