@@ -61,7 +61,11 @@ public static class Extensions
         {
             options.AddPolicy("DefaultCorsPolicy", policy =>
             {
-                policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "https://recommendations-git-main-0vincis-projects.vercel.app")
+                policy.WithOrigins("http://localhost:5173", 
+                        "http://localhost:5174", 
+                        "http://localhost:3000", 
+                        "https://recommendations-git-main-0vincis-projects.vercel.app", 
+                        "https://mgr.dupa.uk")
                       .AllowAnyMethod()
                       .AllowAnyHeader()
                       .AllowCredentials();
