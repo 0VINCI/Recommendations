@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Star, TrendingUp } from "lucide-react";
+import { Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
