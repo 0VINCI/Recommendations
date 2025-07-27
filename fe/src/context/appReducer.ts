@@ -1,14 +1,15 @@
 import type { ProductDto } from "../types/product/ProductDto";
 import type { User } from "../types/authorization/User.tsx";
 import type { ToastItem } from "../components/common/ToastContainer";
-import type { CartItem, Order, Theme, CartProduct } from "../types/index.ts";
+import type { CartItem } from "../types/cart/Cart.ts";
+import type { Order } from "../types/purchase/Order.ts";
 
 export interface AppState {
   products: ProductDto[];
   cart: CartItem[];
   user: User | null;
   orders: Order[];
-  theme: Theme;
+  theme: "light" | "dark";
   isAuthModalOpen: boolean;
   authMode: "login" | "register";
   isChangePasswordModalOpen: boolean;
@@ -22,7 +23,7 @@ export type AppAction =
   | {
       type: "ADD_TO_CART";
       payload: {
-        product: ProductDto | CartProduct;
+        product: ProductDto | CartItem;
         size: string;
         color: string;
       };
