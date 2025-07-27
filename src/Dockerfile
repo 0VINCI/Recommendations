@@ -9,7 +9,7 @@ ENV PATH="$PATH:/root/.dotnet/tools"
 
 RUN dotnet restore
 RUN dotnet build -c Release
-RUN dotnet ef database update --no-build --verbose
+RUN dotnet ef database update --no-build --verbose --project ./Api/Recommendations.Api.csproj --startup-project ./Api/Recommendations.Api.csproj
 
 RUN dotnet publish -c Release -o /app/out
 
