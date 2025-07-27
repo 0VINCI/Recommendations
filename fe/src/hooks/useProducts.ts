@@ -73,6 +73,15 @@ interface UseProductsReturn {
   clearBestsellersError: () => void;
   clearNewProductsError: () => void;
   clearCategoriesError: () => void;
+  setSubCategories: React.Dispatch<
+    React.SetStateAction<GetSubCategoriesResponse["subCategories"]>
+  >;
+  setArticleTypes: React.Dispatch<
+    React.SetStateAction<GetArticleTypesResponse["articleTypes"]>
+  >;
+  setBaseColours: React.Dispatch<
+    React.SetStateAction<GetBaseColoursResponse["baseColours"]>
+  >;
 }
 
 export const useProducts = (): UseProductsReturn => {
@@ -356,6 +365,7 @@ export const useProducts = (): UseProductsReturn => {
       }
     } catch (err) {
       setCategoriesError("Błąd podczas ładowania kategorii");
+      console.log(err);
     } finally {
       setCategoriesLoading(false);
     }
@@ -410,5 +420,8 @@ export const useProducts = (): UseProductsReturn => {
     clearBestsellersError,
     clearNewProductsError,
     clearCategoriesError,
+    setSubCategories,
+    setArticleTypes,
+    setBaseColours,
   };
 };
