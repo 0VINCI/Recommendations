@@ -72,11 +72,12 @@ export function CheckoutPage() {
     }
 
     const orderItems: OrderItem[] = state.cart.map((item) => ({
-      ProductId: item.product.id,
-      ProductName: item.product.name,
-      ProductPrice: item.product.price,
-      Quantity: item.quantity,
+      productId: item.product.id,
+      productName: item.product.name,
+      productPrice: item.product.price,
+      quantity: item.quantity,
     }));
+
     let error = "Wystąpił błąd";
 
     try {

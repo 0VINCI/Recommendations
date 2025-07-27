@@ -3,5 +3,5 @@ export interface OrderItem {
   productName: string;
   productPrice: number;
   quantity: number;
-  image: string;
+  image?: string;
 }
