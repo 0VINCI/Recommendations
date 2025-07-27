@@ -128,7 +128,7 @@ export function useCart() {
               );
               await addItemToCartDb({
                 ProductId: product.id,
-                Name: name,
+                Name: String(name),
                 Price: product.price,
                 Quantity: item.quantity,
               });
