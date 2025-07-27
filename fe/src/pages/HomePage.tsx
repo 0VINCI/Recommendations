@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Star, TrendingUp } from "lucide-react";
+import { Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
@@ -38,23 +38,28 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Odkryj Swój Styl
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100">
-              Najnowsze trendy w modzie damskiej i męskiej
-            </p>
-            <Link
-              to="/category/wszystkie?page=1&pageSize=20"
-              className="inline-flex items-center bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Przeglądaj Kolekcję
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </div>
+      <section
+        className="relative bg-gradient-to-r from-primary-600 to-primary-400 flex flex-col items-center justify-center h-[388px]"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-blue-600/70 z-0" />{" "}
+        {/* Opcjonalny overlay dla lepszej czytelności */}
+        <div className="relative z-10 flex flex-col items-center justify-center h-full">
+          <h1 className="text-6xl font-bold text-white mb-6 text-center drop-shadow-lg">
+            Odkryj Swój Styl
+          </h1>
+          <p className="text-2xl text-blue-100 mb-8 text-center drop-shadow-lg">
+            Najnowsze trendy w modzie damskiej i męskiej
+          </p>
+          <button className="bg-white/70 text-primary-600 px-8 py-3 rounded-xl font-semibold hover:bg-white transition">
+            Przeglądaj Kolekcję
+          </button>
         </div>
       </section>
       {/* Bestsellers Section */}
