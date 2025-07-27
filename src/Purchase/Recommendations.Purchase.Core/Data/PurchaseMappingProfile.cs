@@ -23,22 +23,6 @@ public class PurchaseMappingProfile : Profile
             .ForCtorParam("City", opt => opt.MapFrom(x => x.City))
             .ForCtorParam("PostalCode", opt => opt.MapFrom(x => x.PostalCode))
             .ForCtorParam("Country", opt => opt.MapFrom(x => x.Country));
-        //
-        // CreateMap<Order, OrderDto>()
-        //     .ForCtorParam("IdOrder",    opt => opt.MapFrom(x => x.IdOrder))
-        //     .ForCtorParam("CustomerId", opt => opt.MapFrom(x => x.CustomerId))
-        //     .ForCtorParam("ShippingAddressId",     opt => opt.MapFrom(x => x.ShippingAddressId))
-        //     .ForCtorParam("Status",     opt => opt.MapFrom(x => x.Status))
-        //     .ForCtorParam("CreatedAt", opt => opt.MapFrom(x => x.CreatedAt))
-        //     .ForCtorParam("PaidAt",     opt => opt.MapFrom(x => x.PaidAt))
-        //     .ForCtorParam("Items",     opt => opt.MapFrom(x => x.Items))
-        //     .ForCtorParam("Payments",     opt => opt.MapFrom(x => x.Payments));
-        //
-        // CreateMap<OrderItem, OrderItemDto>()
-        //     .ForCtorParam("ProductId", opt => opt.MapFrom(x => x.ProductId))
-        //     .ForCtorParam("ProductName", opt => opt.MapFrom(x => x.ProductName))
-        //     .ForCtorParam("ProductPrice", opt => opt.MapFrom(x => x.ProductPrice))
-        //     .ForCtorParam("Quantity", opt => opt.MapFrom(x => x.Quantity));
 
         CreateMap<Customer, CustomerDbModel>();
         CreateMap<CustomerDbModel, Customer>();
