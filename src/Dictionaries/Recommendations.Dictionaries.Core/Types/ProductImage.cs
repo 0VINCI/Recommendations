@@ -7,8 +7,8 @@ public sealed class ProductImage
     public Product Product { get; private set; } = null!;
     
     public string ImageUrl { get; private set; }
-    public string ImageType { get; private set; } // "default", "front", "back", "search"
-    public string? Resolution { get; private set; } // "150X200", "360X480", etc.
+    public string ImageType { get; private set; }
+    public string? Resolution { get; private set; }
     public bool IsPrimary { get; private set; }
     
     public ProductImage(
@@ -46,15 +46,5 @@ public sealed class ProductImage
             imageType,
             resolution,
             isPrimary);
-    }
-
-    public void SetAsPrimary()
-    {
-        IsPrimary = true;
-    }
-
-    public void SetAsSecondary()
-    {
-        IsPrimary = false;
     }
 } 

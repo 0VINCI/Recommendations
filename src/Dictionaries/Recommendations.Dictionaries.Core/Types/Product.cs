@@ -91,7 +91,7 @@ public sealed class Product
 
     public void UpdateRating(decimal newRating, int newReviews)
     {
-        if (newRating < 0 || newRating > 5) 
+        if (newRating is < 0 or > 5) 
             throw new ArgumentException("Rating must be between 0 and 5", nameof(newRating));
         if (newReviews < 0) 
             throw new ArgumentException("Reviews must be >= 0", nameof(newReviews));
