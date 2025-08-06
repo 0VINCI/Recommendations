@@ -9,6 +9,7 @@ public sealed class ProductDetails
     public string Gender { get; private set; }
     public string Season { get; private set; }
     public string Usage { get; private set; }
+    public string Year { get; private set; }
     
     public string? Description { get; private set; }
     public string? SleeveLength { get; private set; }
@@ -25,6 +26,7 @@ public sealed class ProductDetails
         string gender,
         string season,
         string usage,
+        string year,
         string? description = null,
         string? sleeveLength = null,
         string? fit = null,
@@ -46,6 +48,7 @@ public sealed class ProductDetails
         Gender = gender;
         Season = season;
         Usage = usage;
+        Year = year;
         Description = description;
         SleeveLength = sleeveLength;
         Fit = fit;
@@ -61,6 +64,7 @@ public sealed class ProductDetails
         string gender,
         string season,
         string usage,
+        string year,
         string? description = null,
         string? sleeveLength = null,
         string? fit = null,
@@ -76,6 +80,7 @@ public sealed class ProductDetails
             gender,
             season,
             usage,
+            year,
             description,
             sleeveLength,
             fit,

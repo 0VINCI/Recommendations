@@ -6,8 +6,8 @@ public sealed class ArticleType
     public string Name { get; private set; }
     public Guid SubCategoryId { get; private set; }
     public SubCategory SubCategory { get; private set; } = null!;
-    
-    public ArticleType(
+
+    private ArticleType(
         Guid id,
         string name,
         Guid subCategoryId)

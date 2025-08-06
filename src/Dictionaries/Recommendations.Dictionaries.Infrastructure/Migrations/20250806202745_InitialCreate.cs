@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Recommendations.Dictionaries.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,13 +33,7 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    SocialSharingEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsReturnable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsExchangeable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    PickupEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsTryAndBuyEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,13 +47,7 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    MasterCategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    SocialSharingEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsReturnable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsExchangeable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    PickupEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsTryAndBuyEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                    MasterCategoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,14 +68,7 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    SubCategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    SocialSharingEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsReturnable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsExchangeable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    PickupEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsTryAndBuyEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    IsMyntsEnabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                    SubCategoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -117,8 +98,7 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                     IsNew = table.Column<bool>(type: "boolean", nullable: false),
                     SubCategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     ArticleTypeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BaseColourId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BaseColourId1 = table.Column<Guid>(type: "uuid", nullable: true)
+                    BaseColourId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -138,12 +118,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Products_BaseColours_BaseColourId1",
-                        column: x => x.BaseColourId1,
-                        principalSchema: "Dictionary",
-                        principalTable: "BaseColours",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Products_SubCategories_SubCategoryId",
                         column: x => x.SubCategoryId,
                         principalSchema: "Dictionary",
@@ -161,29 +135,16 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     Gender = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Season = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Year = table.Column<int>(type: "integer", nullable: false),
-                    Usage = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    StyleNote = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    MaterialsCare = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Fit = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Usage = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Year = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    SleeveLength = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Fit = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Fabric = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ArticleNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    Vat = table.Column<decimal>(type: "numeric(5,2)", nullable: true),
-                    AgeGroup = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    FashionType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    LandingPageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    VariantName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    MyntraRating = table.Column<double>(type: "numeric(3,1)", nullable: true),
-                    CatalogAddDate = table.Column<long>(type: "bigint", nullable: true),
-                    Colour1 = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    Colour2 = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    VisualTag = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    StyleType = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    ProductTypeId = table.Column<int>(type: "integer", nullable: true),
-                    DisplayCategories = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Weight = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    NavigationId = table.Column<int>(type: "integer", nullable: true)
+                    Collar = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    BodyOrGarmentSize = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Pattern = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    AgeGroup = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -222,12 +183,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArticleTypes_Active",
-                schema: "Dictionary",
-                table: "ArticleTypes",
-                column: "Active");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ArticleTypes_Name",
                 schema: "Dictionary",
                 table: "ArticleTypes",
@@ -246,12 +201,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 table: "BaseColours",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MasterCategories_Active",
-                schema: "Dictionary",
-                table: "MasterCategories",
-                column: "Active");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MasterCategories_Name",
@@ -286,12 +235,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 column: "Usage");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductDetails_Year",
-                schema: "Dictionary",
-                table: "ProductDetails",
-                column: "Year");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductImages_ImageType",
                 schema: "Dictionary",
                 table: "ProductImages",
@@ -320,12 +263,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 schema: "Dictionary",
                 table: "Products",
                 column: "BaseColourId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_BaseColourId1",
-                schema: "Dictionary",
-                table: "Products",
-                column: "BaseColourId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandName",
@@ -362,12 +299,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                 schema: "Dictionary",
                 table: "Products",
                 column: "SubCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubCategories_Active",
-                schema: "Dictionary",
-                table: "SubCategories",
-                column: "Active");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SubCategories_MasterCategoryId",

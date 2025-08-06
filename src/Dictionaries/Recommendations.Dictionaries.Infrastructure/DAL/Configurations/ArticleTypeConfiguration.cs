@@ -13,34 +13,6 @@ public class ArticleTypeConfiguration : IEntityTypeConfiguration<ArticleType>
         builder.Property(at => at.Name)
             .IsRequired()
             .HasMaxLength(100);
-            
-        builder.Property(at => at.Active)
-            .IsRequired()
-            .HasDefaultValue(true);
-            
-        builder.Property(at => at.SocialSharingEnabled)
-            .IsRequired()
-            .HasDefaultValue(true);
-            
-        builder.Property(at => at.IsReturnable)
-            .IsRequired()
-            .HasDefaultValue(true);
-            
-        builder.Property(at => at.IsExchangeable)
-            .IsRequired()
-            .HasDefaultValue(true);
-            
-        builder.Property(at => at.PickupEnabled)
-            .IsRequired()
-            .HasDefaultValue(true);
-            
-        builder.Property(at => at.IsTryAndBuyEnabled)
-            .IsRequired()
-            .HasDefaultValue(true);
-            
-        builder.Property(at => at.IsMyntsEnabled)
-            .IsRequired()
-            .HasDefaultValue(true);
 
         builder.HasOne(at => at.SubCategory)
             .WithMany(sc => sc.ArticleTypes)
@@ -48,6 +20,5 @@ public class ArticleTypeConfiguration : IEntityTypeConfiguration<ArticleType>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(at => at.Name).IsUnique();
-        builder.HasIndex(at => at.Active);
     }
 } 

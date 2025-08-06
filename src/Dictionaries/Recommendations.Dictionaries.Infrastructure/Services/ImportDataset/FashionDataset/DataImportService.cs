@@ -135,31 +135,17 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
                 // Create ProductDetails
                 var productDetail = ProductDetails.Create(
                     product.Id,
-                    productData.Gender ?? "Unisex",
+                    productData.Gender,
                     string.IsNullOrWhiteSpace(productData.Season) ? "All Seasons" : productData.Season,
-                    int.TryParse(productData.Year, out int yearValue) ? yearValue : 2020,
                     string.IsNullOrWhiteSpace(productData.Usage) ? "Casual" : productData.Usage,
                     productData.ProductDescriptors?.Description?.Value,
-                    productData.ProductDescriptors?.StyleNote?.Value,
-                    productData.ProductDescriptors?.MaterialsCareDesc?.Value,
+                    productData.ArticleAttributes?.SleeveLength,
                     productData.ArticleAttributes?.Fit,
                     productData.ArticleAttributes?.Fabric,
-                    productData.ArticleNumber,
-                    productData.Vat,
-                    productData.AgeGroup,
-                    productData.FashionType,
-                    productData.LandingPageUrl,
-                    productData.VariantName,
-                    productData.MyntraRating,
-                    productData.CatalogAddDate,
-                    productData.Colour1,
-                    productData.Colour2,
-                    productData.VisualTag,
-                    productData.StyleType,
-                    null, // productTypeId - not available in JSON
-                    productData.DisplayCategories,
-                    productData.Weight,
-                    productData.NavigationId
+                    productData.ArticleAttributes?.Collar,
+                    productData.ArticleAttributes?.BodyOrGarmentSize,
+                    productData.ArticleAttributes?.Pattern,
+                    productData.AgeGroup
                 );
 
                 productDetails.Add(productDetail);
@@ -340,27 +326,14 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
             
             // Additional fields from JSON - not available in CSV
             var description = (string?)null;
-            var styleNote = (string?)null;
-            var materialsCare = (string?)null;
             var fit = (string?)null;
             var fabric = (string?)null;
-            var articleNumber = (string?)null;
-            var vat = (decimal?)null;
             var ageGroup = (string?)null;
-            var fashionType = (string?)null;
-            var landingPageUrl = (string?)null;
-            var variantName = (string?)null;
-            var myntraRating = (double?)null;
-            var catalogAddDate = (long?)null;
-            var colour1 = (string?)null;
-            var colour2 = (string?)null;
-            var visualTag = (string?)null;
-            var styleType = (string?)null;
-            var productTypeId = (int?)null;
-            var displayCategories = (string?)null;
-            var weight = (string?)null;
-            var navigationId = (int?)null;
-
+            var sleeveLength = (string?)null;
+            var collar = (string?)null;
+            var bodyOrGarmentSize = (string?)null;
+            var pattern = (string?)null;
+            
             // Process MasterCategory
             if (!string.IsNullOrEmpty(masterCategory) && masterCategory != "NA" && !masterCategories.ContainsKey(masterCategory))
             {
@@ -432,29 +405,15 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
                 product.Id,
                 gender ?? "Unisex",
                 string.IsNullOrWhiteSpace(season) ? "All Seasons" : season,
-                int.TryParse(year, out int yearValue) ? yearValue : 2020,
                 string.IsNullOrWhiteSpace(usage) ? "Casual" : usage,
                 description,
-                styleNote,
-                materialsCare,
+                sleeveLength,
                 fit,
                 fabric,
-                articleNumber,
-                vat,
-                ageGroup,
-                fashionType,
-                landingPageUrl,
-                variantName,
-                myntraRating,
-                catalogAddDate,
-                colour1,
-                colour2,
-                visualTag,
-                styleType,
-                productTypeId,
-                displayCategories,
-                weight,
-                navigationId
+                collar,
+                bodyOrGarmentSize, 
+                pattern, 
+                ageGroup
             );
 
             productDetails.Add(productDetail);

@@ -11,6 +11,8 @@ namespace Recommendations.Purchase.Core.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"CREATE SCHEMA IF NOT EXISTS ""Purchase"";");
+
             migrationBuilder.DropTable(
                 name: "CustomerPayments",
                 schema: "Purchase");

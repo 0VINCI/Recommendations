@@ -3,4 +3,4 @@ using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.Dictionaries.Shared.Queries;
 
-public sealed record GetAllProducts() : IQuery<IReadOnlyCollection<ProductDto>>; 
+public sealed record GetAllProducts() : IQuery<IReadOnlyCollection<ProductDto>>;

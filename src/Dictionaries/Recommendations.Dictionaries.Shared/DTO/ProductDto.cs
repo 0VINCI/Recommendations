@@ -16,4 +16,5 @@ public sealed record ProductDto(
     int Reviews,
     bool IsBestseller,
     bool IsNew,
+    IReadOnlyCollection<ProductDetailsDto> Details,
     IReadOnlyCollection<ProductImageDto> Images); 

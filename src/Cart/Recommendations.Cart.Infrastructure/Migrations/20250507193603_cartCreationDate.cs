@@ -11,6 +11,8 @@ namespace Recommendations.Cart.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"CREATE SCHEMA IF NOT EXISTS ""Cart"";");
+
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
                 schema: "Cart",

@@ -3,4 +3,4 @@ using Recommendations.Shared.Abstractions.Commands;
 
 namespace Recommendations.Dictionaries.Shared.Commands;
 
-public sealed record AddProduct(ProductDto Product) : ICommand; 
+public sealed record AddProduct(ProductDto ProductDto) : ICommand; 

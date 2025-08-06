@@ -11,6 +11,8 @@ namespace Recommendations.Authorization.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"CREATE SCHEMA IF NOT EXISTS ""Authorization"";");
+
             migrationBuilder.EnsureSchema(
                 name: "Authorization");
 
