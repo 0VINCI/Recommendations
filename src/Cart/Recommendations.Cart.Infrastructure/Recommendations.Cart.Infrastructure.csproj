@@ -16,4 +16,8 @@
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>
