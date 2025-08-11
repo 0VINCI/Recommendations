@@ -12,6 +12,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Details)
             .ToListAsync();
     }
 
@@ -22,6 +23,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
             .Include(p => p.Images)
+            .Include(p => p.Details)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -31,6 +33,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Details)
             .Where(p => p.IsBestseller)
             .ToListAsync();
     }
@@ -41,6 +44,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Details)
             .Where(p => p.IsNew)
             .ToListAsync();
     }
@@ -51,6 +55,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Details)
             .Where(p => p.SubCategory.Name == category || p.ArticleType.Name == category)
             .ToListAsync();
     }
@@ -61,6 +66,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Details)
             .Where(p => p.ProductDisplayName.Contains(searchTerm) || 
                        p.SubCategory.Name.Contains(searchTerm) ||
                        p.ArticleType.Name.Contains(searchTerm))
@@ -100,6 +106,8 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .Include(p => p.Details)
             .AsNoTracking();
     }
     
@@ -130,6 +138,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
             .Include(p => p.Images)
+            .Include(p => p.Details)
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(subCategoryId))
@@ -179,6 +188,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
             .Include(p => p.Images)
+            .Include(p => p.Details)
             .AsNoTracking()
             .Where(p => p.IsBestseller);
 
@@ -197,6 +207,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
             .Include(p => p.Images)
+            .Include(p => p.Details)
             .AsNoTracking()
             .Where(p => p.IsNew);
 
@@ -219,6 +230,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
             .Include(p => p.Images)
+            .Include(p => p.Details)
             .AsNoTracking()
             .Where(p =>
                 p.ProductDisplayName.Contains(searchTerm) ||

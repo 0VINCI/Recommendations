@@ -12,7 +12,8 @@ public class DictionariesMappingProfile : Profile
             .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.SubCategory.Name))
             .ForMember(dest => dest.ArticleTypeName, opt => opt.MapFrom(src => src.ArticleType.Name))
             .ForMember(dest => dest.BaseColourName, opt => opt.MapFrom(src => src.BaseColour.Name))
-            .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
+            .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images))
+            .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.Details));
         CreateMap<ProductDetails, ProductDetailsDto>();
         CreateMap<ProductImage, ProductImageDto>();
 

@@ -19,7 +19,6 @@ public class ProductDetailsConfiguration : IEntityTypeConfiguration<ProductDetai
             .HasMaxLength(20);
         
         builder.Property(pd => pd.Year)
-            .IsRequired()
             .HasMaxLength(20);
 
         builder.Property(pd => pd.Usage)

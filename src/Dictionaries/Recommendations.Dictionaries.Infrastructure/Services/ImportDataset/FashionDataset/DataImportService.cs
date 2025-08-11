@@ -44,7 +44,11 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
             try
             {
                 var jsonContent = await File.ReadAllTextAsync(jsonFile);
-                var jsonResponse = JsonSerializer.Deserialize<ProductJsonResponse>(jsonContent);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                var jsonResponse = JsonSerializer.Deserialize<ProductJsonResponse>(jsonContent, options);
                 
                 if (jsonResponse?.Data == null) 
                 {
@@ -138,16 +142,18 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
                     productData.Gender,
                     string.IsNullOrWhiteSpace(productData.Season) ? "All Seasons" : productData.Season,
                     string.IsNullOrWhiteSpace(productData.Usage) ? "Casual" : productData.Usage,
+                    productData.Year,
                     productData.ProductDescriptors?.Description?.Value,
                     productData.ArticleAttributes?.SleeveLength,
                     productData.ArticleAttributes?.Fit,
-                    productData.ArticleAttributes?.Fabric,
+                    GetFabricValue(productData.ArticleAttributes),
                     productData.ArticleAttributes?.Collar,
                     productData.ArticleAttributes?.BodyOrGarmentSize,
-                    productData.ArticleAttributes?.Pattern,
+                    GetPatternValue(productData.ArticleAttributes),
                     productData.AgeGroup
                 );
 
+                product.SetDetails(productDetail);
                 productDetails.Add(productDetail);
 
                 // Create ProductImages
@@ -536,5 +542,31 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
         var randomFactor = _random.Next(100) < 10; // 10% random chance for older items
 
         return isRecent || randomFactor;
+    }
+
+    private static string? GetFabricValue(ArticleAttributes? attributes)
+    {
+        if (attributes == null) return null;
+        
+        // Sprawdź różne warianty pola Fabric
+        if (!string.IsNullOrWhiteSpace(attributes.Fabric) && attributes.Fabric != "NA")
+            return attributes.Fabric;
+        if (!string.IsNullOrWhiteSpace(attributes.Fabric2) && attributes.Fabric2 != "NA")
+            return attributes.Fabric2;
+        
+        return null;
+    }
+
+    private static string? GetPatternValue(ArticleAttributes? attributes)
+    {
+        if (attributes == null) return null;
+        
+        // Sprawdź różne warianty pola Pattern
+        if (!string.IsNullOrWhiteSpace(attributes.Pattern) && attributes.Pattern != "NA")
+            return attributes.Pattern;
+        if (!string.IsNullOrWhiteSpace(attributes.DialPattern) && attributes.DialPattern != "NA")
+            return attributes.DialPattern;
+        
+        return null;
     }
 } 

@@ -6,6 +6,7 @@ public sealed record ProductDetailsDto(
     string Gender,
     string Season,
     string Usage,
+    string? Year,
     string? Description,
     string? SleeveLength,
     string? Fit,

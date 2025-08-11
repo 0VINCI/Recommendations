@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Recommendations.Dictionaries.Application;
@@ -9,6 +10,7 @@ using Recommendations.Dictionaries.Core;
 using Recommendations.Dictionaries.Core.Services;
 using Recommendations.Dictionaries.Infrastructure;
 using Recommendations.Dictionaries.Infrastructure.DAL;
+using Recommendations.Dictionaries.Infrastructure.Services.ImportDataset.FashionDataset;
 using Recommendations.Dictionaries.Shared.Commands;
 using Recommendations.Dictionaries.Shared.DTO;
 using Recommendations.Dictionaries.Shared.Queries;
@@ -176,8 +178,9 @@ internal sealed class DictionariesModule : ModuleDefinition
         {
             try
             {
-                var stylesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "fashion-dataset", "styles.csv");
-                var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "fashion-dataset", "images.csv");
+                var datasetRoot = "/Users/pawelw/Desktop/magisterka/programowanie/backend/fashion-dataset";
+                var stylesPath = Path.Combine(datasetRoot, "styles.csv");
+                var imagesPath = Path.Combine(datasetRoot, "images.csv");
                 
                 await dataImportService.ImportFashionDatasetAsync(stylesPath, imagesPath);
                 return Results.Ok(new { message = "Fashion dataset imported successfully" });
@@ -271,7 +274,8 @@ internal sealed class DictionariesModule : ModuleDefinition
         {
             try
             {
-                var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "fashion-dataset", "styles");
+                var datasetRoot = "/Users/pawelw/Desktop/magisterka/programowanie/backend/fashion-dataset";
+                var jsonPath = Path.Combine(datasetRoot, "styles");
                 
                 if (!Directory.Exists(jsonPath))
                 {
@@ -283,7 +287,11 @@ internal sealed class DictionariesModule : ModuleDefinition
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(new { error = ex.Message });
+                return Results.BadRequest(new { 
+                    error = ex.Message, 
+                    innerException = ex.InnerException?.Message,
+                    stackTrace = ex.StackTrace 
+                });
             }
         });
 
@@ -294,6 +302,37 @@ internal sealed class DictionariesModule : ModuleDefinition
         {
             var product = await queryDispatcher.QueryAsync(new GetProductFullById(id), cancellationToken);
             return product is null ? Results.NotFound() : Results.Ok(product);
+        });
+
+        app.MapGet("/test/database", async (
+            [FromServices] DictionariesDbContext context,
+            CancellationToken cancellationToken = default) =>
+        {
+            try
+            {
+                var masterCategoriesCount = await context.MasterCategories.CountAsync(cancellationToken);
+                var subCategoriesCount = await context.SubCategories.CountAsync(cancellationToken);
+                var articleTypesCount = await context.ArticleTypes.CountAsync(cancellationToken);
+                var baseColoursCount = await context.BaseColours.CountAsync(cancellationToken);
+                var productsCount = await context.Products.CountAsync(cancellationToken);
+                var productDetailsCount = await context.ProductDetails.CountAsync(cancellationToken);
+                var productImagesCount = await context.ProductImages.CountAsync(cancellationToken);
+
+                return Results.Ok(new
+                {
+                    MasterCategories = masterCategoriesCount,
+                    SubCategories = subCategoriesCount,
+                    ArticleTypes = articleTypesCount,
+                    BaseColours = baseColoursCount,
+                    Products = productsCount,
+                    ProductDetails = productDetailsCount,
+                    ProductImages = productImagesCount
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new { error = ex.Message, stackTrace = ex.StackTrace });
+            }
         });
     }
 }

@@ -118,4 +118,9 @@ public sealed class Product
         Price = newPrice;
         OriginalPrice = newOriginalPrice;
     }
+
+    public void SetDetails(ProductDetails details)
+    {
+        Details = details;
+    }
 } 
