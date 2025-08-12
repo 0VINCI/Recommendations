@@ -57,11 +57,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.Purchase.Sh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ContentBased", "ContentBased", "{E513014C-0494-4255-8246-07AB3BD2B300}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.ContentBased.Api", "Recommendations.ContentBased.Api\Recommendations.ContentBased.Api.csproj", "{FBA09E35-15FE-48EB-8392-0BA63F420E02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.ContentBased.Api", "ContentBased\Recommendations.ContentBased.Api\Recommendations.ContentBased.Api.csproj", "{FBA09E35-15FE-48EB-8392-0BA63F420E02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.ContentBased.Shared", "Recommendations.ContentBased.Shared\Recommendations.ContentBased.Shared.csproj", "{D34525A7-B3C4-4F1D-9F68-C5302310C891}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.ContentBased.Shared", "ContentBased\Recommendations.ContentBased.Shared\Recommendations.ContentBased.Shared.csproj", "{D34525A7-B3C4-4F1D-9F68-C5302310C891}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.ContentBased.Core", "Recommendations.ContentBased.Core\Recommendations.ContentBased.Core.csproj", "{E2DBDF74-4E0E-4F11-A460-E598E99B02A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommendations.ContentBased.Core", "ContentBased\Recommendations.ContentBased.Core\Recommendations.ContentBased.Core.csproj", "{E2DBDF74-4E0E-4F11-A460-E598E99B02A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

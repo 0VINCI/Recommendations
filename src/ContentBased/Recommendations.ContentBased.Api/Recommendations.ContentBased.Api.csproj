@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Recommendations.Api" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
+      <ProjectReference Include="..\Recommendations.ContentBased.Core\Recommendations.ContentBased.Core.csproj" />
+    </ItemGroup>
+</Project>
