@@ -113,7 +113,7 @@ internal sealed class DictionariesModule : ModuleDefinition
                 new GetBestsellers(Page: page, PageSize: pageSize), cancellationToken);
             return Results.Ok(products);
         });
-        
+
         app.MapGet("/products/recommended", async (
             [FromServices] IQueryDispatcher queryDispatcher,
             CancellationToken cancellationToken = default) =>
@@ -181,8 +181,8 @@ internal sealed class DictionariesModule : ModuleDefinition
                 var datasetRoot = "/Users/pawelw/Desktop/magisterka/programowanie/backend/fashion-dataset";
                 var stylesPath = Path.Combine(datasetRoot, "styles.csv");
                 var imagesPath = Path.Combine(datasetRoot, "images.csv");
-                
-                await dataImportService.ImportFashionDatasetAsync(stylesPath, imagesPath);
+
+                await dataImportService.ImportCsvDataAsync(stylesPath, imagesPath);
                 return Results.Ok(new { message = "Fashion dataset imported successfully" });
             }
             catch (Exception ex)
@@ -198,7 +198,7 @@ internal sealed class DictionariesModule : ModuleDefinition
             try
             {
                 var products = await queryDispatcher.QueryAsync(new GetAllProducts(), cancellationToken);
-                
+
                 if (!products.Any())
                 {
                     return Results.Ok(new { message = "No products found. Import data first." });
@@ -256,9 +256,9 @@ internal sealed class DictionariesModule : ModuleDefinition
                 context.BaseColours.RemoveRange(context.BaseColours);
                 context.ArticleTypes.RemoveRange(context.ArticleTypes);
                 context.SubCategories.RemoveRange(context.SubCategories);
-                
+
                 await context.SaveChangesAsync(cancellationToken);
-                
+
                 return Results.Ok(new { message = "All data cleared successfully" });
             }
             catch (Exception ex)
@@ -266,31 +266,54 @@ internal sealed class DictionariesModule : ModuleDefinition
                 return Results.BadRequest(new { error = ex.Message });
             }
         });
-        
+
         //endpoint about needing to import one particular set of data - that's why messy :)
         app.MapPost("/import/json-data", async (
             [FromServices] IDataImportService dataImportService,
+            [FromServices] DictionariesDbContext context,
             CancellationToken cancellationToken = default) =>
         {
             try
             {
+                // Test database connection first
+                Console.WriteLine("Testing database connection...");
+                try
+                {
+                    await context.Database.CanConnectAsync(cancellationToken);
+                    Console.WriteLine("Database connection successful");
+                }
+                catch (Exception dbEx)
+                {
+                    Console.WriteLine($"Database connection failed: {dbEx.Message}");
+                    return Results.BadRequest(new
+                    {
+                        error = "Database connection failed",
+                        details = dbEx.Message,
+                        innerException = dbEx.InnerException?.Message
+                    });
+                }
+
                 var datasetRoot = "/Users/pawelw/Desktop/magisterka/programowanie/backend/fashion-dataset";
                 var jsonPath = Path.Combine(datasetRoot, "styles");
-                
+
                 if (!Directory.Exists(jsonPath))
                 {
                     return Results.BadRequest(new { error = "JSON directory not found. Expected path: " + jsonPath });
                 }
-                
+
+                Console.WriteLine($"Starting JSON import from: {jsonPath}");
                 await dataImportService.ImportJsonDataAsync(jsonPath);
                 return Results.Ok(new { message = "JSON data imported successfully" });
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(new { 
-                    error = ex.Message, 
+                Console.WriteLine($"Import failed: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Results.BadRequest(new
+                {
+                    error = ex.Message,
                     innerException = ex.InnerException?.Message,
-                    stackTrace = ex.StackTrace 
+                    stackTrace = ex.StackTrace
                 });
             }
         });
@@ -310,6 +333,13 @@ internal sealed class DictionariesModule : ModuleDefinition
         {
             try
             {
+                // Test connection first
+                var canConnect = await context.Database.CanConnectAsync(cancellationToken);
+                if (!canConnect)
+                {
+                    return Results.BadRequest(new { error = "Cannot connect to database" });
+                }
+
                 var masterCategoriesCount = await context.MasterCategories.CountAsync(cancellationToken);
                 var subCategoriesCount = await context.SubCategories.CountAsync(cancellationToken);
                 var articleTypesCount = await context.ArticleTypes.CountAsync(cancellationToken);
@@ -320,6 +350,7 @@ internal sealed class DictionariesModule : ModuleDefinition
 
                 return Results.Ok(new
                 {
+                    ConnectionStatus = "Connected",
                     MasterCategories = masterCategoriesCount,
                     SubCategories = subCategoriesCount,
                     ArticleTypes = articleTypesCount,
@@ -331,7 +362,12 @@ internal sealed class DictionariesModule : ModuleDefinition
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(new { error = ex.Message, stackTrace = ex.StackTrace });
+                return Results.BadRequest(new
+                {
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    innerException = ex.InnerException?.Message
+                });
             }
         });
     }

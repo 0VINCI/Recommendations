@@ -3,6 +3,7 @@ namespace Recommendations.Dictionaries.Core.Types;
 public sealed class Product
 {
     public Guid Id { get; private set; }
+    public string? ExternalId { get; private set; }
     public string ProductDisplayName { get; private set; }
     public string BrandName { get; private set; }
     public decimal Price { get; private set; }
@@ -24,6 +25,7 @@ public sealed class Product
     
     public Product(
         Guid id,
+        string? externalId,
         string productDisplayName,
         string brandName,
         decimal price,
@@ -48,6 +50,7 @@ public sealed class Product
             throw new ArgumentException("Reviews must be >= 0", nameof(reviews));
 
         Id = id;
+        ExternalId = externalId;
         ProductDisplayName = productDisplayName;
         BrandName = brandName;
         Price = price;
@@ -62,6 +65,7 @@ public sealed class Product
     }
 
     public static Product Create(
+        string? externalId,
         string productDisplayName,
         string brandName,
         decimal price,
@@ -76,6 +80,7 @@ public sealed class Product
     {
         return new Product(
             Guid.NewGuid(),
+            externalId,
             productDisplayName,
             brandName,
             price,
@@ -122,5 +127,30 @@ public sealed class Product
     public void SetDetails(ProductDetails details)
     {
         Details = details;
+    }
+
+    public void UpdateFromJson(
+        string brandName,
+        decimal price,
+        decimal? originalPrice,
+        decimal rating,
+        Guid subCategoryId,
+        Guid articleTypeId,
+        Guid baseColourId)
+    {
+        if (string.IsNullOrWhiteSpace(brandName)) 
+            throw new ArgumentException("BrandName cannot be empty", nameof(brandName));
+        if (price < 0) 
+            throw new ArgumentException("Price must be >= 0", nameof(price));
+        if (rating is < 0 or > 5) 
+            throw new ArgumentException("Rating must be between 0 and 5", nameof(rating));
+
+        BrandName = brandName;
+        Price = price;
+        OriginalPrice = originalPrice;
+        Rating = rating;
+        SubCategoryId = subCategoryId;
+        ArticleTypeId = articleTypeId;
+        BaseColourId = baseColourId;
     }
 } 

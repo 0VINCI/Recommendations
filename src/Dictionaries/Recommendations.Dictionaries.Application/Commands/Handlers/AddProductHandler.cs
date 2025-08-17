@@ -10,6 +10,7 @@ internal sealed class AddProductHandler(IProductRepository productRepository) : 
     public async Task HandleAsync(AddProduct command, CancellationToken cancellationToken = default)
     {
         var product = Product.Create(
+            command.ProductDto.ExternalId,
             command.ProductDto.ProductDisplayName,
             command.ProductDto.BrandName,
             command.ProductDto.Price,

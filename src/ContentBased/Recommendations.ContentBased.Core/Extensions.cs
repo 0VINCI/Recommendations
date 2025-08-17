@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Recommendations.ContentBased.Core.Commands;
+using Recommendations.ContentBased.Core.Data;
 using Recommendations.ContentBased.Core.ModuleApi;
 using Recommendations.ContentBased.Core.Queries;
 using Recommendations.ContentBased.Shared;
@@ -13,7 +14,7 @@ public static class Extensions
         services.AddSingleton<IContentBasedModuleApi, ContentBasedModuleApi>();
         services.AddCommands();
         services.AddQueries();
-        //services.AddPostgres();
+        services.AddPostgres();
 
         return services;
     }

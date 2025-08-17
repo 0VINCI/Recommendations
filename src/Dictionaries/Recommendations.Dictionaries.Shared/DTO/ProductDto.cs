@@ -2,6 +2,7 @@ namespace Recommendations.Dictionaries.Shared.DTO;
 
 public sealed record ProductDto(
     Guid Id,
+    string? ExternalId,
     string ProductDisplayName,
     string BrandName,
     Guid SubCategoryId,

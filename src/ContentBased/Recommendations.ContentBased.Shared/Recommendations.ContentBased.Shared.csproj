@@ -7,6 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
+      <PackageReference Include="Pgvector" Version="0.3.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Commands\" />
+      <Folder Include="DTO\" />
+      <Folder Include="Queries\" />
     </ItemGroup>
 
 </Project>
