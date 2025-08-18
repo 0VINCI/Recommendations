@@ -178,7 +178,7 @@ internal sealed class DictionariesModule : ModuleDefinition
         {
             try
             {
-                var datasetRoot = "/Users/pawelw/Desktop/magisterka/programowanie/backend/fashion-dataset";
+                var datasetRoot = @"C:\Users\wrobl\Downloads\archive\fashion-dataset";
                 var stylesPath = Path.Combine(datasetRoot, "styles.csv");
                 var imagesPath = Path.Combine(datasetRoot, "images.csv");
 
@@ -293,7 +293,7 @@ internal sealed class DictionariesModule : ModuleDefinition
                     });
                 }
 
-                var datasetRoot = "/Users/pawelw/Desktop/magisterka/programowanie/backend/fashion-dataset";
+                var datasetRoot = @"C:\Users\wrobl\Downloads\archive\fashion-dataset";
                 var jsonPath = Path.Combine(datasetRoot, "styles");
 
                 if (!Directory.Exists(jsonPath))

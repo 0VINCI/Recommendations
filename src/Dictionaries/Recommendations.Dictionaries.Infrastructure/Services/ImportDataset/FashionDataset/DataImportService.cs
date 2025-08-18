@@ -12,6 +12,7 @@ namespace Recommendations.Dictionaries.Infrastructure.Services.ImportDataset.Fas
 public class DataImportService(DictionariesDbContext context) : IDataImportService
 {
     private readonly Random _random = new();
+    private const int BatchSize = 5000;
 
     public async Task ImportCsvDataAsync(string stylesCsvPath, string imagesCsvPath)
     {
@@ -33,6 +34,8 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
         context.BaseColours.RemoveRange(context.BaseColours);
 
         await context.SaveChangesAsync();
+        await context.Database.CloseConnectionAsync();
+        context.ChangeTracker.Clear();
     }
 
     private static async Task<Dictionary<string, string>> ReadImagesDataAsync(string imagesCsvPath)
@@ -64,12 +67,19 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
 
     private async Task ReadAndProcessStylesDataAsync(string stylesCsvPath, IReadOnlyDictionary<string, string> imagesData)
     {
+        // słowniki globalne (utrzymują referencje i ID między batchami)
         var masterCategories = new Dictionary<string, MasterCategory>();
         var subCategories = new Dictionary<string, SubCategory>();
         var articleTypes = new Dictionary<string, ArticleType>();
         var baseColours = new Dictionary<string, BaseColour>();
-        var products = new List<Product>();
-        var productImages = new List<ProductImage>();
+
+        // listy batchowe — zapisujemy i czyścimy co BatchSize produktów
+        var batchMasterCategories = new List<MasterCategory>();
+        var batchSubCategories = new List<SubCategory>();
+        var batchArticleTypes = new List<ArticleType>();
+        var batchBaseColours = new List<BaseColour>();
+        var batchProducts = new List<Product>();
+        var batchProductImages = new List<ProductImage>();
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -90,67 +100,140 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
             var articleType = record.articleType?.ToString();
             var baseColour = record.baseColour?.ToString();
             var year = record.year?.ToString();
-            var usage = record.usage?.ToString();
-            var gender = record.gender?.ToString();
+            var usage = record.usage?.ToString();   // celowo nieużywane tutaj – details dodasz z JSON
+            var gender = record.gender?.ToString(); // jw.
             var productDisplayName = record.productDisplayName?.ToString();
 
             if (string.IsNullOrEmpty(productDisplayName) || string.IsNullOrEmpty(id))
                 continue;
 
+            // MasterCategory
             if (!string.IsNullOrEmpty(masterCategory) && masterCategory != "NA" && !masterCategories.ContainsKey(masterCategory))
-                masterCategories[masterCategory] = MasterCategory.Create(masterCategory);
+            {
+                var mc = MasterCategory.Create(masterCategory);
+                masterCategories[masterCategory] = mc;
+                batchMasterCategories.Add(mc);
+            }
 
+            // SubCategory
             if (!string.IsNullOrEmpty(subCategory) && subCategory != "NA" && !subCategories.ContainsKey(subCategory))
             {
                 if (masterCategories.TryGetValue(masterCategory ?? "", out MasterCategory mcEntity))
-                    subCategories[subCategory] = SubCategory.Create(subCategory, mcEntity.Id);
+                {
+                    var sc = SubCategory.Create(subCategory, mcEntity.Id);
+                    subCategories[subCategory] = sc;
+                    batchSubCategories.Add(sc);
+                }
             }
 
+            // ArticleType
             if (!string.IsNullOrEmpty(articleType) && articleType != "NA" && !articleTypes.ContainsKey(articleType))
             {
                 if (subCategories.TryGetValue(subCategory ?? "", out SubCategory scEntity))
-                    articleTypes[articleType] = ArticleType.Create(articleType, scEntity.Id);
+                {
+                    var at = ArticleType.Create(articleType, scEntity.Id);
+                    articleTypes[articleType] = at;
+                    batchArticleTypes.Add(at);
+                }
             }
 
+            // BaseColour
             if (!string.IsNullOrEmpty(baseColour) && baseColour != "NA" && !baseColours.ContainsKey(baseColour))
-                baseColours[baseColour] = BaseColour.Create(baseColour);
+            {
+                var bc = BaseColour.Create(baseColour);
+                baseColours[baseColour] = bc;
+                batchBaseColours.Add(bc);
+            }
 
+            // walidacja powiązań
             if (!subCategories.TryGetValue(subCategory ?? "", out SubCategory finalSubCategory)) continue;
             if (!articleTypes.TryGetValue(articleType ?? "", out ArticleType finalArticleType)) continue;
             if (!baseColours.TryGetValue(baseColour ?? "", out BaseColour finalBaseColour)) continue;
-            
+
+            // dane sprzedażowe (syntetyczne)
             var priceTuple = GeneratePrice(masterCategory ?? string.Empty, finalArticleType.Name);
             decimal price = priceTuple.Item1;
             decimal? originalPrice = priceTuple.Item2;
-            var (rating, reviews) = GenerateRatingAndReviews();
+
+            var ratingReviews = GenerateRatingAndReviews();
+            decimal rating = ratingReviews.Item1;
+            int reviews = ratingReviews.Item2;
+
             var isBestseller = GenerateBestsellerStatus(rating, reviews);
             var isNew = GenerateNewStatus(int.TryParse(year, out int y) ? y : 2020);
 
+            // Product (ExternalId = id z CSV)
             var product = Product.Create(
                 id, productDisplayName, GenerateBrandName(finalArticleType.Name),
                 price, originalPrice,
                 rating, reviews, isBestseller, isNew,
                 finalSubCategory.Id, finalArticleType.Id, finalBaseColour.Id
             );
-            products.Add(product);
+            batchProducts.Add(product);
 
+            // Zdjęcie główne (jeśli jest)
             if (imagesData.TryGetValue(id, out string imageUrl))
-                productImages.Add(ProductImage.Create(product.Id, imageUrl, "default", null, true));
+                batchProductImages.Add(ProductImage.Create(product.Id, imageUrl, "default", null, true));
+
+            // flush co BatchSize produktów
+            if (batchProducts.Count >= BatchSize)
+                await FlushCsvBatchAsync(
+                    batchMasterCategories, batchSubCategories, batchArticleTypes, batchBaseColours,
+                    batchProducts, batchProductImages
+                );
         }
 
-        await context.MasterCategories.AddRangeAsync(masterCategories.Values);
-        await context.SubCategories.AddRangeAsync(subCategories.Values);
-        await context.ArticleTypes.AddRangeAsync(articleTypes.Values);
-        await context.BaseColours.AddRangeAsync(baseColours.Values);
-        await context.Products.AddRangeAsync(products);
-        await context.ProductImages.AddRangeAsync(productImages);
+        // flush resztki
+        if (batchProducts.Count > 0 ||
+            batchMasterCategories.Count > 0 || batchSubCategories.Count > 0 ||
+            batchArticleTypes.Count > 0 || batchBaseColours.Count > 0 ||
+            batchProductImages.Count > 0)
+        {
+            await FlushCsvBatchAsync(
+                batchMasterCategories, batchSubCategories, batchArticleTypes, batchBaseColours,
+                batchProducts, batchProductImages
+            );
+        }
+    }
+
+    private async Task FlushCsvBatchAsync(
+        List<MasterCategory> batchMasterCategories,
+        List<SubCategory> batchSubCategories,
+        List<ArticleType> batchArticleTypes,
+        List<BaseColour> batchBaseColours,
+        List<Product> batchProducts,
+        List<ProductImage> batchProductImages)
+    {
+        if (batchMasterCategories.Count > 0) await context.MasterCategories.AddRangeAsync(batchMasterCategories);
+        if (batchSubCategories.Count > 0)   await context.SubCategories.AddRangeAsync(batchSubCategories);
+        if (batchArticleTypes.Count > 0)    await context.ArticleTypes.AddRangeAsync(batchArticleTypes);
+        if (batchBaseColours.Count > 0)     await context.BaseColours.AddRangeAsync(batchBaseColours);
+        if (batchProducts.Count > 0)        await context.Products.AddRangeAsync(batchProducts);
+        if (batchProductImages.Count > 0)   await context.ProductImages.AddRangeAsync(batchProductImages);
 
         await context.SaveChangesAsync();
+
+        // „odśwież” kontekst i połączenie
+        await context.Database.CloseConnectionAsync();
+        context.ChangeTracker.Clear();
+
+        // wyczyść batch
+        batchMasterCategories.Clear();
+        batchSubCategories.Clear();
+        batchArticleTypes.Clear();
+        batchBaseColours.Clear();
+        batchProducts.Clear();
+        batchProductImages.Clear();
     }
 
     public async Task ImportJsonDataAsync(string jsonDirectoryPath)
     {
         var jsonFiles = Directory.GetFiles(jsonDirectoryPath, "*.json");
+        if (jsonFiles.Length == 0) return;
+
+        var batchDetails = new List<ProductDetails>();
+        var batchImages = new List<ProductImage>();
+        int processed = 0;
 
         foreach (var jsonFile in jsonFiles)
         {
@@ -161,15 +244,20 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
             if (jsonResponse?.Data == null) continue;
             var productData = jsonResponse.Data;
 
-            var existingProduct = await context.Products
+            // znajdź produkt po ExternalId == Id z JSON
+            var existingProduct = await context
+                .Products
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.ExternalId == productData.Id.ToString());
 
             if (existingProduct == null) continue;
 
-            var existingDetails = await context.ProductDetails
-                .FirstOrDefaultAsync(pd => pd.ProductId == existingProduct.Id);
+            // details: dodaj tylko jeśli brak
+            var hasDetails = await context.ProductDetails
+                .AsNoTracking()
+                .AnyAsync(pd => pd.ProductId == existingProduct.Id);
 
-            if (existingDetails == null)
+            if (!hasDetails)
             {
                 var productDetail = ProductDetails.Create(
                     existingProduct.Id,
@@ -186,22 +274,50 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
                     GetPatternValue(productData.ArticleAttributes),
                     productData.AgeGroup
                 );
-                await context.ProductDetails.AddAsync(productDetail);
+                batchDetails.Add(productDetail);
             }
 
-            var hasImages = await context.ProductImages.AnyAsync(pi => pi.ProductId == existingProduct.Id);
-            if (!hasImages && productData.StyleImages != null)
+            // obrazy: dodaj tylko jeśli brak jakichkolwiek
+            var hasAnyImages = await context.ProductImages
+                .AsNoTracking()
+                .AnyAsync(pi => pi.ProductId == existingProduct.Id);
+
+            if (!hasAnyImages && productData.StyleImages != null)
             {
                 if (productData.StyleImages.Default != null)
-                    context.ProductImages.Add(ProductImage.Create(existingProduct.Id, productData.StyleImages.Default.ImageUrl, "default", null, true));
+                    batchImages.Add(ProductImage.Create(existingProduct.Id, productData.StyleImages.Default.ImageUrl, "default", null, true));
                 if (productData.StyleImages.Front != null)
-                    context.ProductImages.Add(ProductImage.Create(existingProduct.Id, productData.StyleImages.Front.ImageUrl, "front", null, false));
+                    batchImages.Add(ProductImage.Create(existingProduct.Id, productData.StyleImages.Front.ImageUrl, "front", null, false));
                 if (productData.StyleImages.Back != null)
-                    context.ProductImages.Add(ProductImage.Create(existingProduct.Id, productData.StyleImages.Back.ImageUrl, "back", null, false));
+                    batchImages.Add(ProductImage.Create(existingProduct.Id, productData.StyleImages.Back.ImageUrl, "back", null, false));
             }
 
-            await context.SaveChangesAsync();
+            processed++;
+
+            if (processed % BatchSize == 0)
+                await FlushJsonBatchAsync(batchDetails, batchImages);
         }
+
+        // flush resztki
+        if (batchDetails.Count > 0 || batchImages.Count > 0)
+            await FlushJsonBatchAsync(batchDetails, batchImages);
+    }
+
+    private async Task FlushJsonBatchAsync(
+        List<ProductDetails> batchDetails,
+        List<ProductImage> batchImages)
+    {
+        if (batchDetails.Count > 0) await context.ProductDetails.AddRangeAsync(batchDetails);
+        if (batchImages.Count > 0)  await context.ProductImages.AddRangeAsync(batchImages);
+
+        await context.SaveChangesAsync();
+
+        // „odśwież” kontekst i połączenie
+        await context.Database.CloseConnectionAsync();
+        context.ChangeTracker.Clear();
+
+        batchDetails.Clear();
+        batchImages.Clear();
     }
 
     private (decimal price, decimal? originalPrice) GeneratePrice(string masterCategory, string articleType)
