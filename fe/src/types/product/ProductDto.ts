@@ -15,42 +15,26 @@ export interface ProductDto {
   reviews: number;
   isBestseller: boolean;
   isNew: boolean;
+  details?: ProductDetailsDto;
   images: ProductImageDto[];
 }
 
 export interface ProductDetailsDto {
-  id: string;
-  productId: string;
   gender: string;
   season: string;
-  year: number;
   usage: string;
+  year?: string;
   description?: string;
-  styleNote?: string;
-  materialsCare?: string;
+  sleeveLength?: string;
   fit?: string;
   fabric?: string;
-  articleNumber?: string;
-  vat?: number;
+  collar?: string;
+  bodyOrGarmentSize?: string;
+  pattern?: string;
   ageGroup?: string;
-  fashionType?: string;
-  landingPageUrl?: string;
-  variantName?: string;
-  myntraRating?: number;
-  catalogAddDate?: number;
-  colour1?: string;
-  colour2?: string;
-  visualTag?: string;
-  styleType?: string;
-  productTypeId?: number;
-  displayCategories?: string;
-  weight?: string;
-  navigationId?: number;
 }
 
 export interface ProductImageDto {
-  id: string;
-  productId: string;
   imageUrl: string;
   imageType: string;
   resolution?: string;

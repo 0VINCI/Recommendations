@@ -3,6 +3,7 @@ import type { User } from "../types/authorization/User.tsx";
 import type { ToastItem } from "../components/common/ToastContainer";
 import type { CartItem, Product } from "../types/cart/Cart.ts";
 import type { Order } from "../types/purchase/Order.ts";
+import { RecommendationAlgorithm } from "../types/recommendation/RecommendationAlgorithm";
 
 export interface AppState {
   products: ProductDto[];
@@ -17,6 +18,7 @@ export interface AppState {
   isResetPasswordModalOpen: boolean;
   resetPasswordEmail: string;
   toasts: ToastItem[];
+  selectedRecommendationAlgorithm: RecommendationAlgorithm;
 }
 
 export type AppAction =
@@ -54,7 +56,8 @@ export type AppAction =
   | { type: "ADD_TOAST"; payload: ToastItem }
   | { type: "REMOVE_TOAST"; payload: string }
   | { type: "ADD_ORDER"; payload: Order }
-  | { type: "SET_CART"; payload: CartItem[] };
+  | { type: "SET_CART"; payload: CartItem[] }
+  | { type: "SET_RECOMMENDATION_ALGORITHM"; payload: RecommendationAlgorithm };
 
 export const initialState: AppState = {
   products: [],
@@ -69,6 +72,7 @@ export const initialState: AppState = {
   isResetPasswordModalOpen: false,
   resetPasswordEmail: "",
   toasts: [],
+  selectedRecommendationAlgorithm: RecommendationAlgorithm.ContentBasedFull,
 };
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -256,6 +260,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         cart: action.payload,
+      };
+
+    case "SET_RECOMMENDATION_ALGORITHM":
+      return {
+        ...state,
+        selectedRecommendationAlgorithm: action.payload,
       };
 
     default:

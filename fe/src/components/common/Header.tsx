@@ -13,6 +13,7 @@ import {
 import { useApp } from "../../context/useApp";
 import { signOut } from "../../api/authorizationService";
 import { useState, useEffect, useRef } from "react";
+import { RecommendationAlgorithmSelector } from "./RecommendationAlgorithmSelector";
 
 export function Header() {
   const { state, dispatch } = useApp();
@@ -99,6 +100,9 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            {/* Recommendation Algorithm Selector */}
+            <RecommendationAlgorithmSelector />
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}

@@ -12,6 +12,134 @@ import {
 import { useProducts } from "../hooks/useProducts";
 import { useCart } from "../hooks/useCart";
 import { Loader } from "../components/common/Loader";
+import { SimilarProducts } from "../components/SimilarProducts";
+
+// Funkcja do parsowania HTML opisu produktu
+function parseProductDescription(description: string) {
+  if (!description) return null;
+
+  // Usuń tagi <p> i </p> z początku i końca
+  const cleanDescription = description.replace(/^<p>|<\/p>$/g, "");
+
+  // Podziel na sekcje na podstawie <strong> tagów
+  const sections: { title: string; content: string }[] = [];
+
+  // Znajdź wszystkie sekcje z <strong> tagami - prostsze podejście
+  const strongMatches = cleanDescription.match(
+    /<strong>([^<]+)(?:<br\s*\/?>\s*)?<\/strong>/g
+  );
+
+  if (strongMatches) {
+    for (let i = 0; i < strongMatches.length; i++) {
+      const currentMatch = strongMatches[i];
+      const titleMatch = currentMatch.match(
+        /<strong>([^<]+)(?:<br\s*\/?>\s*)?<\/strong>/
+      );
+
+      if (titleMatch) {
+        const title = titleMatch[1].trim();
+
+        // Znajdź treść między obecnym <strong> a następnym <strong> lub <em> lub końcem
+        const currentIndex = cleanDescription.indexOf(currentMatch);
+        const nextStrongIndex = cleanDescription.indexOf(
+          "<strong>",
+          currentIndex + currentMatch.length
+        );
+        const nextEmIndex = cleanDescription.indexOf(
+          "<em>",
+          currentIndex + currentMatch.length
+        );
+
+        let endIndex = cleanDescription.length;
+        if (
+          nextStrongIndex !== -1 &&
+          (nextEmIndex === -1 || nextStrongIndex < nextEmIndex)
+        ) {
+          endIndex = nextStrongIndex;
+        } else if (nextEmIndex !== -1) {
+          endIndex = nextEmIndex;
+        }
+
+        let content = cleanDescription
+          .substring(currentIndex + currentMatch.length, endIndex)
+          .trim();
+
+        // Usuń HTML tagi z content, ale zachowaj podziały linii
+        content = content
+          .replace(/<br\s*\/?>/gi, "\n") // Zamień <br> na nowe linie
+          .replace(/<[^>]*>/g, "") // Usuń pozostałe HTML tagi
+          .replace(/\n\s*\n/g, "\n") // Usuń podwójne nowe linie
+          .trim();
+
+        if (content) {
+          sections.push({ title, content });
+        }
+      }
+    }
+  }
+
+  // Znajdź sekcje z <em> tagami (jak "Model statistics")
+  const emMatches = cleanDescription.match(/<em>([^<]+)<\/em>/g);
+
+  if (emMatches) {
+    for (let i = 0; i < emMatches.length; i++) {
+      const currentMatch = emMatches[i];
+      const titleMatch = currentMatch.match(/<em>([^<]+)<\/em>/);
+
+      if (titleMatch) {
+        const title = titleMatch[1].trim();
+
+        // Znajdź treść między obecnym <em> a następnym <strong> lub <em> lub końcem
+        const currentIndex = cleanDescription.indexOf(currentMatch);
+        const nextStrongIndex = cleanDescription.indexOf(
+          "<strong>",
+          currentIndex + currentMatch.length
+        );
+        const nextEmIndex = cleanDescription.indexOf(
+          "<em>",
+          currentIndex + currentMatch.length
+        );
+
+        let endIndex = cleanDescription.length;
+        if (
+          nextStrongIndex !== -1 &&
+          (nextEmIndex === -1 || nextStrongIndex < nextEmIndex)
+        ) {
+          endIndex = nextStrongIndex;
+        } else if (nextEmIndex !== -1) {
+          endIndex = nextEmIndex;
+        }
+
+        let content = cleanDescription
+          .substring(currentIndex + currentMatch.length, endIndex)
+          .trim();
+
+        // Usuń HTML tagi z content, ale zachowaj podziały linii
+        content = content
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/<[^>]*>/g, "")
+          .replace(/\n\s*\n/g, "\n")
+          .trim();
+
+        if (content) {
+          sections.push({ title, content });
+        }
+      }
+    }
+  }
+
+  // Jeśli nie ma sekcji z <strong> lub <em>, traktuj całość jako zwykły opis
+  if (sections.length === 0) {
+    const cleanContent = cleanDescription
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]*>/g, "")
+      .replace(/\n\s*\n/g, "\n")
+      .trim();
+    return [{ title: "Opis", content: cleanContent }];
+  }
+
+  return sections;
+}
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -260,6 +388,178 @@ export function ProductPage() {
               )}
             </div>
 
+            {/* Additional Product Details */}
+            {product.details && (
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                  Szczegóły produktu
+                </h3>
+                <div className="space-y-3">
+                  {product.details.gender && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Płeć:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.gender}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.season && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Sezon:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.season}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.usage && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Użycie:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.usage}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.year && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Rok:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.year}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.sleeveLength && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Długość rękawa:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.sleeveLength}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.fit && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Fason:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.fit}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.fabric && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Materiał:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.fabric}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.collar && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Kołnierz:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.collar}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.pattern && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Wzór:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.pattern}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.ageGroup && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Grupa wiekowa:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.ageGroup}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.bodyOrGarmentSize && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Rozmiar:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {product.details.bodyOrGarmentSize}
+                      </span>
+                    </div>
+                  )}
+                  {product.details.description && (
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                      <h4 className="text-md font-medium text-gray-900 dark:text-white mb-3">
+                        Szczegółowy opis
+                      </h4>
+                      {(() => {
+                        const descriptionSections = parseProductDescription(
+                          product.details.description
+                        );
+
+                        // Debug - sprawdź co się dzieje
+                        console.log(
+                          "Original description:",
+                          product.details.description
+                        );
+                        console.log("Parsed sections:", descriptionSections);
+
+                        if (!descriptionSections) return null;
+
+                        return (
+                          <div className="space-y-4">
+                            {descriptionSections.map((section, index) => (
+                              <div
+                                key={index}
+                                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4"
+                              >
+                                <h5 className="font-semibold text-gray-900 dark:text-white mb-2 capitalize">
+                                  {section.title}
+                                </h5>
+                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line">
+                                  {section.content}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
+
+                      {/* Debug - pokaż surowy HTML */}
+                      <details className="mt-4">
+                        <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+                          Debug - Pokaż surowy HTML
+                        </summary>
+                        <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs">
+                          <pre className="whitespace-pre-wrap overflow-x-auto">
+                            {product.details.description}
+                          </pre>
+                        </div>
+                      </details>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Quantity */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
@@ -324,6 +624,12 @@ export function ProductPage() {
           </div>
         </div>
       </div>
+
+      {/* Similar Products */}
+      <SimilarProducts
+        productId={product.id}
+        currentProductName={product.productDisplayName}
+      />
     </div>
   );
 }
