@@ -266,6 +266,14 @@ internal sealed class DictionariesModule : ModuleDefinition
                 return Results.BadRequest(new { error = ex.Message });
             }
         });
+        app.MapPost("/import/embeddings", async (
+            [FromServices] IEmbeddingsImportService svc,
+            CancellationToken ct) =>
+        {
+            var dupa = "C:\\Users\\wrobl\\Downloads\\archive\\fashion-dataset\\vectors_output";
+            await svc.ImportEmbeddingsFromCsvAsync(dupa, batchSize: 1000, reopenEvery: 5000, ct);
+            return Results.Ok(new { message = "Embeddings imported" });
+        });
 
         //endpoint about needing to import one particular set of data - that's why messy :)
         app.MapPost("/import/json-data", async (
