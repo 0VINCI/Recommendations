@@ -84,6 +84,38 @@ internal sealed class DictionariesModule : ModuleDefinition
             return Results.Ok(products);
         });
 
+        app.MapGet("/subCategories", async (
+            [FromQuery] string? masterCategoryId,
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var query = new GetSubCategories(
+                MasterCategoryId: !string.IsNullOrEmpty(masterCategoryId) ? Guid.Parse(masterCategoryId) : null
+            );
+            var result = await queryDispatcher.QueryAsync(query, cancellationToken);
+            return Results.Ok(result);
+        });
+
+        app.MapGet("/articleTypes", async (
+            [FromQuery] string? subCategoryId,
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var query = new GetArticleTypes(
+                SubCategoryId: !string.IsNullOrEmpty(subCategoryId) ? Guid.Parse(subCategoryId) : null
+            );
+            var result = await queryDispatcher.QueryAsync(query, cancellationToken);
+            return Results.Ok(result);
+        });
+
+        app.MapGet("/baseColours", async (
+            [FromServices] IQueryDispatcher queryDispatcher,
+            CancellationToken cancellationToken = default) =>
+        {
+            var result = await queryDispatcher.QueryAsync(new GetBaseColours(), cancellationToken);
+            return Results.Ok(result);
+        });
+
         app.MapGet("/products/category", async (
             [FromQuery] string? masterCategoryId,
             [FromQuery] string? subCategoryId,

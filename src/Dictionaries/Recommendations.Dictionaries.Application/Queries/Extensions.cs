@@ -18,7 +18,10 @@ public static class Extensions
         services.AddScoped<IQueryHandler<SearchProducts, IReadOnlyCollection<ProductDto>>, SearchProductsHandler>();
         services.AddScoped<IQueryHandler<GetProductFullById, ProductFullDto?>, GetProductFullByIdHandler>();
         services.AddScoped<IQueryHandler<GetProducts, FilteredProductDto>, GetProductsHandler>();
-        services.AddScoped<IQueryHandler<GetCategories, IReadOnlyCollection<CategoriesDto>>, GetCategoriesHandler>();
+        services.AddScoped<IQueryHandler<GetCategories, IReadOnlyCollection<MasterCategoryDto>>, GetCategoriesHandler>();
+        services.AddScoped<IQueryHandler<GetSubCategories, IReadOnlyCollection<SubCategoryDto>>, GetSubCategoriesHandler>();
+        services.AddScoped<IQueryHandler<GetArticleTypes, IReadOnlyCollection<ArticleTypeDto>>, GetArticleTypesHandler>();
+        services.AddScoped<IQueryHandler<GetBaseColours, IReadOnlyCollection<BaseColourDto>>, GetBaseColoursHandler>();
         
         return services;
     }

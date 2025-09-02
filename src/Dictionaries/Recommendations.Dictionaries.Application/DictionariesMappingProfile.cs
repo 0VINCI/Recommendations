@@ -18,14 +18,13 @@ public class DictionariesMappingProfile : Profile
         CreateMap<ProductImage, ProductImageDto>();
 
         CreateMap<MasterCategory, MasterCategoryDto>();
-        CreateMap<MasterCategory, CategoriesDto>()
-            .ForMember(dest => dest.SubCategories, opt => opt.MapFrom(src => src.SubCategories));
+        // Usunięto mapowanie na CategoriesDto - nie jest już używane
 
-        CreateMap<SubCategory, SubCategoryDto>()
-            .ForMember(dest => dest.MasterCategoryName, opt => opt.MapFrom(src => src.MasterCategory.Name));
+        CreateMap<SubCategory, SubCategoryDto>();
+        // Usunięto mapowanie MasterCategoryName - nie ma takiego pola w DTO
         
-        CreateMap<ArticleType, ArticleTypeDto>()
-            .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.SubCategory.Name));
+        CreateMap<ArticleType, ArticleTypeDto>();
+        // Usunięto mapowanie SubCategoryName - nie ma takiego pola w DTO
         
         CreateMap<BaseColour, BaseColourDto>();
 

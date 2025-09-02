@@ -3,4 +3,4 @@ using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.Dictionaries.Shared.Queries;
 
-public sealed record GetCategories() : IQuery<IReadOnlyCollection<MasterCategoryDto>>;
+public sealed record GetBaseColours() : IQuery<IReadOnlyCollection<BaseColourDto>>;
