@@ -270,7 +270,7 @@ internal sealed class DictionariesModule : ModuleDefinition
             [FromServices] IEmbeddingsImportService svc,
             CancellationToken ct) =>
         {
-            var dupa = "C:\\Users\\wrobl\\Downloads\\archive\\fashion-dataset\\vectors_output";
+            var dupa = "C:\\Users\\user\\Downloads\\product_vectors";
             await svc.ImportEmbeddingsFromCsvAsync(dupa, batchSize: 1000, reopenEvery: 5000, ct);
             return Results.Ok(new { message = "Embeddings imported" });
         });
