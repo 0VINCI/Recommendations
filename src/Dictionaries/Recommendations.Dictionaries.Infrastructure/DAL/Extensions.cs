@@ -25,6 +25,7 @@ internal static class Extensions
         services.AddScoped<IArticleTypeRepository, ArticleTypeRepository>();
         services.AddScoped<IBaseColourRepository, BaseColourRepository>();
         services.AddScoped<IDataImportService, DataImportService>();
+        services.AddScoped<IEmbeddingsImportService, EmbeddingsImportService>();
 
         return services;
     }

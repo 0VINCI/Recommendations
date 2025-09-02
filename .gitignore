@@ -474,3 +474,7 @@ fe/node_modules/proxy-from-env/LICENSE
 fe/node_modules/proxy-from-env/package.json
 fe/node_modules/proxy-from-env/README.md
 fe/node_modules/proxy-from-env/test.js
+/src/.vs/Recommendations/config/applicationhost.config
+/src/.vs/Recommendations/FileContentIndex
+/src/.vs/Recommendations
+/fe/node_modules
