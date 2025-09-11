@@ -65,7 +65,8 @@ public static class Extensions
                         "http://localhost:5174", 
                         "http://localhost:3000", 
                         "https://recommendations-git-main-0vincis-projects.vercel.app", 
-                        "https://mgr.dupa.uk")
+                        "https://mgr.dupa.uk",
+                        "https://recommendations-mu.vercel.app")
                       .AllowAnyMethod()
                       .AllowAnyHeader()
                       .AllowCredentials();
