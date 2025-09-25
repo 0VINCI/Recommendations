@@ -15,7 +15,6 @@ namespace Recommendations.ContentBased.Api;
 internal sealed class ContentBasedModule : ModuleDefinition
 {
     public override string ModulePrefix => "/content-based";
-    public override bool RequireAuthorization => true;
 
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
@@ -25,14 +24,14 @@ internal sealed class ContentBasedModule : ModuleDefinition
     public override void CreateEndpoints(IEndpointRouteBuilder app)
     {
         app.MapGet("/product-embeddings/{productId:guid}/{variant}", async (
-    [FromRoute] Guid productId,
-    [FromRoute] VectorType variant,
-    [FromServices] IContentBasedModuleApi contentBasedModuleApi,
-    CancellationToken cancellationToken = default) =>
-{
-    var productEmbedding = await contentBasedModuleApi.GetProductEmbedding(productId, variant, cancellationToken);
-    return productEmbedding is null ? Results.NotFound() : Results.Ok(productEmbedding);
-});
+            [FromRoute] Guid productId,
+            [FromRoute] VectorType variant,
+            [FromServices] IContentBasedModuleApi contentBasedModuleApi,
+            CancellationToken cancellationToken = default) =>
+        {
+            var productEmbedding = await contentBasedModuleApi.GetProductEmbedding(productId, variant, cancellationToken);
+            return productEmbedding is null ? Results.NotFound() : Results.Ok(productEmbedding);
+        });
 
         app.MapGet("/product-embeddings/{productId:guid}", async (
             [FromRoute] Guid productId,

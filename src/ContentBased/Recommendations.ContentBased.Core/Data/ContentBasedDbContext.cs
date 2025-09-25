@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Recommendations.ContentBased.Core.Types;
+using Recommendations.Shared.Infrastructure.Options;
 
 namespace Recommendations.ContentBased.Core.Data;
 
 public class ContentBasedDbContext : DbContext
 {
-    public ContentBasedDbContext(DbContextOptions<ContentBasedDbContext> dbContextOptions)
+    public ContentBasedDbContext(DbContextOptions<ContentBasedDbContext> dbContextOptions, IOptions<DbOptions> dbOptions)
         : base(dbContextOptions)
     {
     }
@@ -14,7 +16,8 @@ public class ContentBasedDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("ContentBased");
+        modelBuilder.HasDefaultSchema("Vectors");
+        modelBuilder.HasPostgresExtension("vector");
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 }

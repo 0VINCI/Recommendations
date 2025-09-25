@@ -14,10 +14,14 @@ internal static class Extensions
         services.AddDbContext<ContentBasedDbContext>((serviceProvider, options) =>
         {
             var dbOptions = serviceProvider.GetRequiredService<IOptions<DbOptions>>();
-            options.UseNpgsql(dbOptions.Value.DatabaseConnection, o => o.UseVector());
+            options.UseNpgsql(dbOptions.Value.DatabaseConnection, npgsqlOptions =>
+            {
+                npgsqlOptions.UseVector();
+            });
         });
+        
         services.AddScoped<IProductEmbeddingRepository, ProductEmbeddingRepository>();
-
+        
         return services;
     }
 }

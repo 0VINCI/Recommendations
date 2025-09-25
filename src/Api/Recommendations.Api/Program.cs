@@ -34,7 +34,8 @@ var contexts = new DbContext[]
     scope.ServiceProvider.GetRequiredService<DictionariesDbContext>(),
     scope.ServiceProvider.GetRequiredService<PurchaseDbContext>(),
     scope.ServiceProvider.GetRequiredService<CartDbContext>(),
-    scope.ServiceProvider.GetRequiredService<AuthorizationDbContext>()
+    scope.ServiceProvider.GetRequiredService<AuthorizationDbContext>(),
+    scope.ServiceProvider.GetRequiredService<ContentBasedDbContext>()
 };
 
 foreach (var ctx in contexts)
