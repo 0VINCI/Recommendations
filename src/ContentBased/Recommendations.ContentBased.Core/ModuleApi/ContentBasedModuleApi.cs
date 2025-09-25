@@ -3,13 +3,16 @@ using Recommendations.ContentBased.Shared.Types;
 using Recommendations.ContentBased.Shared.Commands;
 using Recommendations.ContentBased.Shared.DTO;
 using Recommendations.ContentBased.Shared.Queries;
+using Recommendations.Dictionaries.Shared;
+using Recommendations.Dictionaries.Shared.DTO;
 using Recommendations.Shared.Abstractions.Commands;
 using Recommendations.Shared.Abstractions.Queries;
 
 namespace Recommendations.ContentBased.Core.ModuleApi;
 
 public class ContentBasedModuleApi(ICommandDispatcher commands,
-    IQueryDispatcher queries) : IContentBasedModuleApi
+    IQueryDispatcher queries,
+    IDictionariesModuleApi dictionariesModuleApi) : IContentBasedModuleApi
 {
     public async Task<ProductEmbeddingDto?> GetProductEmbedding(Guid productId, VectorType variant, CancellationToken cancellationToken = default)
     {
@@ -23,14 +26,22 @@ public class ContentBasedModuleApi(ICommandDispatcher commands,
         return await queries.QueryAsync(query, cancellationToken);
     }
 
-    public async Task<IEnumerable<SimilarProductDto>> GetSimilarProducts(
+    public async Task<IEnumerable<ProductDto>> GetSimilarProducts(
         Guid productId, 
         VectorType variant, 
         int topCount, 
         CancellationToken cancellationToken = default)
     {
+        // 1. Pobierz podobne produkty (ID + similarity score)
         var query = new GetSimilarProducts(productId, variant, topCount);
-        return await queries.QueryAsync(query, cancellationToken);
+        var similarProducts = await queries.QueryAsync(query, cancellationToken);
+        
+        // 2. Pobierz pełne dane produktów
+        var productIds = similarProducts.Select(sp => sp.ProductId).ToArray();
+        var products = await dictionariesModuleApi.GetProductsByIds(productIds);
+        
+        // 3. Zwróć tylko produkty (bez similarity score)
+        return products;
     }
 
     public async Task CreateProductEmbedding(CreateProductEmbeddingDto productEmbedding, CancellationToken cancellationToken = default)

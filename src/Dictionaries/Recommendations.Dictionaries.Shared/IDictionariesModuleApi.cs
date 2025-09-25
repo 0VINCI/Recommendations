@@ -8,6 +8,7 @@ public interface IDictionariesModuleApi
 {
     Task<IReadOnlyCollection<ProductDto>> GetAllProducts();
     Task<ProductDto?> GetProductById(Guid id);
+    Task<IReadOnlyCollection<ProductDto>> GetProductsByIds(Guid[] productIds);
     Task<FilteredProductDto> GetProductsByCategory(
         string? masterCategoryId = null,
         string? subCategoryId = null,

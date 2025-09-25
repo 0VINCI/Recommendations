@@ -8,9 +8,7 @@ import type {
   GetProductEmbeddingResponse,
   GetAllProductEmbeddingsRequest,
   GetAllProductEmbeddingsResponse,
-  BackendSimilarProductDto,
 } from "../types/recommendation/RecommendationApi";
-import { getProductById } from "./productService";
 
 const modulePrefix = "/content-based";
 
@@ -37,8 +35,8 @@ export const getSimilarProducts = async (
   const topCount = request.topCount || 10;
 
   try {
-    // Pobierz podobne produkty (tylko ID i score)
-    const response = await get<BackendSimilarProductDto[]>(
+    // Pobierz podobne produkty (pełne dane produktów)
+    const response = await get<ProductDto[]>(
       `${modulePrefix}/product-embeddings/${request.productId}/${vectorType}/similar?topCount=${topCount}`
     );
 
@@ -49,28 +47,10 @@ export const getSimilarProducts = async (
       };
     }
 
-    // Pobierz pełne dane produktów
-    const products: ProductDto[] = [];
-    for (const similarProduct of response.data) {
-      try {
-        const productResult = await getProductById({
-          productId: similarProduct.productId,
-        });
-        if (productResult.status === 200 && productResult.data?.product) {
-          products.push(productResult.data.product);
-        }
-      } catch (error) {
-        console.error(
-          `Error fetching product ${similarProduct.productId}:`,
-          error
-        );
-      }
-    }
-
     return {
       status: 200,
       data: {
-        products,
+        products: response.data,
         algorithm: request.algorithm,
         productId: request.productId,
       },

@@ -27,6 +27,18 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task<IReadOnlyCollection<Product>> GetByIdsAsync(Guid[] ids)
+    {
+        return await context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .Include(p => p.Details)
+            .Where(p => ids.Contains(p.Id))
+            .ToListAsync();
+    }
+
     public async Task<IReadOnlyCollection<Product>> GetBestsellersAsync()
     {
         return await context.Products

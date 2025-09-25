@@ -1,5 +1,6 @@
 using Pgvector;
 using Recommendations.ContentBased.Shared.Types;
+using Recommendations.Dictionaries.Shared.DTO;
 
 namespace Recommendations.ContentBased.Shared.DTO;
 

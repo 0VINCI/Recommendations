@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { getSimilarProducts } from "../api/recommendationService";
 import { RecommendationAlgorithm } from "../types/recommendation/RecommendationAlgorithm";
 import type { ProductDto } from "../types/product/ProductDto";
@@ -8,43 +8,48 @@ export function useRecommendations() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getSimilarProductsHandler = async (
-    productId: string,
-    algorithm: RecommendationAlgorithm,
-    topCount: number = 10
-  ) => {
-    setLoading(true);
-    setError(null);
+  const getSimilarProductsHandler = useCallback(
+    async (
+      productId: string,
+      algorithm: RecommendationAlgorithm,
+      topCount: number = 10
+    ) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await getSimilarProducts({
-        productId,
-        algorithm,
-        topCount,
-      });
+      try {
+        const result = await getSimilarProducts({
+          productId,
+          algorithm,
+          topCount,
+        });
 
-      if (result.status === 200 && result.data) {
-        setSimilarProducts(result.data.products);
-      } else {
-        setError(result.message || "Nie udało się pobrać podobnych produktów");
+        if (result.status === 200 && result.data) {
+          setSimilarProducts(result.data.products);
+        } else {
+          setError(
+            result.message || "Nie udało się pobrać podobnych produktów"
+          );
+          setSimilarProducts([]);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Błąd podczas pobierania rekomendacji"
+        );
         setSimilarProducts([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Błąd podczas pobierania rekomendacji"
-      );
-      setSimilarProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    []
+  );
 
-  const clearSimilarProducts = () => {
+  const clearSimilarProducts = useCallback(() => {
     setSimilarProducts([]);
     setError(null);
-  };
+  }, []);
 
   return {
     similarProducts,
