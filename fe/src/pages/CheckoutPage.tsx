@@ -39,6 +39,27 @@ export function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<number>(1);
 
   const handleSaveCustomer = async () => {
+    // Walidacja na froncie
+    if (!customerForm.firstName.trim()) {
+      showError("Imię jest wymagane!");
+      return;
+    }
+    if (!customerForm.lastName.trim()) {
+      showError("Nazwisko jest wymagane!");
+      return;
+    }
+    if (!customerForm.email.trim()) {
+      showError("Email jest wymagany!");
+      return;
+    }
+    if (
+      !customerForm.phoneNumber.trim() ||
+      customerForm.phoneNumber.length < 7
+    ) {
+      showError("Numer telefonu musi mieć co najmniej 7 znaków!");
+      return;
+    }
+
     try {
       await addNewCustomer({
         FirstName: customerForm.firstName,
