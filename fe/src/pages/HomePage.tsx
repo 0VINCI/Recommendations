@@ -4,6 +4,7 @@ import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
 import { Loader } from "../components/common/Loader";
+import { RotatingBanners } from "../components/common/RotatingBanners";
 
 export function HomePage() {
   const {
@@ -37,50 +38,27 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
-      <section
-        className="relative bg-gradient-to-r from-primary-600 to-primary-400 flex flex-col items-center justify-center h-[388px]"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="absolute inset-0 bg-blue-600/70 z-0" />{" "}
-        {/* Opcjonalny overlay dla lepszej czytelności */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full">
-          <h1 className="text-6xl font-bold text-white mb-6 text-center drop-shadow-lg">
-            Odkryj Swój Styl
-          </h1>
-          <p className="text-2xl text-blue-100 mb-8 text-center drop-shadow-lg">
-            Najnowsze trendy w modzie damskiej i męskiej
-          </p>
-          <Link
-            to="/category/wszystkie?page=1&pageSize=20"
-            className="inline-flex items-center bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-          >
-            Przeglądaj Kolekcję
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Link>
-        </div>
-      </section>
+      {/* Rotating Banners */}
+      <RotatingBanners />
+
       {/* Bestsellers Section */}
-      <section className="py-16">
+      <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-6 h-6 text-primary-600" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-accent-100 dark:bg-accent-900 rounded-xl">
+                <TrendingUp className="w-6 h-6 text-accent-600 dark:text-accent-400" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Bestsellery
               </h2>
             </div>
             <Link
               to="/category/bestsellers?page=1&pageSize=20"
-              className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+              className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-semibold transition-colors flex items-center space-x-1"
             >
-              Zobacz wszystkie
+              <span>Zobacz wszystkie</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -93,7 +71,7 @@ export function HomePage() {
           )}
 
           {!bestsellersLoading && !bestsellersError && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {(bestsellers || []).slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -102,20 +80,23 @@ export function HomePage() {
         </div>
       </section>
       {/* New Products Section */}
-      <section className="py-16 bg-white dark:bg-gray-800">
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-2">
-              <Star className="w-6 h-6 text-green-600" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-xl">
+                <Star className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Nowości
               </h2>
             </div>
             <Link
               to="/category/new?page=1&pageSize=20"
-              className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+              className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-semibold transition-colors flex items-center space-x-1"
             >
-              Zobacz wszystkie
+              <span>Zobacz wszystkie</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -128,7 +109,7 @@ export function HomePage() {
           )}
 
           {!newProductsLoading && !newProductsError && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {(newProducts || []).slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -137,35 +118,116 @@ export function HomePage() {
         </div>
       </section>
       {/* Featured Products */}
-      <section className="py-16">
+      <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-            Polecane Produkty
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Polecane Produkty
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Wyselekcjonowane przez nas produkty, które pokochasz
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
       </section>
+      {/* Special Offers */}
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Oferty Specjalne
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Nie przegap okazji - ograniczone czasowo promocje
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Free Shipping */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-soft hover:shadow-strong transition-all duration-300 text-center">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🚚</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                Darmowa Dostawa
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Przy zamówieniach powyżej 200 zł
+              </p>
+              <Link
+                to="/category/wszystkie?page=1&pageSize=20"
+                className="inline-flex items-center text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-semibold"
+              >
+                Kup teraz
+                <ArrowRight className="ml-1 w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* New Customer Discount */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-soft hover:shadow-strong transition-all duration-300 text-center">
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎁</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                -15% dla Nowych Klientów
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Kod: WITAJ15 przy pierwszym zamówieniu
+              </p>
+              <Link
+                to="/category/wszystkie?page=1&pageSize=20"
+                className="inline-flex items-center text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-semibold"
+              >
+                Skorzystaj z kodu
+                <ArrowRight className="ml-1 w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Return Policy */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-soft hover:shadow-strong transition-all duration-300 text-center">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">↩️</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                30 Dni na Zwrot
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Bezpieczne zakupy z możliwością zwrotu
+              </p>
+              <Link
+                to="/category/wszystkie?page=1&pageSize=20"
+                className="inline-flex items-center text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-semibold"
+              >
+                Dowiedz się więcej
+                <ArrowRight className="ml-1 w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter Section */}
-      <section className="py-16 bg-primary-50 dark:bg-gray-800">
+      <section className="py-20 bg-gradient-to-br from-brand-50 to-brand-100 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Bądź na bieżąco z nowościami
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
             Zapisz się do naszego newslettera i otrzymuj informacje o
-            najnowszych produktach i promocjach
+            najnowszych produktach i ekskluzywnych promocjach
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
             <input
               type="email"
               placeholder="Twój adres email"
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="flex-1 px-6 py-4 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200"
             />
-            <button className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+            <button className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-200 shadow-medium hover:shadow-strong hover:scale-105">
               Zapisz się
             </button>
           </div>
