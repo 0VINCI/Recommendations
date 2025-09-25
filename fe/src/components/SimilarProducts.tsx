@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRecommendations } from "../hooks/useRecommendations";
 import { useApp } from "../context/useApp";
 import { ProductCard } from "./ProductCard";
-import { Loader } from "./common/Loader";
+import { RecommendationSkeleton } from "./common/RecommendationSkeleton";
 import { RECOMMENDATION_ALGORITHMS } from "../types/recommendation/RecommendationAlgorithm";
 
 interface SimilarProductsProps {
@@ -24,9 +25,34 @@ export function SimilarProducts({
     clearSimilarProducts,
   } = useRecommendations();
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const currentAlgorithm = RECOMMENDATION_ALGORITHMS.find(
     (alg) => alg.value === state.selectedRecommendationAlgorithm
   );
+
+  // Funkcje do przewijania
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const cardWidth = 320; // Szerokość karty + gap
+      const scrollAmount = Math.min(cardWidth * 2, container.scrollLeft);
+      container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const cardWidth = 320; // Szerokość karty + gap
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const scrollAmount = Math.min(
+        cardWidth * 2,
+        maxScroll - container.scrollLeft
+      );
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     if (productId && state.selectedRecommendationAlgorithm) {
@@ -44,13 +70,7 @@ export function SimilarProducts({
   ]);
 
   if (loading) {
-    return (
-      <div className="py-8">
-        <div className="flex items-center justify-center">
-          <Loader />
-        </div>
-      </div>
-    );
+    return <RecommendationSkeleton />;
   }
 
   if (error) {
@@ -92,22 +112,42 @@ export function SimilarProducts({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {similarProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {/* Carousel Container */}
+      <div className="relative">
+        {/* Left Arrow */}
+        <button
+          onClick={scrollLeft}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Przewiń w lewo"
+        >
+          <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
 
-      {similarProducts.length > 0 && (
-        <div className="mt-8 text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 dark:text-primary-300 dark:bg-primary-900 dark:hover:bg-primary-800 transition-colors"
-          >
-            Zobacz więcej produktów
-          </Link>
+        {/* Right Arrow */}
+        <button
+          onClick={scrollRight}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Przewiń w prawo"
+        >
+          <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
+
+        {/* Scrollable Products Container */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
+          {similarProducts.map((product) => (
+            <div key={product.id} className="flex-shrink-0 w-80">
+              <ProductCard product={product} />
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }

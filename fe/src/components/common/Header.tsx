@@ -82,7 +82,7 @@ export function Header() {
               <span className="text-white font-bold text-xl">S</span>
             </div>
             <span className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-              StyleHub
+              Thesis Shop
             </span>
           </Link>
 

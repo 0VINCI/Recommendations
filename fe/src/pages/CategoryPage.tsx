@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import {
-  Grid,
-  List,
-  Filter,
-} from "lucide-react";
+import { Grid, List, Filter } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { Loader } from "../components/common/Loader";
@@ -423,11 +419,13 @@ export function CategoryPage() {
                 }}
                 className="px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200"
               >
-                <option value={5}>5 na stronę</option>
-                <option value={10}>10 na stronę</option>
-                <option value={15}>15 na stronę</option>
+                <option value={4}>4 na stronę</option>
+                <option value={8}>8 na stronę</option>
+                <option value={12}>12 na stronę</option>
+                <option value={16}>16 na stronę</option>
                 <option value={20}>20 na stronę</option>
-                <option value={30}>30 na stronę</option>
+                <option value={24}>24 na stronę</option>
+                <option value={32}>32 na stronę</option>
               </select>
 
               {/* Sort */}
@@ -568,11 +566,27 @@ export function CategoryPage() {
 
             {!isLoading && !hasError && (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {sortedProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
+                {viewMode === "grid" ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {sortedProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        viewMode="grid"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {sortedProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        viewMode="list"
+                      />
+                    ))}
+                  </div>
+                )}
 
                 {sortedProducts.length === 0 && (
                   <div className="text-center py-12">

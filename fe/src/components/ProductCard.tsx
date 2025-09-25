@@ -6,9 +6,10 @@ import { useCart } from "../hooks/useCart";
 
 interface ProductCardProps {
   product: ProductDto;
+  viewMode?: "grid" | "list";
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
   const { addToCart } = useCart();
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [imageError, setImageError] = React.useState(false);
@@ -46,6 +47,109 @@ export function ProductCard({ product }: ProductCardProps) {
     addToCart(product);
   };
 
+  if (viewMode === "list") {
+    return (
+      <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-strong transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600">
+        <Link to={`/product/${product.id}`} className="flex">
+          <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-50 dark:bg-gray-900">
+            <img
+              src={imageUrl}
+              alt={product.productDisplayName}
+              className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out bg-white dark:bg-gray-800"
+              onError={() => {
+                setImageError(true);
+              }}
+            />
+
+            {/* Badges */}
+            <div className="absolute top-2 left-2 flex flex-col space-y-1 z-10">
+              {product.isBestseller && (
+                <span className="bg-gradient-to-r from-accent-500 to-accent-600 text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center space-x-1 shadow-medium border border-accent-400">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>Bestseller</span>
+                </span>
+              )}
+
+              {product.isNew && (
+                <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center space-x-1 shadow-medium border border-green-400">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Nowość</span>
+                </span>
+              )}
+
+              {product.originalPrice && (
+                <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-medium border border-orange-400">
+                  -
+                  {Math.round(
+                    ((product.originalPrice - product.price) /
+                      product.originalPrice) *
+                      100
+                  )}
+                  %
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1 p-4 flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors mb-2">
+                {product.productDisplayName}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                {product.subCategoryName}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                  {product.price.toFixed(2)} zł
+                </span>
+                {product.originalPrice && (
+                  <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+                    {product.originalPrice.toFixed(2)} zł
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {product.rating.toFixed(1)}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-500">
+                    ({product.reviews})
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <Heart className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  </button>
+                  <button
+                    onClick={handleAddToCart}
+                    className="p-2 bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 rounded-full hover:bg-brand-200 dark:hover:bg-brand-800 transition-colors"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Link>
+      </div>
+    );
+  }
+
+  // Grid view (default)
   return (
     <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-strong transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600">
       <Link to={`/product/${product.id}`}>
