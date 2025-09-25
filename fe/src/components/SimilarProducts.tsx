@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRecommendations } from "../hooks/useRecommendations";
 import { useApp } from "../context/useApp";
