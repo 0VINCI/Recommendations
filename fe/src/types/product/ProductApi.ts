@@ -45,7 +45,7 @@ export interface GetProductFullByIdResponse {
 
 // Get Categories
 export interface GetMasterCategoriesRequest {
-  active?: boolean;
+  // Usunięto active - nie ma takiego pola w bazie
 }
 
 export interface GetMasterCategoriesResponse {
@@ -57,7 +57,7 @@ export type MasterCategoriesResponse = MasterCategoryDto[];
 
 export interface GetSubCategoriesRequest {
   masterCategoryId?: string;
-  active?: boolean;
+  // Usunięto active - nie ma takiego pola w bazie
 }
 
 export interface GetSubCategoriesResponse {
@@ -66,7 +66,7 @@ export interface GetSubCategoriesResponse {
 
 export interface GetArticleTypesRequest {
   subCategoryId?: string;
-  active?: boolean;
+  // Usunięto active - nie ma takiego pola w bazie
 }
 
 export interface GetArticleTypesResponse {

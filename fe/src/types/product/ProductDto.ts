@@ -51,24 +51,12 @@ export interface SubCategoryDto {
   id: string;
   name: string;
   masterCategoryId: string;
-  masterCategoryName: string;
-  active: boolean;
-  socialSharingEnabled: boolean;
-  isReturnable: boolean;
-  isExchangeable: boolean;
-  pickupEnabled: boolean;
-  isTryAndBuyEnabled: boolean;
+  articleTypes: ArticleTypeDto[];
 }
 
 export interface MasterCategoryDto {
   id: string;
   name: string;
-  active: boolean;
-  socialSharingEnabled: boolean;
-  isReturnable: boolean;
-  isExchangeable: boolean;
-  pickupEnabled: boolean;
-  isTryAndBuyEnabled: boolean;
   subCategories: SubCategoryDto[];
 }
 
@@ -76,14 +64,6 @@ export interface ArticleTypeDto {
   id: string;
   name: string;
   subCategoryId: string;
-  subCategoryName: string;
-  active: boolean;
-  socialSharingEnabled: boolean;
-  isReturnable: boolean;
-  isExchangeable: boolean;
-  pickupEnabled: boolean;
-  isTryAndBuyEnabled: boolean;
-  isMyntsEnabled: boolean;
 }
 
 export interface BaseColourDto {

@@ -5,7 +5,6 @@ import type {
   GetProductsResponse,
   GetProductByIdRequest,
   GetProductByIdResponse,
-  GetMasterCategoriesRequest,
   MasterCategoriesResponse,
   GetSubCategoriesRequest,
   GetSubCategoriesResponse,
@@ -20,7 +19,7 @@ const modulePrefix = "/dic";
 
 function toQueryString(params: object): string {
   return Object.entries(params)
-    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
+    .filter(([, v]) => v !== undefined && v !== null && v !== "")
     .map(
       ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`
     )
@@ -116,17 +115,11 @@ export const getNewProducts = async (
 };
 
 // Category operations
-export const getMasterCategories = async (
-  request: GetMasterCategoriesRequest = {}
-): Promise<ApiResult<MasterCategoriesResponse>> => {
-  const params = new URLSearchParams();
-  if (request.active !== undefined) {
-    params.append("active", request.active.toString());
-  }
-  const queryString = params.toString();
-  const url = queryString
-    ? `${modulePrefix}/products/categories?${queryString}`
-    : `${modulePrefix}/products/categories`;
+export const getMasterCategories = async (): Promise<
+  ApiResult<MasterCategoriesResponse>
+> => {
+  // Usunięto parametry active - nie ma takiego pola w bazie
+  const url = `${modulePrefix}/products/categories`;
   return await get<MasterCategoriesResponse>(url);
 };
 
@@ -137,9 +130,7 @@ export const getSubCategories = async (
   if (request.masterCategoryId) {
     params.append("masterCategoryId", request.masterCategoryId);
   }
-  if (request.active !== undefined) {
-    params.append("active", request.active.toString());
-  }
+  // Usunięto parametry active - nie ma takiego pola w bazie
   const queryString = params.toString();
   const url = queryString
     ? `${modulePrefix}/subCategories?${queryString}`
@@ -154,9 +145,7 @@ export const getArticleTypes = async (
   if (request.subCategoryId) {
     params.append("subCategoryId", request.subCategoryId);
   }
-  if (request.active !== undefined) {
-    params.append("active", request.active.toString());
-  }
+  // Usunięto parametry active - nie ma takiego pola w bazie
   const queryString = params.toString();
   const url = queryString
     ? `${modulePrefix}/articleTypes?${queryString}`
