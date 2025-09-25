@@ -19,6 +19,7 @@ internal sealed class ContentBasedModule : ModuleDefinition
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCore();
+        services.AddMemoryCache(); // Dodaj cache dla rekomendacji
     }
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)

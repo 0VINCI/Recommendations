@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Memory;
 using Recommendations.ContentBased.Shared;
 using Recommendations.ContentBased.Shared.Types;
 using Recommendations.ContentBased.Shared.Commands;
@@ -12,7 +13,8 @@ namespace Recommendations.ContentBased.Core.ModuleApi;
 
 public class ContentBasedModuleApi(ICommandDispatcher commands,
     IQueryDispatcher queries,
-    IDictionariesModuleApi dictionariesModuleApi) : IContentBasedModuleApi
+    IDictionariesModuleApi dictionariesModuleApi,
+    IMemoryCache memoryCache) : IContentBasedModuleApi
 {
     public async Task<ProductEmbeddingDto?> GetProductEmbedding(Guid productId, VectorType variant, CancellationToken cancellationToken = default)
     {
@@ -32,15 +34,32 @@ public class ContentBasedModuleApi(ICommandDispatcher commands,
         int topCount, 
         CancellationToken cancellationToken = default)
     {
+        // Cache key dla rekomendacji
+        var cacheKey = $"similar_products_{productId}_{variant}_{topCount}";
+        
+        // Sprawdź cache
+        if (memoryCache.TryGetValue(cacheKey, out IEnumerable<ProductDto>? cachedProducts))
+        {
+            return cachedProducts!;
+        }
+
         // 1. Pobierz podobne produkty (ID + similarity score)
         var query = new GetSimilarProducts(productId, variant, topCount);
         var similarProducts = await queries.QueryAsync(query, cancellationToken);
         
-        // 2. Pobierz pełne dane produktów
+        // 2. Pobierz zoptymalizowane dane produktów (tylko niezbędne pola)
         var productIds = similarProducts.Select(sp => sp.ProductId).ToArray();
-        var products = await dictionariesModuleApi.GetProductsByIds(productIds);
+        var products = await dictionariesModuleApi.GetProductsByIdsForRecommendations(productIds);
         
-        // 3. Zwróć tylko produkty (bez similarity score)
+        // 3. Cache na 5 minut
+        var cacheOptions = new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+            SlidingExpiration = TimeSpan.FromMinutes(2)
+        };
+        memoryCache.Set(cacheKey, products, cacheOptions);
+        
+        // 4. Zwróć tylko produkty (bez similarity score)
         return products;
     }
 

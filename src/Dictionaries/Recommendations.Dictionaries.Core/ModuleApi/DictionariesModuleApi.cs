@@ -21,6 +21,9 @@ internal class DictionariesModuleApi(ICommandDispatcher commands,
     public Task<IReadOnlyCollection<ProductDto>> GetProductsByIds(Guid[] productIds)
         => queries.QueryAsync(new GetProductsByIds(productIds));
 
+    public Task<IReadOnlyCollection<ProductDto>> GetProductsByIdsForRecommendations(Guid[] productIds)
+        => queries.QueryAsync(new GetProductsByIdsForRecommendations(productIds));
+
     public Task<FilteredProductDto> GetProductsByCategory(
         string? masterCategoryId = null, 
         string? subCategoryId = null, 

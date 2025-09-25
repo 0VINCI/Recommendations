@@ -39,6 +39,33 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .ToListAsync();
     }
 
+    // Zoptymalizowana metoda dla rekomendacji - ładuje tylko niezbędne dane
+    public async Task<IReadOnlyCollection<Product>> GetByIdsForRecommendationsAsync(Guid[] ids)
+    {
+        return await context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images.Where(img => img.IsPrimary)) // Tylko główne zdjęcie
+            .Where(p => ids.Contains(p.Id))
+            .Select(p => new Product
+            {
+                Id = p.Id,
+                ProductDisplayName = p.ProductDisplayName,
+                Price = p.Price,
+                OriginalPrice = p.OriginalPrice,
+                Rating = p.Rating,
+                Reviews = p.Reviews,
+                IsBestseller = p.IsBestseller,
+                IsNew = p.IsNew,
+                SubCategory = p.SubCategory,
+                ArticleType = p.ArticleType,
+                BaseColour = p.BaseColour,
+                Images = p.Images.Where(img => img.IsPrimary).ToList()
+            })
+            .ToListAsync();
+    }
+
     public async Task<IReadOnlyCollection<Product>> GetBestsellersAsync()
     {
         return await context.Products

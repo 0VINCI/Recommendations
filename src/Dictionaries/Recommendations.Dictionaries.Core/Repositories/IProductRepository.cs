@@ -6,6 +6,7 @@ public interface IProductRepository
 {
     Task<Product?> GetByIdAsync(Guid id);
     Task<IReadOnlyCollection<Product>> GetByIdsAsync(Guid[] ids);
+    Task<IReadOnlyCollection<Product>> GetByIdsForRecommendationsAsync(Guid[] ids);
     Task<IReadOnlyCollection<Product>> GetAllAsync();
     Task<IReadOnlyCollection<Product>> GetByCategoryAsync(string category);
     Task<IReadOnlyCollection<Product>> GetBestsellersAsync();
