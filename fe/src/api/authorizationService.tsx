@@ -14,7 +14,15 @@ export const signIn = async (
 };
 
 export const signUp = async (signUp: User) => {
-  return await post<void>(`${modulePrefix}/signUp`, signUp);
+  const signUpCommand = {
+    SignUpDto: {
+      Name: signUp.Name,
+      Surname: signUp.Surname,
+      Email: signUp.Email,
+      Password: signUp.Password,
+    },
+  };
+  return await post<void>(`${modulePrefix}/signUp`, signUpCommand);
 };
 
 export const signOut = async () => {
