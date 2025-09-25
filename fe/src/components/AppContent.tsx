@@ -28,7 +28,7 @@ function AppContent() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       <Navigation />
-      <main>
+      <main className="relative">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:category" element={<CategoryPage />} />

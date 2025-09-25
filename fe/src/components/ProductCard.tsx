@@ -47,13 +47,13 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-strong transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600">
       <Link to={`/product/${product.id}`}>
-        <div className="relative aspect-square overflow-hidden">
+        <div className="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-900">
           <img
             src={imageUrl}
             alt={product.productDisplayName}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 bg-white dark:bg-gray-800"
+            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out bg-white dark:bg-gray-800"
             onError={() => {
               // Ustaw flagę błędu żeby zapobiec pętli
               setImageError(true);
@@ -61,10 +61,10 @@ export function ProductCard({ product }: ProductCardProps) {
           />
 
           {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col space-y-1 z-10">
+          <div className="absolute top-3 left-3 flex flex-col space-y-2 z-10">
             {/* Bestseller badge */}
             {product.isBestseller && (
-              <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold flex items-center space-x-1 shadow-lg border border-red-400">
+              <span className="bg-gradient-to-r from-accent-500 to-accent-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold flex items-center space-x-1 shadow-medium border border-accent-400">
                 <TrendingUp className="w-3 h-3" />
                 <span>Bestseller</span>
               </span>
@@ -72,7 +72,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* New product badge */}
             {product.isNew && (
-              <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold flex items-center space-x-1 shadow-lg border border-green-400">
+              <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold flex items-center space-x-1 shadow-medium border border-green-400">
                 <Sparkles className="w-3 h-3" />
                 <span>Nowość</span>
               </span>
@@ -80,7 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Discount badge */}
             {product.originalPrice && (
-              <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold shadow-lg border border-orange-400">
+              <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-3 py-1.5 rounded-full font-semibold shadow-medium border border-orange-400">
                 -
                 {Math.round(
                   ((product.originalPrice - product.price) /
@@ -93,17 +93,17 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Quick Actions */}
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <button className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            <button className="p-2.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-medium hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 hover:scale-110">
               <Heart className="w-4 h-4 text-gray-600 dark:text-gray-300" />
             </button>
           </div>
 
           {/* Quick Add to Cart */}
-          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+          <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-20">
             <button
               onClick={handleAddToCart}
-              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-2 rounded-md flex items-center justify-center transition-colors shadow-lg min-w-[40px]"
+              className="bg-brand-600 hover:bg-brand-700 text-white py-2.5 px-3 rounded-xl flex items-center justify-center transition-all duration-200 shadow-medium hover:shadow-strong min-w-[44px] hover:scale-105"
               aria-label="Dodaj do koszyka"
               title="Dodaj do koszyka"
             >
@@ -113,16 +113,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Image Gallery Thumbnails */}
           {product.images && product.images.length > 1 && (
-            <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-              <div className="flex space-x-1 bg-white/80 dark:bg-gray-900/80 p-1 rounded-md shadow-md">
+            <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-10">
+              <div className="flex space-x-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-1.5 rounded-xl shadow-medium">
                 {product.images.slice(0, 3).map((image, index) => (
                   <button
                     key={index}
                     onClick={(e) => changeImage(e, index)}
-                    className={`w-8 h-8 rounded border-2 overflow-hidden transition-all duration-200 hover:scale-110 ${
+                    className={`w-8 h-8 rounded-lg border-2 overflow-hidden transition-all duration-200 hover:scale-110 ${
                       currentImageIndex === index
-                        ? "border-primary-500 ring-2 ring-primary-300"
-                        : "border-white hover:border-primary-300"
+                        ? "border-brand-500 ring-2 ring-brand-300"
+                        : "border-white hover:border-brand-300"
                     }`}
                   >
                     <img
@@ -139,7 +139,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   </button>
                 ))}
                 {product.images.length > 3 && (
-                  <div className="w-8 h-8 rounded border-2 border-white shadow-md bg-gray-800 text-white text-xs flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg border-2 border-white shadow-medium bg-gray-800 text-white text-xs flex items-center justify-center font-semibold">
                     +{product.images.length - 3}
                   </div>
                 )}
@@ -151,19 +151,19 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      <div className="p-4">
+      <div className="p-5">
         <Link to={`/product/${product.id}`}>
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 hover:text-brand-600 dark:hover:text-brand-400 transition-colors line-clamp-2 leading-tight">
             {product.productDisplayName}
           </h3>
         </Link>
 
-        <div className="flex items-center space-x-1 mb-2">
+        <div className="flex items-center space-x-1 mb-3">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-3 h-3 ${
+                className={`w-3.5 h-3.5 ${
                   i < Math.floor(product.rating)
                     ? "text-yellow-400 fill-current"
                     : "text-gray-300 dark:text-gray-600"
@@ -171,12 +171,12 @@ export function ProductCard({ product }: ProductCardProps) {
               />
             ))}
           </div>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
             ({product.reviews})
           </span>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 mb-3">
           <span className="text-lg font-bold text-gray-900 dark:text-white">
             {product.price.toFixed(2)} zł
           </span>
@@ -188,8 +188,8 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Product Details */}
-        <div className="mt-2 space-y-1">
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="space-y-1">
+          <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
             {product.subCategoryName}
             {product.brandName && ` • ${product.brandName}`}
             {product.baseColourName && ` • ${product.baseColourName}`}

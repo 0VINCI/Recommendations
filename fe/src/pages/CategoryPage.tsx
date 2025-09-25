@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { SlidersHorizontal } from "lucide-react";
+import {
+  Grid,
+  List,
+  Filter,
+} from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useProducts } from "../hooks/useProducts";
 import { Loader } from "../components/common/Loader";
+import { Breadcrumbs } from "../components/common/Breadcrumbs";
 
 export function CategoryPage() {
   const { category } = useParams<{ category: string }>();
@@ -47,6 +52,7 @@ export function CategoryPage() {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [showFilters, setShowFilters] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(urlPageSize);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Załaduj kategorie przy starcie
   useEffect(() => {
@@ -124,6 +130,7 @@ export function CategoryPage() {
     getProductsByCategory,
     getBestsellers,
     getNewProducts,
+    masterCategories,
   ]);
 
   // Wybierz odpowiednie produkty na podstawie kategorii
@@ -322,6 +329,11 @@ export function CategoryPage() {
     wszystkie: "Wszystkie produkty",
     new: "Nowe produkty",
     bestsellers: "Bestsellery",
+    "sports equipment": "Sprzęt Sportowy",
+    "loungewear and nightwear": "Odzież Domowa",
+    nails: "Akcesoria do Paznokci",
+    eyewear: "Okulary i Soczewki",
+    sandal: "Sandały",
     koszule: "Koszule",
     spodnie: "Spodnie",
     sukienki: "Sukienki",
@@ -343,72 +355,106 @@ export function CategoryPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumbs */}
+        <div className="mb-6">
+          <Breadcrumbs masterCategories={masterCategories} />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {categoryNames[category || "wszystkie"]}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              {pagination.totalCount} produktów • {itemsPerPage} na stronę
-            </p>
-          </div>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-soft p-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {categoryNames[category || "wszystkie"]}
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                {pagination.totalCount} produktów • {itemsPerPage} na stronę
+              </p>
+            </div>
 
-          <div className="flex items-center space-x-4">
-            {/* Items per page */}
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                const newPageSize = parseInt(e.target.value);
-                setItemsPerPage(newPageSize);
-                // Reset to first page when changing page size
-                updateURL(1, newPageSize);
-                if (category === "new") {
-                  getNewProducts(1, newPageSize);
-                } else if (category === "bestsellers") {
-                  getBestsellers(1, newPageSize);
-                } else if (category && category !== "wszystkie") {
-                  const { masterCategoryId, subCategoryId } =
-                    getCategoryIds(category);
-                  getProductsByCategory(
-                    masterCategoryId,
-                    subCategoryId,
-                    1,
-                    newPageSize
-                  );
-                } else {
-                  getProducts(1, newPageSize);
-                }
-              }}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
-            >
-              <option value={5}>Wyświetlaj 5 produktów</option>
-              <option value={10}>Wyświetlaj 10 produktów</option>
-              <option value={15}>Wyświetlaj 15 produktów</option>
-              <option value={20}>Wyświetlaj 20 produktów</option>
-              <option value={30}>Wyświetlaj 30 produktów</option>
-            </select>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-lg transition-all duration-200 ${
+                    viewMode === "grid"
+                      ? "bg-white dark:bg-gray-600 shadow-medium text-gray-900 dark:text-white"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded-lg transition-all duration-200 ${
+                    viewMode === "list"
+                      ? "bg-white dark:bg-gray-600 shadow-medium text-gray-900 dark:text-white"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
 
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="name">Sortuj: A-Z</option>
-              <option value="price-low">Cena: od najniższej</option>
-              <option value="price-high">Cena: od najwyższej</option>
-              <option value="rating">Ocena: od najwyższej</option>
-            </select>
+              {/* Items per page */}
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  const newPageSize = parseInt(e.target.value);
+                  setItemsPerPage(newPageSize);
+                  updateURL(1, newPageSize);
+                  if (category === "new") {
+                    getNewProducts(1, newPageSize);
+                  } else if (category === "bestsellers") {
+                    getBestsellers(1, newPageSize);
+                  } else if (category && category !== "wszystkie") {
+                    const { masterCategoryId, subCategoryId } =
+                      getCategoryIds(category);
+                    getProductsByCategory(
+                      masterCategoryId,
+                      subCategoryId,
+                      1,
+                      newPageSize
+                    );
+                  } else {
+                    getProducts(1, newPageSize);
+                  }
+                }}
+                className="px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value={5}>5 na stronę</option>
+                <option value={10}>10 na stronę</option>
+                <option value={15}>15 na stronę</option>
+                <option value={20}>20 na stronę</option>
+                <option value={30}>30 na stronę</option>
+              </select>
 
-            {/* Filters Toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span className="text-gray-700 dark:text-gray-300">Filtry</span>
-            </button>
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="name">Sortuj: A-Z</option>
+                <option value="price-low">Cena: od najniższej</option>
+                <option value="price-high">Cena: od najwyższej</option>
+                <option value="rating">Ocena: od najwyższej</option>
+              </select>
+
+              {/* Filters Toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 ${
+                  showFilters
+                    ? "bg-brand-600 text-white shadow-medium"
+                    : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                <span>Filtry</span>
+              </button>
+            </div>
           </div>
         </div>
 
