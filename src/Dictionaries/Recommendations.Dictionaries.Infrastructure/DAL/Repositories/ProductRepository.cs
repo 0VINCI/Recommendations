@@ -48,21 +48,21 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.BaseColour)
             .Include(p => p.Images.Where(img => img.IsPrimary)) // Tylko główne zdjęcie
             .Where(p => ids.Contains(p.Id))
-            .Select(p => new Product
-            {
-                Id = p.Id,
-                ProductDisplayName = p.ProductDisplayName,
-                Price = p.Price,
-                OriginalPrice = p.OriginalPrice,
-                Rating = p.Rating,
-                Reviews = p.Reviews,
-                IsBestseller = p.IsBestseller,
-                IsNew = p.IsNew,
-                SubCategory = p.SubCategory,
-                ArticleType = p.ArticleType,
-                BaseColour = p.BaseColour,
-                Images = p.Images.Where(img => img.IsPrimary).ToList()
-            })
+            .Select(p => new Product(
+                p.Id,
+                p.ExternalId,
+                p.ProductDisplayName,
+                p.BrandName,
+                p.Price,
+                p.OriginalPrice,
+                p.Rating,
+                p.Reviews,
+                p.IsBestseller,
+                p.IsNew,
+                p.SubCategoryId,
+                p.ArticleTypeId,
+                p.BaseColourId
+            ))
             .ToListAsync();
     }
 
