@@ -86,9 +86,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
               name: action.payload.product.productDisplayName,
               price: action.payload.product.price,
               originalPrice: action.payload.product.originalPrice,
-              image: `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-                action.payload.product.productDisplayName
-              )}`,
+              image: `https://picsum.photos/600/600?random=${action.payload.product.id}`,
               category: action.payload.product.subCategoryName,
               description: `${action.payload.product.brandName} - ${action.payload.product.productDisplayName}`,
               sizes: ["S", "M", "L", "XL"],

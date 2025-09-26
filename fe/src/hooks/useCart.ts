@@ -8,6 +8,7 @@ import {
   clearCartDb,
   getUserCartDb,
 } from "../api/cartService";
+import type { CartItemDbResponse } from "../types/cart/CartApi";
 import { getProductById } from "../api/productService";
 import type { ProductDto } from "../types/product/ProductDto";
 import type { CartItem } from "../types/cart/Cart";
@@ -145,10 +146,8 @@ export function useCart() {
           backendCart.data.items.length > 0
         ) {
           const newCart: CartItem[] = await Promise.all(
-            backendCart.data.items.map(async (item: any) => {
-              let image = `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
-                item.name
-              )}`;
+            backendCart.data.items.map(async (item: CartItemDbResponse) => {
+              let image = `https://picsum.photos/300/300?random=${item.productId}`;
               try {
                 const productRes = await getProductById({
                   productId: item.productId,
@@ -161,9 +160,8 @@ export function useCart() {
                   productRes.data.product.images.length > 0
                 ) {
                   image =
-                    productRes.data.product.images.find(
-                      (img: any) => img.isPrimary
-                    )?.imageUrl || productRes.data.product.images[0].imageUrl;
+                    productRes.data.product.images.find((img) => img.isPrimary)
+                      ?.imageUrl || productRes.data.product.images[0].imageUrl;
                 }
               } catch (e) {
                 console.log(e);
@@ -203,7 +201,7 @@ export function useCart() {
       );
     }
     prevUserRef.current = state.user;
-  }, [state.user, dispatch]);
+  }, [state.user, state.cart, dispatch]);
 
   return {
     cart: state.cart,

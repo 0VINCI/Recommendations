@@ -262,18 +262,14 @@ export function ProductPage() {
                       product.images?.[0];
                     return (
                       currentImage?.imageUrl ||
-                      `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-                        product.productDisplayName
-                      )}`
+                      `https://picsum.photos/600/600?random=${product.id}`
                     );
                   })()}
                   alt={product.productDisplayName}
                   className="w-full h-full object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-                      product.productDisplayName
-                    )}`;
+                    target.src = `https://picsum.photos/600/600?random=${product.id}`;
                   }}
                 />
               </div>
@@ -297,9 +293,7 @@ export function ProductPage() {
                         className="w-full h-full object-contain bg-white dark:bg-gray-800"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = `https://via.placeholder.com/80x80/cccccc/666666?text=${
-                            index + 1
-                          }`;
+                          target.src = `https://picsum.photos/80/80?random=${product.id}-${index}`;
                         }}
                       />
                     </button>

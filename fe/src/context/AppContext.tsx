@@ -64,9 +64,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               id: item.productId,
               name: item.name,
               price: item.unitPrice,
-              image: `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
-                item.name
-              )}`,
+              image: `https://picsum.photos/300/300?random=${item.productId}`,
               category: "",
               description: "",
               sizes: [],

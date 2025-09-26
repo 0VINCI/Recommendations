@@ -23,16 +23,12 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
     product.images?.find((img) => img.isPrimary) || product.images?.[0];
   const defaultImageUrl =
     primaryImage?.imageUrl ||
-    `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
-      product.productDisplayName
-    )}`;
+    `https://picsum.photos/300/300?random=${product.id}`;
 
   // Aktualnie wyświetlany obraz
   const currentImage = product.images?.[currentImageIndex] || primaryImage;
   const imageUrl = imageError
-    ? `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
-        product.productDisplayName
-      )}`
+    ? `https://picsum.photos/300/300?random=${product.id}`
     : currentImage?.imageUrl || defaultImageUrl;
 
   // Funkcja do zmiany obrazu
@@ -235,9 +231,7 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
                       className="w-full h-full object-contain bg-white dark:bg-gray-800"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = `https://via.placeholder.com/32x32/cccccc/666666?text=${
-                          index + 1
-                        }`;
+                        target.src = `https://picsum.photos/32/32?random=${product.id}-${index}`;
                       }}
                     />
                   </button>

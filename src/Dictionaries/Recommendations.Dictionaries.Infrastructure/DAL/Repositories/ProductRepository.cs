@@ -12,6 +12,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
             .Include(p => p.Details)
             .ToListAsync();
     }
@@ -48,21 +49,6 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.BaseColour)
             .Include(p => p.Images.Where(img => img.IsPrimary)) // Tylko główne zdjęcie
             .Where(p => ids.Contains(p.Id))
-            .Select(p => new Product(
-                p.Id,
-                p.ExternalId,
-                p.ProductDisplayName,
-                p.BrandName,
-                p.Price,
-                p.OriginalPrice,
-                p.Rating,
-                p.Reviews,
-                p.IsBestseller,
-                p.IsNew,
-                p.SubCategoryId,
-                p.ArticleTypeId,
-                p.BaseColourId
-            ))
             .ToListAsync();
     }
 
@@ -72,6 +58,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
             .Include(p => p.Details)
             .Where(p => p.IsBestseller)
             .ToListAsync();
@@ -83,6 +70,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
             .Include(p => p.Details)
             .Where(p => p.IsNew)
             .ToListAsync();
@@ -94,6 +82,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
             .Include(p => p.Details)
             .Where(p => p.SubCategory.Name == category || p.ArticleType.Name == category)
             .ToListAsync();
@@ -105,6 +94,7 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .Include(p => p.SubCategory)
             .Include(p => p.ArticleType)
             .Include(p => p.BaseColour)
+            .Include(p => p.Images)
             .Include(p => p.Details)
             .Where(p => p.ProductDisplayName.Contains(searchTerm) || 
                        p.SubCategory.Name.Contains(searchTerm) ||

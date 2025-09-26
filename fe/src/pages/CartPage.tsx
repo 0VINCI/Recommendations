@@ -5,6 +5,7 @@ import { useCart } from "../hooks/useCart";
 import { useEffect } from "react";
 import { getUserCartDb } from "../api/cartService";
 import { getProductById } from "../api/productService";
+import type { CartItemDbResponse } from "../types/cart/CartApi";
 
 export function CartPage() {
   const { state, dispatch } = useApp();
@@ -24,10 +25,8 @@ export function CartPage() {
           backendCart.data.items.length > 0
         ) {
           const newCart = await Promise.all(
-            backendCart.data.items.map(async (item: any) => {
-              let image = `https://via.placeholder.com/300x300/cccccc/666666?text=${encodeURIComponent(
-                item.name
-              )}`;
+            backendCart.data.items.map(async (item: CartItemDbResponse) => {
+              let image = `https://picsum.photos/300/300?random=${item.productId}`;
               try {
                 const productRes = await getProductById({
                   productId: item.productId,
@@ -40,9 +39,8 @@ export function CartPage() {
                   productRes.data.product.images.length > 0
                 ) {
                   image =
-                    productRes.data.product.images.find(
-                      (img: any) => img.isPrimary
-                    )?.imageUrl || productRes.data.product.images[0].imageUrl;
+                    productRes.data.product.images.find((img) => img.isPrimary)
+                      ?.imageUrl || productRes.data.product.images[0].imageUrl;
                 }
               } catch (e) {
                 console.log(e);
@@ -134,13 +132,10 @@ export function CartPage() {
             >
               <img
                 src={
-                  "image" in item.product
-                    ? item.product.image
-                    : `https://via.placeholder.com/600x600/cccccc/666666?text=${encodeURIComponent(
-                        ""
-                      )}`
+                  item.product.image ||
+                  `https://picsum.photos/600/600?random=${item.product.id}`
                 }
-                alt={"name" in item.product ? item.product.name : ""}
+                alt={item.product.name}
                 className="w-20 h-20 object-cover rounded-lg"
               />
 
