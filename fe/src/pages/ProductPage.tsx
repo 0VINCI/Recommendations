@@ -16,17 +16,13 @@ import { useApp } from "../context/useApp";
 import { Loader } from "../components/common/Loader";
 import { SimilarProducts } from "../components/SimilarProducts";
 
-// Funkcja do parsowania HTML opisu produktu
 function parseProductDescription(description: string) {
   if (!description) return null;
 
-  // Usuń tagi <p> i </p> z początku i końca
   const cleanDescription = description.replace(/^<p>|<\/p>$/g, "");
 
-  // Podziel na sekcje na podstawie <strong> tagów
   const sections: { title: string; content: string }[] = [];
 
-  // Znajdź wszystkie sekcje z <strong> tagami - prostsze podejście
   const strongMatches = cleanDescription.match(
     /<strong>([^<]+)(?:<br\s*\/?>\s*)?<\/strong>/g
   );
@@ -41,7 +37,6 @@ function parseProductDescription(description: string) {
       if (titleMatch) {
         const title = titleMatch[1].trim();
 
-        // Znajdź treść między obecnym <strong> a następnym <strong> lub <em> lub końcem
         const currentIndex = cleanDescription.indexOf(currentMatch);
         const nextStrongIndex = cleanDescription.indexOf(
           "<strong>",
@@ -66,57 +61,6 @@ function parseProductDescription(description: string) {
           .substring(currentIndex + currentMatch.length, endIndex)
           .trim();
 
-        // Usuń HTML tagi z content, ale zachowaj podziały linii
-        content = content
-          .replace(/<br\s*\/?>/gi, "\n") // Zamień <br> na nowe linie
-          .replace(/<[^>]*>/g, "") // Usuń pozostałe HTML tagi
-          .replace(/\n\s*\n/g, "\n") // Usuń podwójne nowe linie
-          .trim();
-
-        if (content) {
-          sections.push({ title, content });
-        }
-      }
-    }
-  }
-
-  // Znajdź sekcje z <em> tagami (jak "Model statistics")
-  const emMatches = cleanDescription.match(/<em>([^<]+)<\/em>/g);
-
-  if (emMatches) {
-    for (let i = 0; i < emMatches.length; i++) {
-      const currentMatch = emMatches[i];
-      const titleMatch = currentMatch.match(/<em>([^<]+)<\/em>/);
-
-      if (titleMatch) {
-        const title = titleMatch[1].trim();
-
-        // Znajdź treść między obecnym <em> a następnym <strong> lub <em> lub końcem
-        const currentIndex = cleanDescription.indexOf(currentMatch);
-        const nextStrongIndex = cleanDescription.indexOf(
-          "<strong>",
-          currentIndex + currentMatch.length
-        );
-        const nextEmIndex = cleanDescription.indexOf(
-          "<em>",
-          currentIndex + currentMatch.length
-        );
-
-        let endIndex = cleanDescription.length;
-        if (
-          nextStrongIndex !== -1 &&
-          (nextEmIndex === -1 || nextStrongIndex < nextEmIndex)
-        ) {
-          endIndex = nextStrongIndex;
-        } else if (nextEmIndex !== -1) {
-          endIndex = nextEmIndex;
-        }
-
-        let content = cleanDescription
-          .substring(currentIndex + currentMatch.length, endIndex)
-          .trim();
-
-        // Usuń HTML tagi z content, ale zachowaj podziały linii
         content = content
           .replace(/<br\s*\/?>/gi, "\n")
           .replace(/<[^>]*>/g, "")
@@ -130,7 +74,53 @@ function parseProductDescription(description: string) {
     }
   }
 
-  // Jeśli nie ma sekcji z <strong> lub <em>, traktuj całość jako zwykły opis
+  const emMatches = cleanDescription.match(/<em>([^<]+)<\/em>/g);
+
+  if (emMatches) {
+    for (let i = 0; i < emMatches.length; i++) {
+      const currentMatch = emMatches[i];
+      const titleMatch = currentMatch.match(/<em>([^<]+)<\/em>/);
+
+      if (titleMatch) {
+        const title = titleMatch[1].trim();
+
+        const currentIndex = cleanDescription.indexOf(currentMatch);
+        const nextStrongIndex = cleanDescription.indexOf(
+          "<strong>",
+          currentIndex + currentMatch.length
+        );
+        const nextEmIndex = cleanDescription.indexOf(
+          "<em>",
+          currentIndex + currentMatch.length
+        );
+
+        let endIndex = cleanDescription.length;
+        if (
+          nextStrongIndex !== -1 &&
+          (nextEmIndex === -1 || nextStrongIndex < nextEmIndex)
+        ) {
+          endIndex = nextStrongIndex;
+        } else if (nextEmIndex !== -1) {
+          endIndex = nextEmIndex;
+        }
+
+        let content = cleanDescription
+          .substring(currentIndex + currentMatch.length, endIndex)
+          .trim();
+
+        content = content
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/<[^>]*>/g, "")
+          .replace(/\n\s*\n/g, "\n")
+          .trim();
+
+        if (content) {
+          sections.push({ title, content });
+        }
+      }
+    }
+  }
+
   if (sections.length === 0) {
     const cleanContent = cleanDescription
       .replace(/<br\s*\/?>/gi, "\n")
@@ -154,10 +144,8 @@ export function ProductPage() {
 
   useEffect(() => {
     if (id) {
-      // Ładuj główny produkt i rekomendacje równolegle
       getProductById(id);
 
-      // Preload rekomendacji jeśli algorytm jest wybrany
       if (state.selectedRecommendationAlgorithm) {
         getSimilarProducts(id, state.selectedRecommendationAlgorithm, 8);
       }
@@ -169,7 +157,6 @@ export function ProductPage() {
     state.selectedRecommendationAlgorithm,
   ]);
 
-  // Reset image index when product changes
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [currentProduct?.id]);

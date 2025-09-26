@@ -122,7 +122,7 @@ export function RotatingBanners() {
 
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 5000); // Zmiana co 5 sekund
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying]);

@@ -53,22 +53,18 @@ export function AuthModal() {
         setAuthError("Błąd rejestracji.");
       }
     } else {
-      // LOGIN
       const result = await signIn({
         Email: formData.email,
         Password: formData.password,
       });
 
       if (result.status === 200 && result.data) {
-        console.log("Login successful, result.data:", result.data); // Debug
-        // Zapisz dane użytkownika w kontekście
         const userData: User = {
           IdUser: result.data.idUser,
           Name: result.data.name,
           Surname: result.data.surname,
           Email: result.data.email,
         };
-        console.log("User data to save:", userData); // Debug
         dispatch({ type: "SET_USER", payload: userData });
         closeModal();
         showSuccess("Zalogowano pomyślnie!");

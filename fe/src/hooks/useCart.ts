@@ -47,15 +47,12 @@ export function useCart() {
     [dispatch, showError, showSuccess, state.user]
   );
 
-  // Remove item from both React state and database
   const removeFromCart = useCallback(
     async (productId: string) => {
-      // Najpierw usuń z frontu
       dispatch({
         type: "REMOVE_FROM_CART",
         payload: productId,
       });
-      // Potem request do backendu (jeśli user)
       if (state.user) {
         try {
           const result = await removeItemFromCartDb({ ProductId: productId });
@@ -70,7 +67,6 @@ export function useCart() {
     [dispatch, showError, state.user]
   );
 
-  // Update quantity in both React state and database
   const updateQuantity = useCallback(
     async (productId: string, quantity: number) => {
       dispatch({
@@ -94,7 +90,6 @@ export function useCart() {
     [dispatch, showError, state.user]
   );
 
-  // Clear cart from both React state and database
   const clearCart = useCallback(async () => {
     dispatch({ type: "CLEAR_CART" });
     if (state.user) {
@@ -113,7 +108,6 @@ export function useCart() {
     const prevUser = prevUserRef.current;
     if (!prevUser && state.user && state.cart.length > 0) {
       const syncAndFetch = async () => {
-        console.log("[useCart] ZAWARTOŚĆ KOSZYKA PRZED SYNC:", state.cart);
         await Promise.all(
           state.cart.map(async (item) => {
             const product = item.product;
@@ -122,24 +116,16 @@ export function useCart() {
                 ? product.productDisplayName
                 : product.name;
             if (name) {
-              console.log(
-                "[useCart] Wysyłam do backendu:",
-                name,
-                item.quantity
-              );
               await addItemToCartDb({
                 ProductId: product.id,
                 Name: String(name),
                 Price: product.price,
                 Quantity: item.quantity,
               });
-            } else {
-              console.warn("[useCart] Produkt bez nazwy!", product);
             }
           })
         );
         const backendCart = await getUserCartDb();
-        console.log("[useCart] Pobrany koszyk z backendu:", backendCart);
         if (
           backendCart.data &&
           backendCart.data.items &&
@@ -163,10 +149,9 @@ export function useCart() {
                     productRes.data.product.images.find((img) => img.isPrimary)
                       ?.imageUrl || productRes.data.product.images[0].imageUrl;
                 }
-              } catch (e) {
-                console.log(e);
+              } catch {
+                void 0;
               }
-              console.log("[useCart] Użyty obrazek:", image);
               return {
                 product: {
                   id: item.productId,
@@ -186,19 +171,12 @@ export function useCart() {
               };
             })
           );
-          console.log("[useCart] newCart do SET_CART:", newCart);
           dispatch({ type: "SET_CART", payload: newCart });
         } else {
-          console.log(
-            "[useCart] Brak produktów w koszyku backendowym, czyszczę koszyk frontowy"
-          );
           dispatch({ type: "CLEAR_CART" });
         }
-        console.log("[useCart] ZAWARTOŚĆ KOSZYKA PO SYNC:", state.cart);
       };
-      syncAndFetch().catch((e) =>
-        console.error("[useCart] Błąd synchronizacji koszyka:", e)
-      );
+      syncAndFetch().catch(() => {});
     }
     prevUserRef.current = state.user;
   }, [state.user, state.cart, dispatch]);

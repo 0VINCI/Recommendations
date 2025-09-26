@@ -25,13 +25,11 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
     primaryImage?.imageUrl ||
     `https://picsum.photos/300/300?random=${product.id}`;
 
-  // Aktualnie wyświetlany obraz
   const currentImage = product.images?.[currentImageIndex] || primaryImage;
   const imageUrl = imageError
     ? `https://picsum.photos/300/300?random=${product.id}`
     : currentImage?.imageUrl || defaultImageUrl;
 
-  // Funkcja do zmiany obrazu
   const changeImage = (e: React.MouseEvent, index: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -145,7 +143,6 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
     );
   }
 
-  // Grid view (default)
   return (
     <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-strong transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600">
       <Link to={`/product/${product.id}`}>
@@ -155,7 +152,6 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
             alt={product.productDisplayName}
             className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out bg-white dark:bg-gray-800"
             onError={() => {
-              // Ustaw flagę błędu żeby zapobiec pętli
               setImageError(true);
             }}
           />
@@ -244,8 +240,6 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
               </div>
             </div>
           )}
-
-          {/* USUNIĘTO DOT INDICATORS */}
         </div>
       </Link>
 

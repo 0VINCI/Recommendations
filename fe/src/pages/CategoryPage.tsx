@@ -10,7 +10,6 @@ export function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Pobierz parametry z URL lub użyj domyślnych
   const urlPage = parseInt(searchParams.get("page") || "1");
   const urlPageSize = parseInt(searchParams.get("pageSize") || "20");
 
@@ -50,7 +49,6 @@ export function CategoryPage() {
   const [itemsPerPage, setItemsPerPage] = useState(urlPageSize);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Załaduj kategorie przy starcie
   useEffect(() => {
     if (!masterCategories || masterCategories.length === 0) {
       loadCategories();
@@ -62,7 +60,6 @@ export function CategoryPage() {
       if (!masterCategories)
         return { masterCategoryId: undefined, subCategoryId: undefined };
 
-      // Szukaj w master categories
       const masterCategory = masterCategories.find(
         (cat) => cat.name.toLowerCase() === categoryName.toLowerCase()
       );
@@ -73,7 +70,6 @@ export function CategoryPage() {
         };
       }
 
-      // Szukaj w sub categories
       for (const masterCat of masterCategories) {
         const subCategory = masterCat.subCategories?.find(
           (sub) => sub.name.toLowerCase() === categoryName.toLowerCase()
@@ -97,7 +93,6 @@ export function CategoryPage() {
     } else if (category === "bestsellers") {
       getBestsellers(urlPage, itemsPerPage);
     } else if (category && category !== "wszystkie") {
-      // Sprawdź czy kategorie są załadowane
       if (!masterCategories || masterCategories.length === 0) {
         return;
       }
@@ -129,7 +124,6 @@ export function CategoryPage() {
     masterCategories,
   ]);
 
-  // Wybierz odpowiednie produkty na podstawie kategorii
   const getCategoryProducts = () => {
     if (category === "new") {
       return newProducts || [];
@@ -140,7 +134,6 @@ export function CategoryPage() {
     }
   };
 
-  // Wybierz odpowiedni loading state
   const getLoadingState = () => {
     if (category === "new") {
       return newProductsLoading;
@@ -151,7 +144,6 @@ export function CategoryPage() {
     }
   };
 
-  // Wybierz odpowiedni error state
   const getErrorState = () => {
     if (category === "new") {
       return newProductsError;
@@ -162,7 +154,6 @@ export function CategoryPage() {
     }
   };
 
-  // Wybierz odpowiednie stany paginacji
   const getPaginationState = () => {
     if (category === "new") {
       return {
@@ -211,7 +202,6 @@ export function CategoryPage() {
     }
   };
 
-  // Funkcja do aktualizacji URL
   const updateURL = (page: number, pageSize: number) => {
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set("page", page.toString());
@@ -224,7 +214,6 @@ export function CategoryPage() {
   const hasError = getErrorState();
   const pagination = getPaginationState();
 
-  // Komponent paginacji
   const Pagination = () => {
     if (pagination.totalPages <= 1) return null;
 

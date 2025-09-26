@@ -42,8 +42,8 @@ export function CartPage() {
                     productRes.data.product.images.find((img) => img.isPrimary)
                       ?.imageUrl || productRes.data.product.images[0].imageUrl;
                 }
-              } catch (e) {
-                console.log(e);
+              } catch {
+                void 0;
               }
               return {
                 product: {
@@ -91,7 +91,6 @@ export function CartPage() {
       dispatch({ type: "TOGGLE_AUTH_MODAL", payload: "login" });
       return;
     }
-    // SPA redirect
     navigate("/checkout");
   };
 

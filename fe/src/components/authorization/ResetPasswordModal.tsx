@@ -43,10 +43,9 @@ export function ResetPasswordModal({
     setIsLoading(true);
 
     try {
-      // Używamy changePassword endpoint z kodem jako starym hasłem
       const result = await changePassword({
         Email: email,
-        OldPassword: formData.verificationCode, // Kod weryfikacyjny jako "stare" hasło
+        OldPassword: formData.verificationCode,
         NewPassword: formData.newPassword,
       });
 

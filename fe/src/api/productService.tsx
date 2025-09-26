@@ -114,11 +114,9 @@ export const getNewProducts = async (
   );
 };
 
-// Category operations
 export const getMasterCategories = async (): Promise<
   ApiResult<MasterCategoriesResponse>
 > => {
-  // Usunięto parametry active - nie ma takiego pola w bazie
   const url = `${modulePrefix}/products/categories`;
   return await get<MasterCategoriesResponse>(url);
 };
@@ -130,7 +128,6 @@ export const getSubCategories = async (
   if (request.masterCategoryId) {
     params.append("masterCategoryId", request.masterCategoryId);
   }
-  // Usunięto parametry active - nie ma takiego pola w bazie
   const queryString = params.toString();
   const url = queryString
     ? `${modulePrefix}/subCategories?${queryString}`
@@ -145,7 +142,6 @@ export const getArticleTypes = async (
   if (request.subCategoryId) {
     params.append("subCategoryId", request.subCategoryId);
   }
-  // Usunięto parametry active - nie ma takiego pola w bazie
   const queryString = params.toString();
   const url = queryString
     ? `${modulePrefix}/articleTypes?${queryString}`
@@ -159,7 +155,6 @@ export const getBaseColours = async (): Promise<
   return await get<GetBaseColoursResponse>(`${modulePrefix}/baseColours`);
 };
 
-// Search operations
 export const searchProducts = async (
   query: string
 ): Promise<ApiResult<SearchProductsResponse>> => {

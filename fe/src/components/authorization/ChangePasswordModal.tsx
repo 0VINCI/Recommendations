@@ -45,12 +45,6 @@ export function ChangePasswordModal({
       return;
     }
 
-    console.log("About to call changePassword with:", {
-      Email: state.user.Email,
-      OldPassword: formData.oldPassword,
-      NewPassword: formData.newPassword,
-    }); // Debug
-
     setIsLoading(true);
 
     try {
@@ -76,7 +70,6 @@ export function ChangePasswordModal({
         );
       }
     } catch (err) {
-      console.error("Error in changePassword:", err); // Debug
       showError("Wystąpił błąd podczas zmiany hasła.");
     } finally {
       setIsLoading(false);

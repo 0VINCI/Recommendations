@@ -78,7 +78,6 @@ export const initialState: AppState = {
 export function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "ADD_TO_CART": {
-      // Convert ProductDto to Product if needed
       const product =
         "productDisplayName" in action.payload.product
           ? ({

@@ -52,9 +52,7 @@ export function Header() {
     try {
       await signOut();
       dispatch({ type: "SET_USER", payload: null });
-    } catch (error) {
-      console.error("Błąd podczas wylogowania:", error);
-    }
+    } catch (error) {}
   };
 
   const openChangePasswordModal = () => {
@@ -76,7 +74,6 @@ export function Header() {
     <header className="bg-white dark:bg-gray-900 shadow-soft border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-white/95 dark:bg-gray-900/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center shadow-medium group-hover:shadow-strong transition-all duration-300 group-hover:scale-105">
               <span className="text-white font-bold text-xl">S</span>
@@ -86,7 +83,6 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">
             <div className="relative w-full group">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-brand-500 transition-colors" />
@@ -98,12 +94,9 @@ export function Header() {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex items-center space-x-2">
-            {/* Recommendation Algorithm Selector */}
             <RecommendationAlgorithmSelector />
 
-            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
@@ -115,7 +108,6 @@ export function Header() {
               )}
             </button>
 
-            {/* User Menu */}
             {state.user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -177,7 +169,6 @@ export function Header() {
               </div>
             )}
 
-            {/* Cart */}
             <Link
               to="/cart"
               className="relative p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 rounded-xl"
@@ -190,7 +181,6 @@ export function Header() {
               )}
             </Link>
 
-            {/* Mobile Menu */}
             <button className="md:hidden p-2 text-gray-600 dark:text-gray-300">
               <Menu className="w-6 h-6" />
             </button>

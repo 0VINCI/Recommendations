@@ -7,7 +7,6 @@ import type {
   BaseColourDto,
 } from "./ProductDto";
 
-// Get Products
 export interface GetProductsRequest {
   page?: number;
   pageSize?: number;
@@ -30,7 +29,6 @@ export interface GetProductsResponse {
   totalPages: number;
 }
 
-// Get Product by ID
 export interface GetProductByIdRequest {
   productId: string;
 }
@@ -43,21 +41,16 @@ export interface GetProductFullByIdResponse {
   product: ProductFullDto;
 }
 
-// Get Categories
-export interface GetMasterCategoriesRequest {
-  // Usunięto active - nie ma takiego pola w bazie
-}
+export interface GetMasterCategoriesRequest {}
 
 export interface GetMasterCategoriesResponse {
   masterCategories: MasterCategoryDto[];
 }
 
-// Alternatywny typ dla bezpośredniej odpowiedzi z API
 export type MasterCategoriesResponse = MasterCategoryDto[];
 
 export interface GetSubCategoriesRequest {
   masterCategoryId?: string;
-  // Usunięto active - nie ma takiego pola w bazie
 }
 
 export interface GetSubCategoriesResponse {
@@ -66,20 +59,16 @@ export interface GetSubCategoriesResponse {
 
 export interface GetArticleTypesRequest {
   subCategoryId?: string;
-  // Usunięto active - nie ma takiego pola w bazie
 }
 
 export interface GetArticleTypesResponse {
   articleTypes: ArticleTypeDto[];
 }
 
-// GetBaseColoursRequest is empty - no filters needed
-
 export interface GetBaseColoursResponse {
   baseColours: BaseColourDto[];
 }
 
-// Search Products
 export interface SearchProductsResponse {
   products: ProductDto[];
   totalCount: number;

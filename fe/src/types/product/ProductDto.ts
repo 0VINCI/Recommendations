@@ -1,4 +1,3 @@
-// DTO types matching backend exactly
 export interface ProductDto {
   id: string;
   productDisplayName: string;

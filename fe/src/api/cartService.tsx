@@ -13,7 +13,6 @@ import type {
 
 const modulePrefix = "/cart";
 
-// Cart operations
 export const addItemToCart = async (
   request: AddItemToCartRequest
 ): Promise<ApiResult<void>> => {
@@ -36,7 +35,6 @@ export const clearCart = async (): Promise<ApiResult<void>> => {
   return await post<void>(`${modulePrefix}/clearCart`, {});
 };
 
-// Cart queries
 export const getCartItems = async (
   request: GetCartRequest
 ): Promise<ApiResult<ShoppingCartResponse>> => {
@@ -52,7 +50,6 @@ export const getUserCart = async (): Promise<
   return await get<ShoppingCartResponse>(`${modulePrefix}/user`);
 };
 
-// Database cart operations (parallel to React state)
 export const addItemToCartDb = async (
   request: AddItemToCartDbRequest
 ): Promise<ApiResult<void>> => {

@@ -1,17 +1,16 @@
-// Request types
 export interface AddItemToCartRequest {
-  ProductId: string; // Guid
+  ProductId: string;
   Name: string;
   Price: number;
   Quantity: number;
 }
 
 export interface RemoveItemFromCartRequest {
-  ProductId: string; // Guid
+  ProductId: string;
 }
 
 export interface UpdateCartItemQuantityRequest {
-  ProductId: string; // Guid
+  ProductId: string;
   Quantity: number;
 }
 
@@ -19,7 +18,6 @@ export interface GetCartRequest {
   CartId: string;
 }
 
-// Response types
 export interface CartItemResponse {
   ProductId: string;
   Name: string;
@@ -35,7 +33,6 @@ export interface ShoppingCartResponse {
   Items: CartItemResponse[];
 }
 
-// Extended types for database cart operations
 export interface AddItemToCartDbRequest {
   ProductId: string;
   Name: string;

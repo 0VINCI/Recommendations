@@ -38,7 +38,6 @@ export function RemindPasswordModal({
       if (result.status === 200) {
         showSuccess("Kod weryfikacyjny został wysłany na podany adres email!");
         setEmail("");
-        // Zamykamy obecny modal i otwieramy ResetPasswordModal
         onClose();
         dispatch({ type: "OPEN_RESET_PASSWORD_MODAL", payload: email });
       } else {

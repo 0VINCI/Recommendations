@@ -14,7 +14,6 @@ import type {
 import type { MasterCategoryDto } from "../types/product/ProductDto";
 
 interface UseProductsReturn {
-  // Products state
   products: ProductDto[];
   currentProduct: ProductDto | null;
   totalProductCount: number;
@@ -24,7 +23,6 @@ interface UseProductsReturn {
   loading: boolean;
   error: string | null;
 
-  // Bestsellers state
   bestsellers: ProductDto[];
   bestsellersLoading: boolean;
   bestsellersError: string | null;
@@ -33,7 +31,6 @@ interface UseProductsReturn {
   bestsellersPageSize: number;
   totalBestsellersPages: number;
 
-  // New products state
   newProducts: ProductDto[];
   newProductsLoading: boolean;
   newProductsError: string | null;
@@ -42,7 +39,6 @@ interface UseProductsReturn {
   newProductsPageSize: number;
   totalNewProductsPages: number;
 
-  // Categories state
   masterCategories: MasterCategoryDto[];
   subCategories: GetSubCategoriesResponse["subCategories"];
   articleTypes: GetArticleTypesResponse["articleTypes"];
@@ -50,7 +46,6 @@ interface UseProductsReturn {
   categoriesLoading: boolean;
   categoriesError: string | null;
 
-  // Actions
   getProducts: (pageNumber?: number, pageSizeNumber?: number) => Promise<void>;
   getProductById: (productId: string) => Promise<void>;
   getBestsellers: (
@@ -85,7 +80,6 @@ interface UseProductsReturn {
 }
 
 export const useProducts = (): UseProductsReturn => {
-  // Products state
   const [products, setProducts] = useState<ProductDto[]>([]);
   const [currentProduct, setCurrentProduct] = useState<ProductDto | null>(null);
   const [totalProductCount, setProductTotalCount] = useState(0);
@@ -95,7 +89,6 @@ export const useProducts = (): UseProductsReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Bestsellers state
   const [bestsellers, setBestsellers] = useState<ProductDto[]>([]);
   const [bestsellersLoading, setBestsellersLoading] = useState(false);
   const [bestsellersError, setBestsellersError] = useState<string | null>(null);
@@ -104,7 +97,6 @@ export const useProducts = (): UseProductsReturn => {
   const [bestsellersPageSize, setBestsellersPageSize] = useState(20);
   const [totalBestsellersPages, setBestsellersTotalPages] = useState(0);
 
-  // New products state
   const [newProducts, setNewProducts] = useState<ProductDto[]>([]);
   const [newProductsLoading, setNewProductsLoading] = useState(false);
   const [newProductsError, setNewProductsError] = useState<string | null>(null);
@@ -113,7 +105,6 @@ export const useProducts = (): UseProductsReturn => {
   const [newProductsPageSize, setNewProductsPageSize] = useState(20);
   const [totalNewProductsPages, setNewProductsTotalPages] = useState(0);
 
-  // Categories state
   const [masterCategories, setMasterCategories] = useState<
     GetMasterCategoriesResponse["masterCategories"]
   >([]);
@@ -155,7 +146,6 @@ export const useProducts = (): UseProductsReturn => {
       setError(null);
 
       try {
-        // Składamy parametry zapytania
         const params: GetProductsRequest = {
           page: pageNumber,
           pageSize: pageSizeNumber,
@@ -176,7 +166,6 @@ export const useProducts = (): UseProductsReturn => {
         }
       } catch (err) {
         setError("Błąd podczas pobierania produktów");
-        console.error("Error fetching products:", err);
       } finally {
         setLoading(false);
       }
@@ -199,7 +188,6 @@ export const useProducts = (): UseProductsReturn => {
       }
     } catch (err) {
       setError("Błąd podczas pobierania produktu");
-      console.error("Error fetching product:", err);
     } finally {
       setLoading(false);
     }
@@ -235,7 +223,6 @@ export const useProducts = (): UseProductsReturn => {
         }
       } catch (err) {
         setBestsellersError("Błąd podczas pobierania bestsellerów");
-        console.error("Error fetching bestsellers:", err);
       } finally {
         setBestsellersLoading(false);
       }
@@ -276,7 +263,6 @@ export const useProducts = (): UseProductsReturn => {
         }
       } catch (err) {
         setNewProductsError("Błąd podczas pobierania nowych produktów");
-        console.error("Error fetching new products:", err);
       } finally {
         setNewProductsLoading(false);
       }
@@ -316,7 +302,6 @@ export const useProducts = (): UseProductsReturn => {
         }
       } catch (err) {
         setError("Błąd podczas pobierania produktów z kategorii");
-        console.error("Error fetching products by category:", err);
       } finally {
         setLoading(false);
       }
@@ -343,7 +328,6 @@ export const useProducts = (): UseProductsReturn => {
       }
     } catch (err) {
       setError("Błąd podczas wyszukiwania produktów");
-      console.error("Error searching products:", err);
     } finally {
       setLoading(false);
     }
@@ -365,14 +349,12 @@ export const useProducts = (): UseProductsReturn => {
       }
     } catch (err) {
       setCategoriesError("Błąd podczas ładowania kategorii");
-      console.log(err);
     } finally {
       setCategoriesLoading(false);
     }
   }, []);
 
   return {
-    // Products state
     products,
     currentProduct,
     totalProductCount,
@@ -382,7 +364,6 @@ export const useProducts = (): UseProductsReturn => {
     loading,
     error,
 
-    // Bestsellers state
     bestsellers,
     bestsellersLoading,
     bestsellersError,
@@ -391,7 +372,6 @@ export const useProducts = (): UseProductsReturn => {
     bestsellersPageSize,
     totalBestsellersPages,
 
-    // New products state
     newProducts,
     newProductsLoading,
     newProductsError,
@@ -400,7 +380,6 @@ export const useProducts = (): UseProductsReturn => {
     newProductsPageSize,
     totalNewProductsPages,
 
-    // Categories state
     masterCategories,
     subCategories,
     articleTypes,
@@ -408,7 +387,6 @@ export const useProducts = (): UseProductsReturn => {
     categoriesLoading,
     categoriesError,
 
-    // Actions
     getProducts,
     getProductById,
     getBestsellers,

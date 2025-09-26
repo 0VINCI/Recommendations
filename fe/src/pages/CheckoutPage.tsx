@@ -39,7 +39,6 @@ export function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<number>(1);
 
   const handleSaveCustomer = async () => {
-    // Walidacja na froncie
     if (!customerForm.firstName.trim()) {
       showError("Imię jest wymagane!");
       return;
@@ -115,7 +114,6 @@ export function CheckoutPage() {
         error = "Błąd podczas tworzenia zamówienia.";
         throw new Error(error);
       }
-      console.log(resp.data);
       const payResp = await payForOrder({
         OrderId: resp.data,
         Method: paymentMethod,

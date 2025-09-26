@@ -20,7 +20,6 @@ export function Breadcrumbs({
 }: BreadcrumbsProps) {
   const { category } = useParams<{ category: string }>();
 
-  // Generowanie breadcrumbs na podstawie kategorii z API
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const breadcrumbs: BreadcrumbItem[] = [
       { label: "Strona główna", href: "/" },
@@ -30,10 +29,8 @@ export function Breadcrumbs({
       return breadcrumbs;
     }
 
-    // Dekoduj nazwę kategorii z URL
     const decodedCategory = decodeURIComponent(category);
 
-    // Mapowanie specjalnych kategorii
     const specialCategories: { [key: string]: string } = {
       wszystkie: "Wszystkie Produkty",
       new: "Nowe Produkty",
@@ -49,7 +46,6 @@ export function Breadcrumbs({
       return breadcrumbs;
     }
 
-    // Szukaj w master categories
     let foundCategory: {
       masterName: string;
       subName?: string;
@@ -57,7 +53,6 @@ export function Breadcrumbs({
     } | null = null;
 
     for (const masterCategory of masterCategories) {
-      // Sprawdź sub categories (tylko sub categories są klikalne)
       for (const subCategory of masterCategory.subCategories || []) {
         if (subCategory.name.toLowerCase() === decodedCategory.toLowerCase()) {
           foundCategory = {
@@ -73,12 +68,10 @@ export function Breadcrumbs({
     }
 
     if (foundCategory) {
-      // Dodaj master category (tylko jako tekst, nie link)
       breadcrumbs.push({
         label: foundCategory.masterName,
       });
 
-      // Dodaj sub category (jako link)
       breadcrumbs.push({
         label: foundCategory.subName!,
         href: `/category/${encodeURIComponent(
@@ -86,7 +79,6 @@ export function Breadcrumbs({
         )}?page=1&pageSize=20`,
       });
     } else {
-      // Fallback - użyj nazwy z URL
       breadcrumbs.push({
         label:
           decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1),

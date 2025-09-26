@@ -30,11 +30,10 @@ export function SimilarProducts({
     (alg) => alg.value === state.selectedRecommendationAlgorithm
   );
 
-  // Funkcje do przewijania
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
-      const cardWidth = 320; // Szerokość karty + gap
+      const cardWidth = 320;
       const scrollAmount = Math.min(cardWidth * 2, container.scrollLeft);
       container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
     }
@@ -43,7 +42,7 @@ export function SimilarProducts({
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
-      const cardWidth = 320; // Szerokość karty + gap
+      const cardWidth = 320;
       const maxScroll = container.scrollWidth - container.clientWidth;
       const scrollAmount = Math.min(
         cardWidth * 2,
@@ -111,9 +110,7 @@ export function SimilarProducts({
         </p>
       </div>
 
-      {/* Carousel Container */}
       <div className="relative">
-        {/* Left Arrow */}
         <button
           onClick={scrollLeft}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -122,7 +119,6 @@ export function SimilarProducts({
           <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
-        {/* Right Arrow */}
         <button
           onClick={scrollRight}
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -131,7 +127,6 @@ export function SimilarProducts({
           <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
-        {/* Scrollable Products Container */}
         <div
           ref={scrollContainerRef}
           className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"

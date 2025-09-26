@@ -27,7 +27,6 @@ const mapAlgorithmToVectorType = (algorithm: string): string => {
   }
 };
 
-// Get Similar Products
 export const getSimilarProducts = async (
   request: GetSimilarProductsRequest
 ): Promise<ApiResult<GetSimilarProductsResponse>> => {
@@ -35,7 +34,6 @@ export const getSimilarProducts = async (
   const topCount = request.topCount || 10;
 
   try {
-    // Pobierz podobne produkty (pełne dane produktów)
     const response = await get<ProductDto[]>(
       `${modulePrefix}/product-embeddings/${request.productId}/${vectorType}/similar?topCount=${topCount}`
     );
@@ -64,7 +62,6 @@ export const getSimilarProducts = async (
   }
 };
 
-// Get Product Embedding
 export const getProductEmbedding = async (
   request: GetProductEmbeddingRequest
 ): Promise<ApiResult<GetProductEmbeddingResponse>> => {
@@ -75,7 +72,6 @@ export const getProductEmbedding = async (
   );
 };
 
-// Get All Product Embeddings
 export const getAllProductEmbeddings = async (
   request: GetAllProductEmbeddingsRequest
 ): Promise<ApiResult<GetAllProductEmbeddingsResponse>> => {
