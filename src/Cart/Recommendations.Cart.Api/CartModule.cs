@@ -18,6 +18,7 @@ namespace Recommendations.Cart.Api;
 internal sealed class CartModule : ModuleDefinition
 {
     public override string ModulePrefix => "/cart";
+    public override bool RequireAuthorization => true;
     public override void AddDependencies(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCore();
@@ -72,6 +73,6 @@ internal sealed class CartModule : ModuleDefinition
         {
             var cart = await queryDispatcher.QueryAsync(new GetUserCart(), cancellationToken);
             return cart is null ? Results.NotFound() : Results.Ok(cart);
-        }).RequireAuthorization();
+        });
     }
 }

@@ -104,6 +104,6 @@ internal sealed class AuthorizationModule : ModuleDefinition
                 userInfo.Surname,
                 userInfo.Email,
             });
-        });
+        }).RequireAuthorization();
     }
 }
