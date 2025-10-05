@@ -10,4 +10,10 @@
         <InternalsVisibleTo Include="Recommendations.Api" />
     </ItemGroup>
 
+    <ItemGroup>
+		<ProjectReference Include="..\..\Shared\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
+		<ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
+		<ProjectReference Include="..\Recommendations.Tracking.Core\Recommendations.Tracking.Core.csproj" />
+	</ItemGroup>
+
 </Project>

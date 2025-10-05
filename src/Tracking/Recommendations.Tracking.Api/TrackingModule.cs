@@ -1,4 +1,10 @@
-﻿namespace Recommendations.Tracking.Api;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Recommendations.Shared.ModuleDefinition;
+using Recommendations.Tracking.Core;
+
+namespace Recommendations.Tracking.Api;
 
 public class TrackingModule : ModuleDefinition
 {
