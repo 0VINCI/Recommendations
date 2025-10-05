@@ -16,4 +16,8 @@
 	  <ProjectReference Include="..\Recommendations.Tracking.Shared\Recommendations.Tracking.Shared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Events\Handlers\" />
+	</ItemGroup>
+
 </Project>
