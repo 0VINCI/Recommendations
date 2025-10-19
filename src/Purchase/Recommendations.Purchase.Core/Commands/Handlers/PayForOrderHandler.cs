@@ -4,10 +4,14 @@ using Recommendations.Purchase.Core.Types;
 using Recommendations.Purchase.Core.Types.Enums;
 using Recommendations.Purchase.Shared.Commands;
 using Recommendations.Shared.Abstractions.Commands;
+using Recommendations.Shared.Abstractions.Events;
+using Recommendations.Tracking.Shared.Events;
 
 namespace Recommendations.Purchase.Core.Commands.Handlers;
 
-internal sealed class PayForOrderHandler(IPurchaseRepository purchaseRepository) : ICommandHandler<PayForOrder>
+internal sealed class PayForOrderHandler(
+    IPurchaseRepository purchaseRepository,
+    IEventDispatcher eventDispatcher) : ICommandHandler<PayForOrder>
 {
     public async Task HandleAsync(PayForOrder command, CancellationToken cancellationToken = default)
     {
@@ -23,5 +27,15 @@ internal sealed class PayForOrderHandler(IPurchaseRepository purchaseRepository)
         order.MarkAsPaid(data.PaymentDate);
 
         await purchaseRepository.SaveOrder(order, cancellationToken);
+
+        var orderPaidEvent = new OrderPaid(
+            order.CustomerId,
+            order.IdOrder,
+            order.GetTotalAmount(),
+            data.Method.ToString(),
+            DateTime.UtcNow
+        );
+        
+        await eventDispatcher.PublishAsync(orderPaidEvent);
     }
 }

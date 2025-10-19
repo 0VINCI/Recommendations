@@ -1,3 +1,9 @@
+using NpgsqlTypes;
+
 namespace Recommendations.Tracking.Core.Types;
 
-public enum EventSource { Frontend, Backend }
+public enum EventSource 
+{ 
+    [PgName("frontend")] Frontend = 0,
+    [PgName("backend")] Backend = 1
+}

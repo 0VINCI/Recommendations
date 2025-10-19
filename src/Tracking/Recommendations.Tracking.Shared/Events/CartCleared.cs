@@ -2,4 +2,7 @@
 
 namespace Recommendations.Tracking.Shared.Events;
 
-public sealed record CartCleared() : IEvent;
+public sealed record CartCleared(
+    Guid UserId,
+    DateTime Timestamp
+) : IEvent;

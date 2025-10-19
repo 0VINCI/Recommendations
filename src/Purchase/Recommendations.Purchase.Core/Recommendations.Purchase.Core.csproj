@@ -17,6 +17,7 @@
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
       <ProjectReference Include="..\Recommendations.Purchase.Shared\Recommendations.Purchase.Shared.csproj" />
+      <ProjectReference Include="..\..\Tracking\Recommendations.Tracking.Shared\Recommendations.Tracking.Shared.csproj" />
     </ItemGroup>
     
 </Project>

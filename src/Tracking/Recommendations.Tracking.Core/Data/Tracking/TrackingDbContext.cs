@@ -26,9 +26,11 @@ public sealed class TrackingDbContext : DbContext
             e.Property(x => x.Payload).HasColumnType("jsonb");
 
             e.Property(x => x.ItemId)
-                .HasComputedColumnSql("(payload->>'item_id')", stored: true);
+                .HasComputedColumnSql("(\"Payload\"->>'item_id')", stored: true)
+                .ValueGeneratedOnAddOrUpdate();
             e.Property(x => x.OrderId)
-                .HasComputedColumnSql("(payload->>'order_id')", stored: true);
+                .HasComputedColumnSql("(\"Payload\"->>'order_id')", stored: true)
+                .ValueGeneratedOnAddOrUpdate();
 
             e.HasIndex(x => new { x.Type, x.Ts });
             e.HasIndex(x => x.UserId);

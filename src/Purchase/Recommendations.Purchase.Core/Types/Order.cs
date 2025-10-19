@@ -53,7 +53,7 @@ public class Order
     {
         if (Status == OrderStatus.Cancelled)
             throw new InvalidOrderStatusTransitionException(Status, OrderStatus.Cancelled);
-        Status = OrderStatus.Delivered;
+        Status = OrderStatus.Cancelled;
     }
 
     public void AddPayment(Payment payment)
@@ -62,6 +62,7 @@ public class Order
     }
 
     public decimal GetTotalAmount() => Items.Sum(x => x.ProductPrice * x.Quantity);
+    public int GetItemsCount() => Items.Count;
     
     public static Order Create(Guid customerId, IEnumerable<OrderItem> items, Guid shippingAddressId, IEnumerable<Payment>? payments = null)
     {

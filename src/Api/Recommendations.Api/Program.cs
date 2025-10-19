@@ -11,6 +11,9 @@ using Recommendations.Dictionaries.Infrastructure.DAL;
 using Recommendations.Purchase.Api;
 using Recommendations.Purchase.Core.Data;
 using Recommendations.Shared.ModuleDefinition;
+using Recommendations.Tracking.Api;
+using Recommendations.Tracking.Core.Data.Tracking;
+using Recommendations.Tracking.Core.Data.Signals;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,7 @@ RegistrationModules.RegisterModule<CartModule>();
 RegistrationModules.RegisterModule<ContentBasedModule>();
 RegistrationModules.RegisterModule<DictionariesModule>();
 RegistrationModules.RegisterModule<PurchaseModule>();
+RegistrationModules.RegisterModule<TrackingModule>();
 
 builder.Services.AddApiDependencies(builder.Configuration);
 
@@ -35,7 +39,9 @@ var contexts = new DbContext[]
     scope.ServiceProvider.GetRequiredService<PurchaseDbContext>(),
     scope.ServiceProvider.GetRequiredService<CartDbContext>(),
     scope.ServiceProvider.GetRequiredService<AuthorizationDbContext>(),
-    scope.ServiceProvider.GetRequiredService<ContentBasedDbContext>()
+    scope.ServiceProvider.GetRequiredService<ContentBasedDbContext>(),
+    scope.ServiceProvider.GetRequiredService<TrackingDbContext>(),
+    scope.ServiceProvider.GetRequiredService<SignalsDbContext>()
 };
 
 foreach (var ctx in contexts)

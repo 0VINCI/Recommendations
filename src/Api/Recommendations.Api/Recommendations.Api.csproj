@@ -25,6 +25,7 @@
       <ProjectReference Include="..\..\ContentBased\Recommendations.ContentBased.Api\Recommendations.ContentBased.Api.csproj" />
       <ProjectReference Include="..\..\Dictionaries\Recommendations.Dictionaries.Api\Recommendations.Dictionaries.Api.csproj" />
       <ProjectReference Include="..\..\Purchase\Recommendations.Purchase.Api\Recommendations.Purchase.Api.csproj" />
+      <ProjectReference Include="..\..\Tracking\Recommendations.Tracking.Api\Recommendations.Tracking.Api.csproj" />
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.Infrastructure\Recommendations.Shared.Infrastructure.csproj" />
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
     </ItemGroup>
