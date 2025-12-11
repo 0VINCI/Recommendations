@@ -557,21 +557,29 @@ export function CategoryPage() {
               <>
                 {viewMode === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {sortedProducts.map((product) => (
+                    {sortedProducts.map((product, index) => (
                       <ProductCard
                         key={product.id}
                         product={product}
                         viewMode="grid"
+                        listId={`category:${category || "all"}_page:${
+                          pagination.currentPage
+                        }`}
+                        position={index + 1}
                       />
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {sortedProducts.map((product) => (
+                    {sortedProducts.map((product, index) => (
                       <ProductCard
                         key={product.id}
                         product={product}
                         viewMode="list"
+                        listId={`category:${category || "all"}_page:${
+                          pagination.currentPage
+                        }`}
+                        position={index + 1}
                       />
                     ))}
                   </div>

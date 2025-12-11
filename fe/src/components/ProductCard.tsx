@@ -3,14 +3,27 @@ import { Link } from "react-router-dom";
 import { Star, Heart, ShoppingCart, TrendingUp, Sparkles } from "lucide-react";
 import type { ProductDto } from "../types/product/ProductDto";
 import { useCart } from "../hooks/useCart";
+import { useTracking } from "../hooks/useTracking";
+import { useApp } from "../context/useApp";
 
 interface ProductCardProps {
   product: ProductDto;
   viewMode?: "grid" | "list";
+  listId?: string;
+  position?: number;
+  onCardClick?: () => void; // Custom click handler (e.g., for rec_click)
 }
 
-export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
+export function ProductCard({
+  product,
+  viewMode = "grid",
+  listId,
+  position,
+  onCardClick,
+}: ProductCardProps) {
   const { addToCart } = useCart();
+  const { state } = useApp();
+  const { productClicked, itemImpression } = useTracking(state.user?.IdUser);
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [imageError, setImageError] = React.useState(false);
 
@@ -18,6 +31,13 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
     setCurrentImageIndex(0);
     setImageError(false);
   }, [product.id]);
+
+  React.useEffect(() => {
+    // fire lightweight impression when rendered in a list with known position
+    if (listId && typeof position === "number") {
+      void itemImpression(String(product.id), listId, position);
+    }
+  }, [itemImpression, listId, position, product.id]);
 
   const primaryImage =
     product.images?.find((img) => img.isPrimary) || product.images?.[0];
@@ -41,10 +61,24 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
     addToCart(product);
   };
 
+  const handleCardClick = () => {
+    // If custom click handler is provided (e.g., for rec_click), use it
+    if (onCardClick) {
+      onCardClick();
+    } else {
+      // Otherwise use standard product_clicked tracking
+      void productClicked(String(product.id), listId, position);
+    }
+  };
+
   if (viewMode === "list") {
     return (
       <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-strong transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600">
-        <Link to={`/product/${product.id}`} className="flex">
+        <Link
+          to={`/product/${product.id}`}
+          className="flex"
+          onClick={handleCardClick}
+        >
           <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-gray-50 dark:bg-gray-900">
             <img
               src={imageUrl}
@@ -107,34 +141,22 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
                 )}
               </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {product.rating.toFixed(1)}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-500">
-                    ({product.reviews})
-                  </span>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    <Heart className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  </button>
-                  <button
-                    onClick={handleAddToCart}
-                    className="p-2 bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 rounded-full hover:bg-brand-200 dark:hover:bg-brand-800 transition-colors"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                  </button>
-                </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  <Heart className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </button>
+                <button
+                  onClick={handleAddToCart}
+                  className="p-2 bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 rounded-full hover:bg-brand-200 dark:hover:bg-brand-800 transition-colors"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>
@@ -145,7 +167,7 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
 
   return (
     <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-strong transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600">
-      <Link to={`/product/${product.id}`}>
+      <Link to={`/product/${product.id}`} onClick={handleCardClick}>
         <div className="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-900">
           <img
             src={imageUrl}
@@ -244,7 +266,7 @@ export function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
       </Link>
 
       <div className="p-5">
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/product/${product.id}`} onClick={handleCardClick}>
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 hover:text-brand-600 dark:hover:text-brand-400 transition-colors line-clamp-2 leading-tight">
             {product.productDisplayName}
           </h3>

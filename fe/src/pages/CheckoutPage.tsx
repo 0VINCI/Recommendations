@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/useApp";
 import { useToast } from "../hooks/useToast";
+import { useTracking } from "../hooks/useTracking";
 import {
   createOrder,
   payForOrder,
@@ -19,6 +20,7 @@ export function CheckoutPage() {
   const { state, dispatch } = useApp();
   const navigate = useNavigate();
   const { showSuccess, showError } = useToast();
+  const { checkoutStarted } = useTracking(state.user?.IdUser);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [customerForm, setCustomerForm] = useState({
     firstName: state.user?.Name || "",
@@ -37,6 +39,11 @@ export function CheckoutPage() {
 
   const [selectedAddressId, setSelectedAddressId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<number>(1);
+
+  // Track checkout start
+  useEffect(() => {
+    void checkoutStarted();
+  }, [checkoutStarted]);
 
   const handleSaveCustomer = async () => {
     if (!customerForm.firstName.trim()) {

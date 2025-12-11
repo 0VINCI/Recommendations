@@ -6,6 +6,7 @@ RUN dotnet nuget locals all --clear \
 ENV PATH="$PATH:/root/.dotnet/tools:$PATH"
 RUN dotnet restore
 RUN dotnet build -c Release
+
 RUN dotnet publish -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -14,3 +15,4 @@ COPY --from=build /app/out ./
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "Recommendations.Api.dll"]
+

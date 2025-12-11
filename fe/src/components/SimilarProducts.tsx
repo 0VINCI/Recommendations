@@ -5,6 +5,7 @@ import { useApp } from "../context/useApp";
 import { ProductCard } from "./ProductCard";
 import { RecommendationSkeleton } from "./common/RecommendationSkeleton";
 import { RECOMMENDATION_ALGORITHMS } from "../types/recommendation/RecommendationAlgorithm";
+import { useTracking } from "../hooks/useTracking";
 
 interface SimilarProductsProps {
   productId: string;
@@ -16,6 +17,7 @@ export function SimilarProducts({
   currentProductName,
 }: SimilarProductsProps) {
   const { state } = useApp();
+  const { recImpression, recClick } = useTracking(state.user?.IdUser);
   const {
     similarProducts,
     loading,
@@ -66,6 +68,32 @@ export function SimilarProducts({
     getSimilarProducts,
     clearSimilarProducts,
   ]);
+
+  useEffect(() => {
+    if (!similarProducts || !currentAlgorithm?.value) return;
+
+    // Emit impressions for rendered products in the widget
+    similarProducts.forEach((p, idx) => {
+      void recImpression(
+        "pdp_similar",
+        currentAlgorithm.value,
+        productId,
+        String(p.id),
+        idx + 1
+      );
+    });
+  }, [similarProducts, currentAlgorithm?.value, productId, recImpression]);
+
+  const handleClick = (itemId: string, index: number) => {
+    if (!currentAlgorithm?.value) return;
+    void recClick(
+      "pdp_similar",
+      currentAlgorithm.value,
+      productId,
+      itemId,
+      index + 1
+    );
+  };
 
   if (loading) {
     return <RecommendationSkeleton />;
@@ -135,9 +163,12 @@ export function SimilarProducts({
             msOverflowStyle: "none",
           }}
         >
-          {similarProducts.map((product) => (
+          {similarProducts.map((product, index) => (
             <div key={product.id} className="flex-shrink-0 w-80">
-              <ProductCard product={product} />
+              <ProductCard
+                product={product}
+                onCardClick={() => handleClick(String(product.id), index)}
+              />
             </div>
           ))}
         </div>

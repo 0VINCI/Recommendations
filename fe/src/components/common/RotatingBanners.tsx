@@ -86,7 +86,7 @@ const banners: BannerData[] = [
     ctaText: "Zobacz Okulary",
     ctaLink: "/category/eyewear?page=1&pageSize=20",
     backgroundImage:
-      "https://images.unsplash.com/photo-1506629905607-1b2a0a0b0b0b?auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=1920&q=80",
     badge: {
       text: "Wizja",
       icon: <Star className="w-4 h-4" />,

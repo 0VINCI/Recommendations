@@ -34,8 +34,13 @@ export function ProductsPage() {
         {loading && <div>Ładowanie...</div>}
         {error && <div className="text-red-500">{error}</div>}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {products.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              listId={`products_page_${currentPage}`}
+              position={index + 1}
+            />
           ))}
         </div>
         {/* Pagination Controls with numbers */}

@@ -18,6 +18,7 @@ import { RecommendationAlgorithmSelector } from "./RecommendationAlgorithmSelect
 export function Header() {
   const { state, dispatch } = useApp();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -65,6 +66,14 @@ export function Header() {
     navigate("/orders");
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
+
   const cartItemsCount = state.cart.reduce(
     (sum, item) => sum + item.quantity,
     0
@@ -84,14 +93,19 @@ export function Header() {
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-            <div className="relative w-full group">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="relative w-full group"
+            >
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-brand-500 transition-colors" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Szukaj produktów, marek, kategorii..."
                 className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200 hover:bg-white dark:hover:bg-gray-700"
               />
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center space-x-2">

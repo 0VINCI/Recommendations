@@ -7,6 +7,7 @@ import { CheckoutPage } from "../pages/CheckoutPage";
 import { HomePage } from "../pages/HomePage";
 import { OrdersPage } from "../pages/OrdersPage";
 import { ProductPage } from "../pages/ProductPage";
+import { SearchPage } from "../pages/SearchPage";
 import { AuthModal } from "./authorization/AuthModal";
 import { ModalManager } from "./authorization/ModalManager";
 import { Header } from "./common/Header";
@@ -33,6 +34,7 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders" element={<OrdersPage />} />

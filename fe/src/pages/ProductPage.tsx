@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import { useRecommendations } from "../hooks/useRecommendations";
 import { useApp } from "../context/useApp";
 import { Loader } from "../components/common/Loader";
 import { SimilarProducts } from "../components/SimilarProducts";
+import { useTracking } from "../hooks/useTracking";
 
 function parseProductDescription(description: string) {
   if (!description) return null;
@@ -139,8 +140,10 @@ export function ProductPage() {
   const { addToCart } = useCart();
   const { state } = useApp();
   const { getSimilarProducts } = useRecommendations();
+  const { productViewed } = useTracking(state.user?.IdUser);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const viewStartTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -160,6 +163,20 @@ export function ProductPage() {
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [currentProduct?.id]);
+
+  // Track product view with dwell time
+  useEffect(() => {
+    if (!id || loading || error || !currentProduct) return;
+
+    viewStartTimeRef.current = Date.now();
+
+    return () => {
+      if (viewStartTimeRef.current) {
+        const dwellMs = Date.now() - viewStartTimeRef.current;
+        void productViewed(id, dwellMs);
+      }
+    };
+  }, [id, loading, error, currentProduct, productViewed]);
 
   const product = currentProduct;
 
