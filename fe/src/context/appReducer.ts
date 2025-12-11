@@ -4,6 +4,7 @@ import type { ToastItem } from "../components/common/ToastContainer";
 import type { CartItem, Product } from "../types/cart/Cart.ts";
 import type { Order } from "../types/purchase/Order.ts";
 import { RecommendationAlgorithm } from "../types/recommendation/RecommendationAlgorithm";
+import { EmbeddingSource } from "../types/recommendation/EmbeddingSource";
 
 export interface AppState {
   products: ProductDto[];
@@ -19,6 +20,7 @@ export interface AppState {
   resetPasswordEmail: string;
   toasts: ToastItem[];
   selectedRecommendationAlgorithm: RecommendationAlgorithm;
+  selectedEmbeddingSource: EmbeddingSource;
 }
 
 export type AppAction =
@@ -57,7 +59,8 @@ export type AppAction =
   | { type: "REMOVE_TOAST"; payload: string }
   | { type: "ADD_ORDER"; payload: Order }
   | { type: "SET_CART"; payload: CartItem[] }
-  | { type: "SET_RECOMMENDATION_ALGORITHM"; payload: RecommendationAlgorithm };
+  | { type: "SET_RECOMMENDATION_ALGORITHM"; payload: RecommendationAlgorithm }
+  | { type: "SET_EMBEDDING_SOURCE"; payload: EmbeddingSource };
 
 export const initialState: AppState = {
   products: [],
@@ -73,6 +76,7 @@ export const initialState: AppState = {
   resetPasswordEmail: "",
   toasts: [],
   selectedRecommendationAlgorithm: RecommendationAlgorithm.ContentBasedFull,
+  selectedEmbeddingSource: EmbeddingSource.New,
 };
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -263,6 +267,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         selectedRecommendationAlgorithm: action.payload,
+      };
+
+    case "SET_EMBEDDING_SOURCE":
+      return {
+        ...state,
+        selectedEmbeddingSource: action.payload,
       };
 
     default:

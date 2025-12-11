@@ -1,10 +1,12 @@
 import type { ProductDto } from "../product/ProductDto";
 import type { RecommendationAlgorithm } from "./RecommendationAlgorithm";
+import type { EmbeddingSource } from "./EmbeddingSource";
 
 export interface GetSimilarProductsRequest {
   productId: string;
   algorithm: RecommendationAlgorithm;
   topCount?: number;
+  embeddingSource?: EmbeddingSource;
 }
 
 export interface GetSimilarProductsResponse {

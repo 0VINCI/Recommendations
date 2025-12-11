@@ -22,17 +22,31 @@ internal sealed class ProductEmbeddingRepository(ContentBasedDbContext dbContext
         => await dbContext.ProductEmbeddings
             .ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<(ProductEmbedding ProductEmbedding, float SimilarityScore)>> GetSimilarProducts(
+    public async Task<IEnumerable<(Guid ProductId, float SimilarityScore)>> GetSimilarProducts(
         Guid productId, 
         VectorType variant, 
-        int topCount, 
+        int topCount,
+        bool useNew = true, 
         CancellationToken cancellationToken = default)
     {
-        var sourceEmbedding = await GetByProductIdAndVariant(productId, variant, cancellationToken);
-        if (sourceEmbedding == null)
+        ProductEmbeddingNew? sourceNew = null;
+        ProductEmbedding? sourceOld = null;
+
+        if (useNew)
+        {
+            sourceNew = await dbContext.ProductEmbeddingsNew
+                .SingleOrDefaultAsync(pe => pe.ProductId == productId && pe.Variant == variant, cancellationToken);
+        }
+        else
+        {
+            sourceOld = await GetByProductIdAndVariant(productId, variant, cancellationToken);
+        }
+
+        if (useNew && sourceNew == null)
+            return [];
+        if (!useNew && sourceOld == null)
             return [];
 
-        // Use direct NpgsqlCommand for better control over data mapping
         var connection = dbContext.Database.GetDbConnection() as NpgsqlConnection;
         if (connection == null)
             throw new InvalidOperationException("Database connection is not NpgsqlConnection");
@@ -42,32 +56,32 @@ internal sealed class ProductEmbeddingRepository(ContentBasedDbContext dbContext
             await connection.OpenAsync(cancellationToken);
         }
 
-        var sql = @"
-            SELECT pe.""ProductId"", pe.""Variant"", pe.""Embedding"", pe.""CreatedAt"", pe.""UpdatedAt"",
+        var tableName = useNew ? @"""Vectors"".""ProductEmbeddingsNew""" : @"""Vectors"".""ProductEmbeddings""";
+        var sql = $@"
+            SELECT pe.""ProductId"", pe.""Variant"", pe.""Embedding"",
                    1 - (pe.""Embedding"" <=> @sourceEmbedding) as similarity_score
-            FROM ""Vectors"".""ProductEmbeddings"" pe
+            FROM {tableName} pe
             WHERE pe.""ProductId"" != @productId AND pe.""Variant"" = @variant
             ORDER BY similarity_score DESC
             LIMIT @topCount";
 
         await using var cmd = new NpgsqlCommand(sql, connection);
-        cmd.Parameters.Add(new NpgsqlParameter("sourceEmbedding", sourceEmbedding.Embedding));
+        var sourceVector = useNew
+            ? sourceNew!.Embedding
+            : sourceOld!.Embedding;
+        cmd.Parameters.Add(new NpgsqlParameter("sourceEmbedding", sourceVector));
         cmd.Parameters.Add(new NpgsqlParameter("productId", productId));
         cmd.Parameters.Add(new NpgsqlParameter("variant", variant.ToString()));
         cmd.Parameters.Add(new NpgsqlParameter("topCount", topCount));
 
-        var results = new List<(ProductEmbedding, float)>();
+        var results = new List<(Guid, float)>();
         await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
         
         while (await reader.ReadAsync(cancellationToken))
         {
             var productIdFromDb = reader.GetGuid(reader.GetOrdinal("ProductId"));
-            var variantFromDb = Enum.Parse<VectorType>(reader.GetString(reader.GetOrdinal("Variant")));
-            var embedding = reader.GetFieldValue<Vector>(reader.GetOrdinal("Embedding"));
             var similarityScore = Convert.ToSingle(reader.GetDouble(reader.GetOrdinal("similarity_score")));
-            
-            var productEmbedding = ProductEmbedding.Create(productIdFromDb, variantFromDb, embedding);
-            results.Add((productEmbedding, similarityScore));
+            results.Add((productIdFromDb, similarityScore));
         }
 
         return results;

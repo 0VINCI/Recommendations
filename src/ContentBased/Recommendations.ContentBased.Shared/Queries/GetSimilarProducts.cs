@@ -7,4 +7,5 @@ namespace Recommendations.ContentBased.Shared.Queries;
 public record GetSimilarProducts(
     Guid ProductId,
     VectorType Variant,
-    int TopCount) : IQuery<IEnumerable<SimilarProductDto>>;
+    int TopCount,
+    bool UseNew = true) : IQuery<IEnumerable<SimilarProductDto>>;

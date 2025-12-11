@@ -1,6 +1,7 @@
 import { get } from "./client/httpClient.tsx";
 import type { ApiResult } from "../types/api/ApiResult.tsx";
 import type { ProductDto } from "../types/product/ProductDto";
+import { EmbeddingSource } from "../types/recommendation/EmbeddingSource";
 import type {
   GetSimilarProductsRequest,
   GetSimilarProductsResponse,
@@ -32,10 +33,11 @@ export const getSimilarProducts = async (
 ): Promise<ApiResult<GetSimilarProductsResponse>> => {
   const vectorType = mapAlgorithmToVectorType(request.algorithm);
   const topCount = request.topCount || 10;
+  const source = request.embeddingSource ?? EmbeddingSource.New;
 
   try {
     const response = await get<ProductDto[]>(
-      `${modulePrefix}/product-embeddings/${request.productId}/${vectorType}/similar?topCount=${topCount}`
+      `${modulePrefix}/product-embeddings/${request.productId}/${vectorType}/similar/${source}?topCount=${topCount}`
     );
 
     if (response.status !== 200 || !response.data) {

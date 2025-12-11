@@ -31,11 +31,12 @@ public class ContentBasedModuleApi(ICommandDispatcher commands,
     public async Task<IEnumerable<ProductDto>> GetSimilarProducts(
         Guid productId, 
         VectorType variant, 
-        int topCount, 
+        int topCount,
+        bool useNew = true, 
         CancellationToken cancellationToken = default)
     {
         // Cache key dla rekomendacji
-        var cacheKey = $"similar_products_{productId}_{variant}_{topCount}";
+        var cacheKey = $"similar_products_{productId}_{variant}_{topCount}_{(useNew ? "new" : "old")}";
         
         // Sprawdź cache
         if (memoryCache.TryGetValue(cacheKey, out IEnumerable<ProductDto>? cachedProducts))
@@ -44,7 +45,7 @@ public class ContentBasedModuleApi(ICommandDispatcher commands,
         }
 
         // 1. Pobierz podobne produkty (ID + similarity score)
-        var query = new GetSimilarProducts(productId, variant, topCount);
+        var query = new GetSimilarProducts(productId, variant, topCount, useNew);
         var similarProducts = await queries.QueryAsync(query, cancellationToken);
         
         // 2. Pobierz zoptymalizowane dane produktów (tylko niezbędne pola)

@@ -43,9 +43,10 @@ internal sealed class ContentBasedModule : ModuleDefinition
             return Results.Ok(productEmbeddings);
         });
 
-        app.MapGet("/product-embeddings/{productId:guid}/{variant}/similar", async (
+        app.MapGet("/product-embeddings/{productId:guid}/{variant}/similar/{source?}", async (
             [FromRoute] Guid productId,
             [FromRoute] VectorType variant,
+            [FromRoute] string source,
             [FromQuery] int topCount,
             [FromServices] IContentBasedModuleApi contentBasedModuleApi,
             CancellationToken cancellationToken = default) =>
@@ -55,8 +56,10 @@ internal sealed class ContentBasedModule : ModuleDefinition
             if (topCount <= 0 || topCount > 100)
                 return Results.BadRequest("TopCount must be between 1 and 100");
 
+            var useNew = source is null || string.Equals(source, "new", StringComparison.OrdinalIgnoreCase);
+
             var similarProducts = await contentBasedModuleApi.GetSimilarProducts(
-                productId, variant, topCount, cancellationToken);
+                productId, variant, topCount, useNew, cancellationToken);
             return Results.Ok(similarProducts);
         });
 

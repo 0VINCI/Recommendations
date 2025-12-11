@@ -6,6 +6,10 @@ import { ProductCard } from "./ProductCard";
 import { RecommendationSkeleton } from "./common/RecommendationSkeleton";
 import { RECOMMENDATION_ALGORITHMS } from "../types/recommendation/RecommendationAlgorithm";
 import { useTracking } from "../hooks/useTracking";
+import {
+  EMBEDDING_SOURCES,
+  EmbeddingSource,
+} from "../types/recommendation/EmbeddingSource";
 
 interface SimilarProductsProps {
   productId: string;
@@ -30,6 +34,9 @@ export function SimilarProducts({
 
   const currentAlgorithm = RECOMMENDATION_ALGORITHMS.find(
     (alg) => alg.value === state.selectedRecommendationAlgorithm
+  );
+  const currentSource = EMBEDDING_SOURCES.find(
+    (s) => s.value === state.selectedEmbeddingSource
   );
 
   const scrollLeft = () => {
@@ -56,7 +63,12 @@ export function SimilarProducts({
 
   useEffect(() => {
     if (productId && state.selectedRecommendationAlgorithm) {
-      getSimilarProducts(productId, state.selectedRecommendationAlgorithm, 8);
+      getSimilarProducts(
+        productId,
+        state.selectedRecommendationAlgorithm,
+        8,
+        state.selectedEmbeddingSource
+      );
     }
 
     return () => {
@@ -65,6 +77,7 @@ export function SimilarProducts({
   }, [
     productId,
     state.selectedRecommendationAlgorithm,
+    state.selectedEmbeddingSource,
     getSimilarProducts,
     clearSimilarProducts,
   ]);
@@ -132,6 +145,10 @@ export function SimilarProducts({
         <p className="text-gray-600 dark:text-gray-400">
           Rekomendacje na podstawie algorytmu:{" "}
           <span className="font-medium">{currentAlgorithm?.label}</span>
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+          Embedding:{" "}
+          <span className="font-medium">{currentSource?.label}</span>
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
           Podobne do: {currentProductName}

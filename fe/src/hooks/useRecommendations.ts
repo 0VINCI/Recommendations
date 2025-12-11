@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { getSimilarProducts } from "../api/recommendationService";
 import { RecommendationAlgorithm } from "../types/recommendation/RecommendationAlgorithm";
 import type { ProductDto } from "../types/product/ProductDto";
+import { EmbeddingSource } from "../types/recommendation/EmbeddingSource";
 
 export function useRecommendations() {
   const [similarProducts, setSimilarProducts] = useState<ProductDto[]>([]);
@@ -12,7 +13,8 @@ export function useRecommendations() {
     async (
       productId: string,
       algorithm: RecommendationAlgorithm,
-      topCount: number = 10
+      topCount: number = 10,
+      embeddingSource: EmbeddingSource = EmbeddingSource.New
     ) => {
       setLoading(true);
       setError(null);
@@ -22,6 +24,7 @@ export function useRecommendations() {
           productId,
           algorithm,
           topCount,
+          embeddingSource,
         });
 
         if (result.status === 200 && result.data) {

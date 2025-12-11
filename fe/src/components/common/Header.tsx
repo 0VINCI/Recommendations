@@ -14,6 +14,7 @@ import { useApp } from "../../context/useApp";
 import { signOut } from "../../api/authorizationService";
 import { useState, useEffect, useRef } from "react";
 import { RecommendationAlgorithmSelector } from "./RecommendationAlgorithmSelector";
+import { EmbeddingSourceSelector } from "./EmbeddingSourceSelector";
 
 export function Header() {
   const { state, dispatch } = useApp();
@@ -110,6 +111,7 @@ export function Header() {
 
           <div className="flex items-center space-x-2">
             <RecommendationAlgorithmSelector />
+            <EmbeddingSourceSelector />
 
             <button
               onClick={toggleTheme}

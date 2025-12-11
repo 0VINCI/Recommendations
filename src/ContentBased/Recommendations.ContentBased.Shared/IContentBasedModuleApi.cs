@@ -10,7 +10,7 @@ public interface IContentBasedModuleApi
 {
     Task<ProductEmbeddingDto?> GetProductEmbedding(Guid productId, VectorType variant, CancellationToken cancellationToken = default);
     Task<IEnumerable<ProductEmbeddingDto>> GetProductEmbeddings(Guid productId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ProductDto>> GetSimilarProducts(Guid productId, VectorType variant, int topCount, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProductDto>> GetSimilarProducts(Guid productId, VectorType variant, int topCount, bool useNew = true, CancellationToken cancellationToken = default);
     Task CreateProductEmbedding(CreateProductEmbeddingDto productEmbedding, CancellationToken cancellationToken = default);
     Task UpdateProductEmbedding(Guid productId, VectorType variant, UpdateProductEmbeddingDto productEmbedding, CancellationToken cancellationToken = default);
     Task DeleteProductEmbedding(Guid productId, VectorType variant, CancellationToken cancellationToken = default);

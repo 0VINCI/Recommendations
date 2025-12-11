@@ -15,10 +15,11 @@ internal sealed class GetSimilarProductsQueryHandler(IProductEmbeddingRepository
         var similarProducts = await productEmbeddingRepository.GetSimilarProducts(
             query.ProductId, 
             query.Variant, 
-            query.TopCount, 
+            query.TopCount,
+            query.UseNew,
             cancellationToken);
 
         return similarProducts.Select(result => 
-            new SimilarProductDto(result.ProductEmbedding.ProductId, result.SimilarityScore));
+            new SimilarProductDto(result.ProductId, result.SimilarityScore));
     }
 }
