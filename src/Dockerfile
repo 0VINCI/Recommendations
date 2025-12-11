@@ -1,7 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet nuget locals all --clear \
+    && dotnet tool install --global dotnet-ef --version 8.0.8 --add-source https://api.nuget.org/v3/index.json --ignore-failed-sources
 ENV PATH="$PATH:/root/.dotnet/tools:$PATH"
 RUN dotnet restore
 RUN dotnet build -c Release
@@ -22,3 +23,4 @@ COPY --from=build /app/out ./
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "Recommendations.Api.dll"]
+
