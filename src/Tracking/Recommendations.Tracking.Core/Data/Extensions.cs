@@ -15,15 +15,17 @@ internal static class Extensions
 {
     public static IServiceCollection AddPostgres(this IServiceCollection services)
     {
-        services.AddDbContext<TrackingDbContext>((serviceProvider, options) =>
+        services.AddSingleton<NpgsqlDataSource>(serviceProvider =>
         {
             var dbOptions = serviceProvider.GetRequiredService<IOptions<DbOptions>>();
-            
-            // Konfiguracja NpgsqlDataSource z mapowaniem enuma
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(dbOptions.Value.DatabaseConnection);
             dataSourceBuilder.MapEnum<EventSource>("rec.event_source");
-            var dataSource = dataSourceBuilder.Build();
-            
+            return dataSourceBuilder.Build();
+        });
+        
+        services.AddDbContext<TrackingDbContext>((serviceProvider, options) =>
+        {
+            var dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
             options.UseNpgsql(dataSource);
         });
         

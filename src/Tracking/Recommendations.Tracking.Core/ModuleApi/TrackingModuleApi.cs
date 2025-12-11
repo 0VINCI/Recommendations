@@ -17,9 +17,9 @@ public class TrackingModuleApi(ITrackingRepository trackingRepository) : ITracki
         string? payload = null,
         CancellationToken cancellationToken = default)
     {
-        if (!Enum.TryParse<EventSource>(source, out var eventSource))
+        if (!Enum.TryParse<EventSource>(source, ignoreCase: true, out var eventSource))
         {
-            throw new ArgumentException($"Invalid source: {source}. Must be 'Frontend' or 'Backend'", nameof(source));
+            throw new ArgumentException($"Invalid source: {source}. Must be 'frontend' or 'backend' (case-insensitive)", nameof(source));
         }
 
         var eventRaw = new EventRaw
@@ -41,6 +41,13 @@ public class TrackingModuleApi(ITrackingRepository trackingRepository) : ITracki
 
     public async Task LinkIdentityAsync(Guid anonymousId, string userId, CancellationToken cancellationToken = default)
     {
+        // Check if link already exists to avoid duplicate key violations
+        var exists = await trackingRepository.IdentityLinkExistsAsync(anonymousId, userId, cancellationToken);
+        if (exists)
+        {
+            return; // Link already exists, nothing to do
+        }
+
         var identityLink = new IdentityLink
         {
             AnonymousId = anonymousId,

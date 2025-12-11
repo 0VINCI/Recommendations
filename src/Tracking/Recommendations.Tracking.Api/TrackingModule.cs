@@ -24,6 +24,45 @@ public class TrackingModule : ModuleDefinition
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)
     {
+        // Track event endpoint (frontend uses /track)
+        app.MapPost("/track", async (
+            [FromBody] TrackEventRequest request,
+            [FromServices] ITrackingModuleApi trackingApi,
+            CancellationToken cancellationToken = default) =>
+        {
+            if (string.IsNullOrEmpty(request.UserId) && !request.AnonymousId.HasValue)
+            {
+                return Results.BadRequest(new { error = "Either UserId or AnonymousId must be provided" });
+            }
+
+            try
+            {
+                var contextJson = request.Context != null ? JsonSerializer.Serialize(request.Context) : null;
+                var payloadJson = request.Payload != null ? JsonSerializer.Serialize(request.Payload) : null;
+
+                var eventId = await trackingApi.TrackEventAsync(
+                    request.EventType,
+                    request.Source,
+                    request.UserId,
+                    request.AnonymousId,
+                    request.SessionId,
+                    contextJson,
+                    payloadJson,
+                    cancellationToken);
+
+                return Results.Ok(new { eventId });
+            }
+            catch (ArgumentException ex)
+            {
+                return Results.BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to track event: {ex.Message}");
+            }
+        });
+        
+        // Legacy endpoint for backwards compatibility
         app.MapPost("/events", async (
             [FromBody] TrackEventRequest request,
             [FromServices] ITrackingModuleApi trackingApi,
@@ -61,6 +100,24 @@ public class TrackingModule : ModuleDefinition
             }
         });
 
+        // Link identity endpoint (frontend uses /link-identity)
+        app.MapPost("/link-identity", async (
+            [FromBody] LinkIdentityRequest request,
+            [FromServices] ITrackingModuleApi trackingApi,
+            CancellationToken cancellationToken = default) =>
+        {
+            try
+            {
+                await trackingApi.LinkIdentityAsync(request.AnonymousId, request.UserId, cancellationToken);
+                return Results.Ok(new { message = "Identity linked successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to link identity: {ex.Message}");
+            }
+        });
+        
+        // Legacy endpoint for backwards compatibility
         app.MapPost("/identity/link", async (
             [FromBody] LinkIdentityRequest request,
             [FromServices] ITrackingModuleApi trackingApi,

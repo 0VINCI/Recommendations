@@ -2,7 +2,7 @@ namespace Recommendations.Tracking.Shared.DTO;
 
 public record TrackEventRequest(
     string EventType,
-    string Source, // "Frontend" or "Backend"
+    string Source,
     string? UserId = null,
     Guid? AnonymousId = null,
     Guid? SessionId = null,
