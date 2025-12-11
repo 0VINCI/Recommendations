@@ -13,6 +13,7 @@ public class ContentBasedDbContext : DbContext
     }
 
     public DbSet<ProductEmbedding> ProductEmbeddings { get; set; }
+    public DbSet<ProductEmbeddingNew> ProductEmbeddingsNew { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

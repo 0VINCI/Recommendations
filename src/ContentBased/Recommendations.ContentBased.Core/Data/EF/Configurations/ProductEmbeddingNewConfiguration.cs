@@ -4,17 +4,17 @@ using Recommendations.ContentBased.Core.Types;
 
 namespace Recommendations.ContentBased.Core.Data.EF.Configurations;
 
-internal sealed class ProductEmbeddingConfiguration : IEntityTypeConfiguration<ProductEmbedding>
+internal sealed class ProductEmbeddingNewConfiguration : IEntityTypeConfiguration<ProductEmbeddingNew>
 {
-    public void Configure(EntityTypeBuilder<ProductEmbedding> builder)
+    public void Configure(EntityTypeBuilder<ProductEmbeddingNew> builder)
     {
-        builder.ToTable("ProductEmbeddings", "Vectors");
+        builder.ToTable("ProductEmbeddingsNew", "Vectors");
         builder.HasKey(x => new { x.ProductId, x.Variant });
 
         builder.Property(x => x.Variant).HasConversion<string>().HasMaxLength(40);
 
         builder.Property(x => x.Embedding)
-             .HasColumnType("vector(768)")
+             .HasColumnType("vector(2560)")
              .IsRequired();
 
         builder.Property(x => x.CreatedAt)

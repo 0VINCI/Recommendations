@@ -18,10 +18,11 @@ namespace Recommendations.ContentBased.Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("ContentBased")
+                .HasDefaultSchema("Vectors")
                 .HasAnnotation("ProductVersion", "8.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Recommendations.ContentBased.Core.Types.ProductEmbedding", b =>
@@ -52,6 +53,36 @@ namespace Recommendations.ContentBased.Core.Migrations
                     b.HasIndex("Variant");
 
                     b.ToTable("ProductEmbeddings", "Vectors");
+                });
+
+            modelBuilder.Entity("Recommendations.ContentBased.Core.Types.ProductEmbeddingNew", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Variant")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Vector>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("vector(2560)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProductId", "Variant");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("Variant");
+
+                    b.ToTable("ProductEmbeddingsNew", "Vectors");
                 });
 #pragma warning restore 612, 618
         }

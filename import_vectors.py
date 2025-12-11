@@ -16,19 +16,19 @@ from tqdm import tqdm
 
 # Konfiguracja bazy danych
 DB_CONFIG = {
-    'host': '192.168.1.245',
+    'host': 'aws-0-eu-central-1.pooler.supabase.com',
     'port': 5432,
-    'database': 'Recommendations',
-    'user': 'someuser',
-    'password': 'somepassword'
+    'database': 'postgres',
+    'user': 'postgres.xfmhkpppyfxbabtuotdh',
+    'password': 'puzdiq-cofvib-cepWe9'
 }
 
 # Mapowanie nazw plików na warianty
 VARIANT_MAPPING = {
-    'product_vectors': 'Full',
-    'product_vectors_no_brand': 'NoBrand', 
-    'product_vectors_no_brand_and_attributes': 'NoBrandAndAttributes',
-    'product_vectors_only_description': 'OnlyDescription'
+    'product_vectors_1st': 'Full',
+    'product_vectors_2nd': 'NoBrand', 
+    'product_vectors_3rd': 'NoBrandAndAttributes',
+    'product_vectors_only_description_qwen': 'OnlyDescription'
 }
 
 def connect_to_db():
@@ -41,7 +41,7 @@ def connect_to_db():
         sys.exit(1)
 
 def create_table_if_not_exists(conn):
-    """Tworzy tabelę ProductEmbeddings jeśli nie istnieje."""
+    """Tworzy tabelę ProductEmbeddingsNew jeśli nie istnieje."""
     with conn.cursor() as cur:
         # Sprawdź czy rozszerzenie vector jest dostępne
         cur.execute("SELECT 1 FROM pg_extension WHERE extname = 'vector'")
@@ -57,10 +57,10 @@ def create_table_if_not_exists(conn):
         # Sprawdź czy tabela istnieje
         cur.execute("""
             SELECT 1 FROM information_schema.tables 
-            WHERE table_schema = 'Vectors' AND table_name = 'ProductEmbeddings'
+            WHERE table_schema = 'Vectors' AND table_name = 'ProductEmbeddingsNew'
         """)
         if not cur.fetchone():
-            print("Tabela ProductEmbeddings nie istnieje! Uruchom migrację EF Core.")
+            print("Tabela ProductEmbeddingsNew nie istnieje! Uruchom migrację EF Core.")
             sys.exit(1)
         
         conn.commit()
@@ -72,8 +72,8 @@ def parse_vector_string(vector_str: str) -> List[float]:
         vector_str = vector_str.strip('[]')
         values = [float(x.strip()) for x in vector_str.split(',')]
         
-        if len(values) != 768:
-            raise ValueError(f"Wektor ma {len(values)} elementów, oczekiwano 768")
+        if len(values) != 2560:
+            raise ValueError(f"Wektor ma {len(values)} elementów, oczekiwano 2560")
         
         return values
     except Exception as e:
@@ -95,7 +95,7 @@ def import_from_csv(conn, csv_file: str, variant: str, batch_size: int = 1000):
     with conn.cursor() as cur:
         # Przygotuj zapytanie
         insert_query = """
-            INSERT INTO "Vectors"."ProductEmbeddings" ("ProductId", "Variant", "Embedding", "CreatedAt")
+            INSERT INTO "Vectors"."ProductEmbeddingsNew" ("ProductId", "Variant", "Embedding", "CreatedAt")
             SELECT p."Id", %s, %s, NOW()
             FROM "Dictionary"."Products" p
             WHERE p."ExternalId" = %s
@@ -118,7 +118,9 @@ def import_from_csv(conn, csv_file: str, variant: str, batch_size: int = 1000):
                     # Konwertuj na format pgvector
                     vector_str = f"[{','.join(map(str, vector_values))}]"
                     
-                    batch_data.append((product_id, variant, vector_str))
+                    # Kolejność parametrów musi odpowiadać kolejności placeholderów w insert_query:
+                    # (%s -> Variant, %s -> Embedding, %s -> ExternalId)
+                    batch_data.append((variant, vector_str, product_id))
                     
                 except Exception as e:
                     print(f"Błąd w wierszu {row.name}: {e}")
@@ -154,7 +156,7 @@ def import_from_pkl(conn, pkl_file: str, variant: str, batch_size: int = 1000):
         
         with conn.cursor() as cur:
             insert_query = """
-                INSERT INTO "Vectors"."ProductEmbeddings" ("ProductId", "Variant", "Embedding", "CreatedAt")
+                INSERT INTO "Vectors"."ProductEmbeddingsNew" ("ProductId", "Variant", "Embedding", "CreatedAt")
                 SELECT p."Id", %s, %s, NOW()
                 FROM "Dictionary"."Products" p
                 WHERE p."ExternalId" = %s
@@ -181,8 +183,8 @@ def import_from_pkl(conn, pkl_file: str, variant: str, batch_size: int = 1000):
                         print(f"Nieobsługiwany format wektora dla ID {product_id}: {type(vector)}")
                         continue
                     
-                    if len(vector_values) != 768:
-                        print(f"Wektor dla ID {product_id} ma {len(vector_values)} elementów, oczekiwano 768")
+                    if len(vector_values) != 2560:
+                        print(f"Wektor dla ID {product_id} ma {len(vector_values)} elementów, oczekiwano 2560")
                         continue
                     
                     # Konwertuj na format pgvector
@@ -278,7 +280,7 @@ def main():
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
                 SELECT "Variant", COUNT(*) as count 
-                FROM "Vectors"."ProductEmbeddings" 
+                FROM "Vectors"."ProductEmbeddingsNew" 
                 GROUP BY "Variant"
             """)
             stats = cur.fetchall()

@@ -3,7 +3,7 @@ using Recommendations.ContentBased.Shared.Types;
 
 namespace Recommendations.ContentBased.Core.Types;
 
-public sealed class ProductEmbedding
+public sealed class ProductEmbeddingNew
 {
     public Guid ProductId { get; private set; }
     public VectorType Variant { get; private set; }
@@ -11,12 +11,12 @@ public sealed class ProductEmbedding
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    private ProductEmbedding() { }
+    private ProductEmbeddingNew() { }
 
-    public static ProductEmbedding Create(Guid productId, VectorType variant, Vector embedding)
+    public static ProductEmbeddingNew Create(Guid productId, VectorType variant, Vector embedding)
     {
-        Ensure768(embedding);
-        return new ProductEmbedding
+        Ensure2560(embedding);
+        return new ProductEmbeddingNew
         {
             ProductId = productId,
             Variant   = variant,
@@ -27,12 +27,12 @@ public sealed class ProductEmbedding
 
     public void Update(Vector embedding)
     {
-        Ensure768(embedding);
+        Ensure2560(embedding);
         Embedding = embedding;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    static void Ensure768(Vector v)
+    private static void Ensure2560(Vector v)
     {
         if (v is null)
             throw new ArgumentException("Embedding cannot be null", nameof(v));

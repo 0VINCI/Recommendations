@@ -32,7 +32,7 @@ internal sealed class CartModule : ModuleDefinition
             [FromBody] AddItemToCart command,
             [FromServices] ICommandDispatcher commandDispatcher, CancellationToken cancellationToken = default) =>
         {
-            await commandDispatcher.SendAsync(command);
+            await commandDispatcher.SendAsync(command, cancellationToken);
             return Results.StatusCode(StatusCodes.Status200OK);
         });
         

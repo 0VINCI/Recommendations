@@ -32,7 +32,7 @@ internal sealed class AuthorizationModule : ModuleDefinition
         app.MapGet("/getAllUsers", async (                 
                 [FromServices] IQueryDispatcher queryDispatcher, CancellationToken cancellationToken = default) 
             => await queryDispatcher.QueryAsync(new GetAllUsers(), cancellationToken)
-        ).RequireAuthorization();
+        ).RequireAuthorization(); 
 
         app.MapPost("/signIn", async (
             [FromBody] SignInDto signInDto,
