@@ -8,7 +8,6 @@ import { RECOMMENDATION_ALGORITHMS } from "../types/recommendation/Recommendatio
 import { useTracking } from "../hooks/useTracking";
 import {
   EMBEDDING_SOURCES,
-  EmbeddingSource,
 } from "../types/recommendation/EmbeddingSource";
 
 interface SimilarProductsProps {
