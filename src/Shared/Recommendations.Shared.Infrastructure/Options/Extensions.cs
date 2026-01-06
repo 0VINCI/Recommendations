@@ -10,6 +10,7 @@ public static class Extensions
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.Configure<DbOptions>(configuration.GetSection(DbOptions.SectionName));
+        services.Configure<CorsOptions>(configuration.GetSection(CorsOptions.SectionName));
 
         return services;
     }

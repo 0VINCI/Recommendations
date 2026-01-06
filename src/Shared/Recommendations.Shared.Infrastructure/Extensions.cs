@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Recommendations.Shared.Infrastructure.Commands;
+using Recommendations.Shared.Infrastructure.Cors;
 using Recommendations.Shared.Infrastructure.Events;
 using Recommendations.Shared.Infrastructure.Options;
 using Recommendations.Shared.Infrastructure.Queries;
@@ -22,56 +23,42 @@ public static class Extensions
     public static IServiceCollection AddSharedFramework(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            var jwtOpts = configuration
-                .GetSection(JwtOptions.SectionName)
-                .Get<JwtOptions>();
-
-            options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer           = true,
-                ValidIssuer              = jwtOpts.Issuer,
-                ValidateAudience         = true,
-                ValidAudience            = jwtOpts.Audience,
-                ValidateLifetime         = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey         = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(jwtOpts.Key))
-            };
-
-            options.Events = new JwtBearerEvents
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
             {
-                OnMessageReceived = context =>
+                var jwtOpts = configuration
+                    .GetSection(JwtOptions.SectionName)
+                    .Get<JwtOptions>();
+
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    if (context.Request.Cookies.TryGetValue("jwt-token", out var cookieToken))
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOpts.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtOpts.Audience,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtOpts.Key))
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
                     {
-                        context.Token = cookieToken;
+                        if (context.Request.Cookies.TryGetValue("jwt-token", out var cookieToken))
+                        {
+                            context.Token = cookieToken;
+                        }
+
+                        return Task.CompletedTask;
                     }
-                    return Task.CompletedTask;
-                }
-            };
-        });        
-        
-        services.AddCors(options =>
-        {
-            options.AddPolicy("DefaultCorsPolicy", policy =>
-            {
-                policy.WithOrigins("http://localhost:5173", 
-                        "http://localhost:5174", 
-                        "http://localhost:3000", 
-                        "https://recommendations-git-main-0vincis-projects.vercel.app", 
-                        "https://mgr.dupa.uk",
-                        "https://recommendations-mu.vercel.app")
-                      .AllowAnyMethod()
-                      .AllowAnyHeader()
-                      .AllowCredentials();
+                };
             });
-        });
+        
         services.AddAuthorization(options =>
         {
             options.AddPolicy("MustBeAdmin", policy =>
@@ -89,6 +76,7 @@ public static class Extensions
         services.AddEvents(assemblies);
         services.AddEndpointsApiExplorer();
         services.AddOptions(configuration);
+        services.AddSharedCors(configuration);
         services.AddServices();
         services.AddUserContext();
         services.AddCustomSwagger();
@@ -99,10 +87,10 @@ public static class Extensions
 
     public static WebApplication UseSharedFramework(this WebApplication app)
     {
-        app.UseCors("DefaultCorsPolicy");
+        app.UseSharedCors();
         app.UseAuthentication();
         app.UseAuthorization();
-
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
