@@ -43,7 +43,7 @@ export const RECOMMENDATION_ALGORITHMS: RecommendationAlgorithmInfo[] = [
     value: RecommendationAlgorithm.CollaborativeFiltering,
     label: "Collaborative Filtering",
     description: "Rekomendacje bazujące na preferencjach innych użytkowników",
-    isAvailable: false,
+    isAvailable: true,
   },
   {
     value: RecommendationAlgorithm.YoloBased,

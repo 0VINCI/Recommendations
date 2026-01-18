@@ -7,6 +7,7 @@ using Recommendations.Shared.Infrastructure.Options;
 using Recommendations.Tracking.Core.Data.Repositories;
 using Recommendations.Tracking.Core.Data.Signals;
 using Recommendations.Tracking.Core.Data.Tracking;
+using Recommendations.Tracking.Core.Repositories;
 using Recommendations.Tracking.Core.Types;
 
 namespace Recommendations.Tracking.Core.Data;
@@ -39,6 +40,7 @@ internal static class Extensions
         });
         
         services.AddScoped<ITrackingRepository, TrackingRepository>();
+        services.AddScoped<ICfEmbeddingRepository, CfEmbeddingRepository>();
 
         return services;
     }

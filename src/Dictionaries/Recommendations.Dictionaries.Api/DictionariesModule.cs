@@ -367,48 +367,5 @@ internal sealed class DictionariesModule : ModuleDefinition
             return product is null ? Results.NotFound() : Results.Ok(product);
         });
 
-        app.MapGet("/test/database", async (
-            [FromServices] DictionariesDbContext context,
-            CancellationToken cancellationToken = default) =>
-        {
-            try
-            {
-                // Test connection first
-                var canConnect = await context.Database.CanConnectAsync(cancellationToken);
-                if (!canConnect)
-                {
-                    return Results.BadRequest(new { error = "Cannot connect to database" });
-                }
-
-                var masterCategoriesCount = await context.MasterCategories.CountAsync(cancellationToken);
-                var subCategoriesCount = await context.SubCategories.CountAsync(cancellationToken);
-                var articleTypesCount = await context.ArticleTypes.CountAsync(cancellationToken);
-                var baseColoursCount = await context.BaseColours.CountAsync(cancellationToken);
-                var productsCount = await context.Products.CountAsync(cancellationToken);
-                var productDetailsCount = await context.ProductDetails.CountAsync(cancellationToken);
-                var productImagesCount = await context.ProductImages.CountAsync(cancellationToken);
-
-                return Results.Ok(new
-                {
-                    ConnectionStatus = "Connected",
-                    MasterCategories = masterCategoriesCount,
-                    SubCategories = subCategoriesCount,
-                    ArticleTypes = articleTypesCount,
-                    BaseColours = baseColoursCount,
-                    Products = productsCount,
-                    ProductDetails = productDetailsCount,
-                    ProductImages = productImagesCount
-                });
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(new
-                {
-                    error = ex.Message,
-                    stackTrace = ex.StackTrace,
-                    innerException = ex.InnerException?.Message
-                });
-            }
-        });
     }
 }

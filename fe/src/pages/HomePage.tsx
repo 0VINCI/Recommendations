@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Star, TrendingUp } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
+import { ForYouSection } from "../components/ForYouSection";
 import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
 import { Loader } from "../components/common/Loader";
@@ -40,6 +41,9 @@ export function HomePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Rotating Banners */}
       <RotatingBanners />
+
+      {/* Personalized Recommendations (CF user-to-item) - only for logged in users */}
+      <ForYouSection />
 
       {/* Bestsellers Section */}
       <section className="py-20 bg-white dark:bg-gray-800">

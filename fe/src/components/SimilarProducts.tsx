@@ -4,11 +4,12 @@ import { useRecommendations } from "../hooks/useRecommendations";
 import { useApp } from "../context/useApp";
 import { ProductCard } from "./ProductCard";
 import { RecommendationSkeleton } from "./common/RecommendationSkeleton";
-import { RECOMMENDATION_ALGORITHMS } from "../types/recommendation/RecommendationAlgorithm";
-import { useTracking } from "../hooks/useTracking";
 import {
-  EMBEDDING_SOURCES,
-} from "../types/recommendation/EmbeddingSource";
+  RECOMMENDATION_ALGORITHMS,
+  RecommendationAlgorithm,
+} from "../types/recommendation/RecommendationAlgorithm";
+import { useTracking } from "../hooks/useTracking";
+import { EMBEDDING_SOURCES } from "../types/recommendation/EmbeddingSource";
 
 interface SimilarProductsProps {
   productId: string;
@@ -145,10 +146,13 @@ export function SimilarProducts({
           Rekomendacje na podstawie algorytmu:{" "}
           <span className="font-medium">{currentAlgorithm?.label}</span>
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-          Embedding:{" "}
-          <span className="font-medium">{currentSource?.label}</span>
-        </p>
+        {state.selectedRecommendationAlgorithm !==
+          RecommendationAlgorithm.CollaborativeFiltering && (
+          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+            Embedding:{" "}
+            <span className="font-medium">{currentSource?.label}</span>
+          </p>
+        )}
         <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
           Podobne do: {currentProductName}
         </p>

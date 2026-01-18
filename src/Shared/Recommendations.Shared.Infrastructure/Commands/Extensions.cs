@@ -15,6 +15,7 @@ namespace Recommendations.Shared.Infrastructure.Commands
                 .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+            
             return services;
         }
     }

@@ -13,6 +13,7 @@
     <ItemGroup>
 		<ProjectReference Include="..\..\Shared\Recommendations.Shared.Abstractions\Recommendations.Shared.Abstractions.csproj" />
 		<ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
+		<ProjectReference Include="..\..\Dictionaries\Recommendations.Dictionaries.Shared\Recommendations.Dictionaries.Shared.csproj" />
 		<ProjectReference Include="..\Recommendations.Tracking.Core\Recommendations.Tracking.Core.csproj" />
 	</ItemGroup>
 

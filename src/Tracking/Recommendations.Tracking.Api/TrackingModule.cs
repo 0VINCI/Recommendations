@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Recommendations.Dictionaries.Shared;
 using Recommendations.Shared.ModuleDefinition;
 using Recommendations.Tracking.Core;
+using Recommendations.Tracking.Core.Repositories;
 using Recommendations.Tracking.Core.Types;
 using Recommendations.Tracking.Shared;
 using Recommendations.Tracking.Shared.DTO;
@@ -148,6 +150,143 @@ public class TrackingModule : ModuleDefinition
             catch (Exception ex)
             {
                 return Results.Problem($"Failed to check identity link: {ex.Message}");
+            }
+        });
+
+        app.MapGet("/cf/similar-items/{itemId}", async (
+            [FromRoute] string itemId,
+            [FromQuery] int? topCount,
+            [FromServices] ICfEmbeddingRepository cfRepository,
+            CancellationToken cancellationToken = default) =>
+        {
+            var count = topCount ?? 10;
+            if (count <= 0 || count > 100)
+                return Results.BadRequest(new { error = "topCount must be between 1 and 100" });
+
+            try
+            {
+                var exists = await cfRepository.ItemEmbeddingExists(itemId, cancellationToken);
+                if (!exists)
+                    return Results.NotFound(new { error = $"No CF embedding found for item {itemId}" });
+
+                var similarItems = await cfRepository.GetSimilarItems(itemId, count, cancellationToken);
+                var items = similarItems.Select(x => new CfRecommendationDto(x.ItemId, x.SimilarityScore)).ToList();
+
+                return Results.Ok(new CfRecommendationsResponse(items, items.Count, "cf-item-similarity"));
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to get similar items: {ex.Message}");
+            }
+        });
+
+        app.MapGet("/cf/similar-items/{itemId}/products", async (
+            [FromRoute] string itemId,
+            [FromQuery] int? topCount,
+            [FromServices] ICfEmbeddingRepository cfRepository,
+            [FromServices] IDictionariesModuleApi dictionariesApi,
+            CancellationToken cancellationToken = default) =>
+        {
+            var count = topCount ?? 10;
+            if (count <= 0 || count > 100)
+                return Results.BadRequest(new { error = "topCount must be between 1 and 100" });
+
+            try
+            {
+                var exists = await cfRepository.ItemEmbeddingExists(itemId, cancellationToken);
+                if (!exists)
+                    return Results.NotFound(new { error = $"No CF embedding found for item {itemId}" });
+
+                var similarItems = await cfRepository.GetSimilarItems(itemId, count, cancellationToken);
+                var productIds = similarItems
+                    .Select(x => Guid.TryParse(x.ItemId, out var guid) ? guid : (Guid?)null)
+                    .Where(x => x.HasValue)
+                    .Select(x => x!.Value)
+                    .ToArray();
+
+                var products = await dictionariesApi.GetProductsByIdsForRecommendations(productIds);
+                return Results.Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to get similar items: {ex.Message}");
+            }
+        });
+
+        app.MapGet("/cf/for-user/{userKey}", async (
+            [FromRoute] string userKey,
+            [FromQuery] int? topCount,
+            [FromServices] ICfEmbeddingRepository cfRepository,
+            CancellationToken cancellationToken = default) =>
+        {
+            var count = topCount ?? 10;
+            if (count <= 0 || count > 100)
+                return Results.BadRequest(new { error = "topCount must be between 1 and 100" });
+
+            try
+            {
+                var exists = await cfRepository.UserEmbeddingExists(userKey, cancellationToken);
+                if (!exists)
+                    return Results.NotFound(new { error = $"No CF embedding found for user {userKey}" });
+
+                var recommendations = await cfRepository.GetRecommendationsForUser(userKey, count, cancellationToken);
+                var items = recommendations.Select(x => new CfRecommendationDto(x.ItemId, x.SimilarityScore)).ToList();
+
+                return Results.Ok(new CfRecommendationsResponse(items, items.Count, "cf-user-recommendation"));
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to get recommendations: {ex.Message}");
+            }
+        });
+
+        app.MapGet("/cf/for-user/{userKey}/products", async (
+            [FromRoute] string userKey,
+            [FromQuery] int? topCount,
+            [FromServices] ICfEmbeddingRepository cfRepository,
+            [FromServices] IDictionariesModuleApi dictionariesApi,
+            CancellationToken cancellationToken = default) =>
+        {
+            var count = topCount ?? 10;
+            if (count <= 0 || count > 100)
+                return Results.BadRequest(new { error = "topCount must be between 1 and 100" });
+
+            try
+            {
+                var exists = await cfRepository.UserEmbeddingExists(userKey, cancellationToken);
+                if (!exists)
+                    return Results.NotFound(new { error = $"No CF embedding found for user {userKey}" });
+
+                var recommendations = await cfRepository.GetRecommendationsForUser(userKey, count, cancellationToken);
+                var productIds = recommendations
+                    .Select(x => Guid.TryParse(x.ItemId, out var guid) ? guid : (Guid?)null)
+                    .Where(x => x.HasValue)
+                    .Select(x => x!.Value)
+                    .ToArray();
+
+                var products = await dictionariesApi.GetProductsByIdsForRecommendations(productIds);
+                return Results.Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to get recommendations for user: {ex.Message}");
+            }
+        });
+
+        app.MapGet("/cf/stats", async (
+            [FromServices] ICfEmbeddingRepository cfRepository,
+            CancellationToken cancellationToken = default) =>
+        {
+            try
+            {
+                var userCount = await cfRepository.GetUserEmbeddingsCount(cancellationToken);
+                var itemCount = await cfRepository.GetItemEmbeddingsCount(cancellationToken);
+
+                return Results.Ok(new CfModelStatsResponse(userCount, itemCount));
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to get CF stats: {ex.Message}");
             }
         });
 

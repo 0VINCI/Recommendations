@@ -36,7 +36,7 @@ public sealed class SignalsDbContext : DbContext
         {
             e.ToTable("user_embeddings_cf");
             e.HasKey(x => x.UserKey);
-            e.Property(x => x.Emb).HasColumnType("vector(768)");
+            e.Property(x => x.Emb).HasColumnType("vector(128)");
             e.HasIndex(x => x.TrainedAt);
         });
 
@@ -44,7 +44,7 @@ public sealed class SignalsDbContext : DbContext
         {
             e.ToTable("item_embeddings_cf");
             e.HasKey(x => x.ItemId);
-            e.Property(x => x.Emb).HasColumnType("vector(768)");
+            e.Property(x => x.Emb).HasColumnType("vector(128)");
             e.HasIndex(x => x.TrainedAt);
         });
     }

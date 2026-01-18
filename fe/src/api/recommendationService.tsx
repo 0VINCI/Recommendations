@@ -2,6 +2,7 @@ import { get } from "./client/httpClient.tsx";
 import type { ApiResult } from "../types/api/ApiResult.tsx";
 import type { ProductDto } from "../types/product/ProductDto";
 import { EmbeddingSource } from "../types/recommendation/EmbeddingSource";
+import { RecommendationAlgorithm } from "../types/recommendation/RecommendationAlgorithm";
 import type {
   GetSimilarProductsRequest,
   GetSimilarProductsResponse,
@@ -11,7 +12,8 @@ import type {
   GetAllProductEmbeddingsResponse,
 } from "../types/recommendation/RecommendationApi";
 
-const modulePrefix = "/content-based";
+const contentBasedPrefix = "/content-based";
+const trackingPrefix = "/tracking";
 
 const mapAlgorithmToVectorType = (algorithm: string): string => {
   switch (algorithm) {
@@ -28,17 +30,31 @@ const mapAlgorithmToVectorType = (algorithm: string): string => {
   }
 };
 
+const isCollaborativeFiltering = (algorithm: string): boolean => {
+  return algorithm === RecommendationAlgorithm.CollaborativeFiltering;
+};
+
 export const getSimilarProducts = async (
   request: GetSimilarProductsRequest
 ): Promise<ApiResult<GetSimilarProductsResponse>> => {
-  const vectorType = mapAlgorithmToVectorType(request.algorithm);
   const topCount = request.topCount || 10;
-  const source = request.embeddingSource ?? EmbeddingSource.New;
 
   try {
-    const response = await get<ProductDto[]>(
-      `${modulePrefix}/product-embeddings/${request.productId}/${vectorType}/similar/${source}?topCount=${topCount}`
-    );
+    let response: ApiResult<ProductDto[]>;
+
+    if (isCollaborativeFiltering(request.algorithm)) {
+
+      response = await get<ProductDto[]>(
+        `${trackingPrefix}/cf/similar-items/${request.productId}/products?topCount=${topCount}`
+      );
+    } else {
+
+      const vectorType = mapAlgorithmToVectorType(request.algorithm);
+      const source = request.embeddingSource ?? EmbeddingSource.New;
+      response = await get<ProductDto[]>(
+        `${contentBasedPrefix}/product-embeddings/${request.productId}/${vectorType}/similar/${source}?topCount=${topCount}`
+      );
+    }
 
     if (response.status !== 200 || !response.data) {
       return {
@@ -70,7 +86,7 @@ export const getProductEmbedding = async (
   const vectorType = mapAlgorithmToVectorType(request.algorithm);
 
   return await get<GetProductEmbeddingResponse>(
-    `${modulePrefix}/product-embeddings/${request.productId}/${vectorType}`
+    `${contentBasedPrefix}/product-embeddings/${request.productId}/${vectorType}`
   );
 };
 
@@ -78,6 +94,32 @@ export const getAllProductEmbeddings = async (
   request: GetAllProductEmbeddingsRequest
 ): Promise<ApiResult<GetAllProductEmbeddingsResponse>> => {
   return await get<GetAllProductEmbeddingsResponse>(
-    `${modulePrefix}/product-embeddings/${request.productId}`
+    `${contentBasedPrefix}/product-embeddings/${request.productId}`
   );
+};
+
+export const getRecommendationsForUser = async (
+  userId: string,
+  topCount: number = 8
+): Promise<ApiResult<ProductDto[]>> => {
+  try {
+    const response = await get<ProductDto[]>(
+      `${trackingPrefix}/cf/for-user/${userId}/products?topCount=${topCount}`
+    );
+
+    if (response.status === 404) {
+
+      return {
+        status: 404,
+        message: "Brak spersonalizowanych rekomendacji",
+      };
+    }
+
+    return response;
+  } catch {
+    return {
+      status: 500,
+      message: "Błąd podczas pobierania rekomendacji",
+    };
+  }
 };
