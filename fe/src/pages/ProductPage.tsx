@@ -527,23 +527,17 @@ export function ProductPage() {
                     return (
                       <div className="space-y-3">
                         {descriptionSections.map((section, index) => (
-                          <>
+                          <div key={`section-${index}`}>
                             {/* Pokaż tytuł sekcji tylko jeśli nie jest pusty (unikamy zagnieżdżonych tytułów) */}
                             {section.title && section.title.trim() !== "" && (
-                              <h4
-                                key={`title-${index}`}
-                                className="font-semibold text-gray-900 dark:text-white mb-2 text-base"
-                              >
+                              <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-base">
                                 {section.title}
                               </h4>
                             )}
-                            <p
-                              key={`content-${index}`}
-                              className="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line"
-                            >
+                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                               {section.content}
                             </p>
-                          </>
+                          </div>
                         ))}
                       </div>
                     );

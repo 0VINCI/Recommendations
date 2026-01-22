@@ -79,31 +79,6 @@ export function RecommendationAlgorithmSelector() {
               )}
             </button>
           ))}
-
-          <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
-            <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              Niedostępne algorytmy
-            </div>
-
-            {RECOMMENDATION_ALGORITHMS.filter((alg) => !alg.isAvailable).map(
-              (algorithm) => (
-                <div
-                  key={algorithm.value}
-                  className="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                >
-                  <div className="flex-1">
-                    <div className="font-medium">{algorithm.label}</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                      {algorithm.description}
-                    </div>
-                  </div>
-                  <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-1 rounded">
-                    Wkrótce
-                  </span>
-                </div>
-              )
-            )}
-          </div>
         </div>
       )}
     </div>
