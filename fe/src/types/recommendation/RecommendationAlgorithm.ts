@@ -4,7 +4,7 @@ export enum RecommendationAlgorithm {
   ContentBasedNoBrandAndAttributes = "ContentBasedNoBrandAndAttributes",
   ContentBasedOnlyDescription = "ContentBasedOnlyDescription",
   CollaborativeFiltering = "CollaborativeFiltering",
-  YoloBased = "YoloBased",
+  VisualBased = "VisualBased",
 }
 
 export interface RecommendationAlgorithmInfo {
@@ -46,9 +46,9 @@ export const RECOMMENDATION_ALGORITHMS: RecommendationAlgorithmInfo[] = [
     isAvailable: true,
   },
   {
-    value: RecommendationAlgorithm.YoloBased,
-    label: "YOLO-based",
-    description: "Rekomendacje bazujące na analizie obrazów produktów",
-    isAvailable: false,
+    value: RecommendationAlgorithm.VisualBased,
+    label: "Visual-Based",
+    description: "Rekomendacje bazujące na podobieństwie wizualnym produktów",
+    isAvailable: true,
   },
 ];

@@ -14,6 +14,8 @@ using Recommendations.Shared.ModuleDefinition;
 using Recommendations.Tracking.Api;
 using Recommendations.Tracking.Core.Data.Tracking;
 using Recommendations.Tracking.Core.Data.Signals;
+using Recommendations.VisualBased.Api;
+using Recommendations.VisualBased.Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,7 @@ RegistrationModules.RegisterModule<ContentBasedModule>();
 RegistrationModules.RegisterModule<DictionariesModule>();
 RegistrationModules.RegisterModule<PurchaseModule>();
 RegistrationModules.RegisterModule<TrackingModule>();
+RegistrationModules.RegisterModule<VisualBasedModule>();
 
 builder.Services.AddApiDependencies(builder.Configuration);
 
@@ -41,7 +44,8 @@ var contexts = new DbContext[]
     scope.ServiceProvider.GetRequiredService<AuthorizationDbContext>(),
     scope.ServiceProvider.GetRequiredService<ContentBasedDbContext>(),
     scope.ServiceProvider.GetRequiredService<TrackingDbContext>(),
-    scope.ServiceProvider.GetRequiredService<SignalsDbContext>()
+    scope.ServiceProvider.GetRequiredService<SignalsDbContext>(),
+    scope.ServiceProvider.GetRequiredService<VisualBasedDbContext>()
 };
 
 foreach (var ctx in contexts)

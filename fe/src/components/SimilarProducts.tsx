@@ -147,7 +147,9 @@ export function SimilarProducts({
           <span className="font-medium">{currentAlgorithm?.label}</span>
         </p>
         {state.selectedRecommendationAlgorithm !==
-          RecommendationAlgorithm.CollaborativeFiltering && (
+          RecommendationAlgorithm.CollaborativeFiltering &&
+          state.selectedRecommendationAlgorithm !==
+            RecommendationAlgorithm.VisualBased && (
           <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
             Embedding:{" "}
             <span className="font-medium">{currentSource?.label}</span>

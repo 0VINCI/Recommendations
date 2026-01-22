@@ -14,6 +14,7 @@ import type {
 
 const contentBasedPrefix = "/content-based";
 const trackingPrefix = "/tracking";
+const visualPrefix = "/visual";
 
 const mapAlgorithmToVectorType = (algorithm: string): string => {
   switch (algorithm) {
@@ -34,6 +35,10 @@ const isCollaborativeFiltering = (algorithm: string): boolean => {
   return algorithm === RecommendationAlgorithm.CollaborativeFiltering;
 };
 
+const isVisualBased = (algorithm: string): boolean => {
+  return algorithm === RecommendationAlgorithm.VisualBased;
+};
+
 export const getSimilarProducts = async (
   request: GetSimilarProductsRequest
 ): Promise<ApiResult<GetSimilarProductsResponse>> => {
@@ -46,6 +51,11 @@ export const getSimilarProducts = async (
 
       response = await get<ProductDto[]>(
         `${trackingPrefix}/cf/similar-items/${request.productId}/products?topCount=${topCount}`
+      );
+    } else if (isVisualBased(request.algorithm)) {
+
+      response = await get<ProductDto[]>(
+        `${visualPrefix}/similar-items/${request.productId}/products?topCount=${topCount}`
       );
     } else {
 

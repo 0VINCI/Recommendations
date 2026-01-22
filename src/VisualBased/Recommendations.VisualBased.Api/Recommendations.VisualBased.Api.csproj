@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\Recommendations.Shared.ModuleDefinition\Recommendations.Shared.ModuleDefinition.csproj" />
       <ProjectReference Include="..\Recommendations.VisualBased.Core\Recommendations.VisualBased.Core.csproj" />
+      <ProjectReference Include="..\..\Dictionaries\Recommendations.Dictionaries.Shared\Recommendations.Dictionaries.Shared.csproj" />
     </ItemGroup>
 
 </Project>

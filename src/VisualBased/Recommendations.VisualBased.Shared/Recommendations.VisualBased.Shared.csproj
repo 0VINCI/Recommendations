@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Dictionaries\Recommendations.Dictionaries.Shared\Recommendations.Dictionaries.Shared.csproj" />
+    </ItemGroup>
+
 </Project>
