@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Recommendations.Dictionaries.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using Recommendations.Dictionaries.Infrastructure.DAL;
 namespace Recommendations.Dictionaries.Infrastructure.Migrations
 {
     [DbContext(typeof(DictionariesDbContext))]
-    partial class DictionariesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260129200308_AddIsOnSaleAndProfitBoostColumns")]
+    partial class AddIsOnSaleAndProfitBoostColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

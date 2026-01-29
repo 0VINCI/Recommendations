@@ -37,6 +37,17 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             
         builder.Property(p => p.IsNew)
             .IsRequired();
+            
+        builder.Property(p => p.IsTrending)
+            .IsRequired();
+            
+        builder.Property(p => p.IsOnSale)
+            .IsRequired()
+            .HasDefaultValue(false);
+            
+        builder.Property(p => p.ProfitBoost)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder.HasOne(p => p.SubCategory)
             .WithMany()
@@ -66,6 +77,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasIndex(p => p.BrandName);
         builder.HasIndex(p => p.IsBestseller);
         builder.HasIndex(p => p.IsNew);
+        builder.HasIndex(p => p.IsTrending);
+        builder.HasIndex(p => p.IsOnSale);
+        builder.HasIndex(p => p.ProfitBoost);
         builder.HasIndex(p => p.Rating);
         builder.HasIndex(p => p.Price);
     }

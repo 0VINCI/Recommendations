@@ -11,6 +11,7 @@ public interface IProductRepository
     Task<IReadOnlyCollection<Product>> GetByCategoryAsync(string category);
     Task<IReadOnlyCollection<Product>> GetBestsellersAsync();
     Task<IReadOnlyCollection<Product>> GetNewProductsAsync();
+    Task<IReadOnlyCollection<Product>> GetTrendingProductsAsync();
     Task<IReadOnlyCollection<Product>> SearchAsync(string searchTerm);
     Task AddAsync(Product product);
     Task UpdateAsync(Product product);
@@ -41,6 +42,12 @@ public interface IProductRepository
         int page,
         int pageSize,
         CancellationToken cancellationToken = default);
+
+    Task<(IReadOnlyCollection<Product> Products, int TotalCount)> GetTrendingProductsPagedAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+        
     Task<(IReadOnlyCollection<Product> Products, int TotalCount)> SearchPagedAsync(
         string searchTerm,
         int page,

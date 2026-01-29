@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Recommendations.Dictionaries.Shared;
 using Recommendations.Shared.ModuleDefinition;
 using Recommendations.Tracking.Core;
+using Recommendations.Tracking.Core.Data.Repositories;
 using Recommendations.Tracking.Core.Repositories;
-using Recommendations.Tracking.Core.Types;
 using Recommendations.Tracking.Shared;
 using Recommendations.Tracking.Shared.DTO;
 
@@ -26,7 +26,6 @@ public class TrackingModule : ModuleDefinition
 
     public override void CreateEndpoints(IEndpointRouteBuilder app)
     {
-        // Track event endpoint (frontend uses /track)
         app.MapPost("/track", async (
             [FromBody] TrackEventRequest request,
             [FromServices] ITrackingModuleApi trackingApi,
@@ -64,7 +63,6 @@ public class TrackingModule : ModuleDefinition
             }
         });
         
-        // Legacy endpoint for backwards compatibility
         app.MapPost("/events", async (
             [FromBody] TrackEventRequest request,
             [FromServices] ITrackingModuleApi trackingApi,
@@ -102,7 +100,6 @@ public class TrackingModule : ModuleDefinition
             }
         });
 
-        // Link identity endpoint (frontend uses /link-identity)
         app.MapPost("/link-identity", async (
             [FromBody] LinkIdentityRequest request,
             [FromServices] ITrackingModuleApi trackingApi,
@@ -119,7 +116,6 @@ public class TrackingModule : ModuleDefinition
             }
         });
         
-        // Legacy endpoint for backwards compatibility
         app.MapPost("/identity/link", async (
             [FromBody] LinkIdentityRequest request,
             [FromServices] ITrackingModuleApi trackingApi,
@@ -287,6 +283,39 @@ public class TrackingModule : ModuleDefinition
             catch (Exception ex)
             {
                 return Results.Problem($"Failed to get CF stats: {ex.Message}");
+            }
+        });
+
+        app.MapGet("/recently-viewed/{userId}/products", async (
+            [FromRoute] string userId,
+            [FromQuery] int? limit,
+            [FromServices] ITrackingRepository trackingRepository,
+            [FromServices] IDictionariesModuleApi dictionariesApi,
+            CancellationToken cancellationToken = default) =>
+        {
+            var count = limit ?? 10;
+            if (count <= 0 || count > 50)
+                return Results.BadRequest(new { error = "limit must be between 1 and 50" });
+
+            try
+            {
+                var productIds = await trackingRepository.GetRecentlyViewedProductIdsAsync(userId, count, cancellationToken);
+                
+                if (productIds.Count == 0)
+                    return Results.Ok(Array.Empty<object>());
+
+                var guids = productIds
+                    .Select(id => Guid.TryParse(id, out var guid) ? guid : (Guid?)null)
+                    .Where(g => g.HasValue)
+                    .Select(g => g!.Value)
+                    .ToArray();
+
+                var products = await dictionariesApi.GetProductsByIdsForRecommendations(guids);
+                return Results.Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed to get recently viewed products: {ex.Message}");
             }
         });
 

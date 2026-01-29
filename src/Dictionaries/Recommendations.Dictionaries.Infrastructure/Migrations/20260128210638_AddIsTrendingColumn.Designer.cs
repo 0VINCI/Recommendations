@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Recommendations.Dictionaries.Infrastructure.DAL;
@@ -11,9 +12,11 @@ using Recommendations.Dictionaries.Infrastructure.DAL;
 namespace Recommendations.Dictionaries.Infrastructure.Migrations
 {
     [DbContext(typeof(DictionariesDbContext))]
-    partial class DictionariesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260128210638_AddIsTrendingColumn")]
+    partial class AddIsTrendingColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,11 +114,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                     b.Property<bool>("IsNew")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsOnSale")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<bool>("IsTrending")
                         .HasColumnType("boolean");
 
@@ -129,11 +127,6 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("ProfitBoost")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<decimal>("Rating")
                         .HasColumnType("decimal(3,1)");
@@ -156,13 +149,9 @@ namespace Recommendations.Dictionaries.Infrastructure.Migrations
 
                     b.HasIndex("IsNew");
 
-                    b.HasIndex("IsOnSale");
-
                     b.HasIndex("IsTrending");
 
                     b.HasIndex("Price");
-
-                    b.HasIndex("ProfitBoost");
 
                     b.HasIndex("Rating");
 

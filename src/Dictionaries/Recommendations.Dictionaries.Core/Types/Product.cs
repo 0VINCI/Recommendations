@@ -12,6 +12,9 @@ public sealed class Product
     public int Reviews { get; private set; }
     public bool IsBestseller { get; private set; }
     public bool IsNew { get; private set; }
+    public bool IsTrending { get; private set; }
+    public bool IsOnSale { get; private set; }
+    public bool ProfitBoost { get; private set; }
     
     public Guid SubCategoryId { get; private set; }
     public SubCategory SubCategory { get; private set; } = null!;
@@ -34,6 +37,9 @@ public sealed class Product
         int reviews,
         bool isBestseller,
         bool isNew,
+        bool isTrending,
+        bool isOnSale,
+        bool profitBoost,
         Guid subCategoryId,
         Guid articleTypeId,
         Guid baseColourId)
@@ -59,6 +65,9 @@ public sealed class Product
         Reviews = reviews;
         IsBestseller = isBestseller;
         IsNew = isNew;
+        IsTrending = isTrending;
+        IsOnSale = isOnSale;
+        ProfitBoost = profitBoost;
         SubCategoryId = subCategoryId;
         ArticleTypeId = articleTypeId;
         BaseColourId = baseColourId;
@@ -74,6 +83,9 @@ public sealed class Product
         int reviews,
         bool isBestseller,
         bool isNew,
+        bool isTrending,
+        bool isOnSale,
+        bool profitBoost,
         Guid subCategoryId,
         Guid articleTypeId,
         Guid baseColourId)
@@ -89,6 +101,9 @@ public sealed class Product
             reviews,
             isBestseller,
             isNew,
+            isTrending,
+            isOnSale,
+            profitBoost,
             subCategoryId,
             articleTypeId,
             baseColourId);
@@ -113,6 +128,21 @@ public sealed class Product
     public void MarkAsNew(bool isNew)
     {
         IsNew = isNew;
+    }
+
+    public void MarkAsTrending(bool isTrending)
+    {
+        IsTrending = isTrending;
+    }
+
+    public void MarkAsOnSale(bool isOnSale)
+    {
+        IsOnSale = isOnSale;
+    }
+
+    public void MarkAsProfitBoost(bool profitBoost)
+    {
+        ProfitBoost = profitBoost;
     }
 
     public void UpdatePrice(decimal newPrice, decimal? newOriginalPrice = null)

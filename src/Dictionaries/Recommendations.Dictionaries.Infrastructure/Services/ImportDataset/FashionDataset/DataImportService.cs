@@ -161,12 +161,15 @@ public class DataImportService(DictionariesDbContext context) : IDataImportServi
 
             var isBestseller = GenerateBestsellerStatus(rating, reviews);
             var isNew = GenerateNewStatus(int.TryParse(year, out int y) ? y : 2020);
+            var isTrending = false; 
+            var isOnSale = originalPrice.HasValue && originalPrice.Value > price;
+            var profitBoost = false;
 
             // Product (ExternalId = id z CSV)
             var product = Product.Create(
                 id, productDisplayName, GenerateBrandName(finalArticleType.Name),
                 price, originalPrice,
-                rating, reviews, isBestseller, isNew,
+                rating, reviews, isBestseller, isNew, isTrending, isOnSale, profitBoost,
                 finalSubCategory.Id, finalArticleType.Id, finalBaseColour.Id
             );
             batchProducts.Add(product);

@@ -19,6 +19,9 @@ internal sealed class AddProductHandler(IProductRepository productRepository) : 
             command.ProductDto.Reviews,
             command.ProductDto.IsBestseller,
             command.ProductDto.IsNew,
+            command.ProductDto.IsTrending,
+            command.ProductDto.IsOnSale,
+            command.ProductDto.ProfitBoost,
             command.ProductDto.SubCategoryId,
             command.ProductDto.ArticleTypeId,
             command.ProductDto.BaseColourId);

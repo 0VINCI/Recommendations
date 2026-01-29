@@ -166,6 +166,17 @@ internal sealed class DictionariesModule : ModuleDefinition
             return Results.Ok(products);
         });
 
+        app.MapGet("/products/trending", async (
+            [FromServices] IQueryDispatcher queryDispatcher,
+            int page = 1,
+            int pageSize = 20,
+            CancellationToken cancellationToken = default) =>
+        {
+            var products = await queryDispatcher.QueryAsync(
+                new GetTrendingProducts(Page: page, PageSize: pageSize), cancellationToken);
+            return Results.Ok(products);
+        });
+
         app.MapGet("/products/search", async (
             [FromQuery] string query,
             [FromServices] IQueryDispatcher queryDispatcher,

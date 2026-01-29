@@ -81,4 +81,19 @@ internal sealed class TrackingRepository(TrackingDbContext context) : ITrackingR
             .AsNoTracking()
             .AnyAsync(il => il.AnonymousId == anonymousId && il.UserId == userId, cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<string>> GetRecentlyViewedProductIdsAsync(string userId, int limit = 10, CancellationToken cancellationToken = default)
+    {
+        var productIds = await context.EventsRaw
+            .AsNoTracking()
+            .Where(e => e.UserId == userId && e.Type == "product_viewed" && e.ItemId != null)
+            .OrderByDescending(e => e.Ts)
+            .Select(e => e.ItemId!)
+            .ToListAsync(cancellationToken);
+
+        return productIds
+            .Distinct()
+            .Take(limit)
+            .ToList();
+    }
 }

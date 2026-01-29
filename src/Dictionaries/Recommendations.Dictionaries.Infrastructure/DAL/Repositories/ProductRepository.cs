@@ -76,6 +76,18 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
             .ToListAsync();
     }
 
+    public async Task<IReadOnlyCollection<Product>> GetTrendingProductsAsync()
+    {
+        return await context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .Include(p => p.Details)
+            .Where(p => p.IsTrending)
+            .ToListAsync();
+    }
+
     public async Task<IReadOnlyCollection<Product>> GetByCategoryAsync(string category)
     {
         return await context.Products
@@ -248,6 +260,27 @@ internal sealed class ProductRepository(DictionariesDbContext context) : IProduc
 
         return (products, totalCount);
     }
+
+    public async Task<(IReadOnlyCollection<Product>, int)> GetTrendingProductsPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = context.Products
+            .Include(p => p.SubCategory)
+            .Include(p => p.ArticleType)
+            .Include(p => p.BaseColour)
+            .Include(p => p.Images)
+            .Include(p => p.Details)
+            .AsNoTracking()
+            .Where(p => p.IsTrending);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var products = await query.OrderByDescending(p => p.ProductDisplayName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (products, totalCount);
+    }
+
     public async Task<(IReadOnlyCollection<Product> Products, int TotalCount)> SearchPagedAsync(
         string searchTerm,
         int page,
