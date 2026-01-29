@@ -6,6 +6,7 @@ import { Loader } from "../components/common/Loader";
 import { getMyOrders } from "../api/purchaseService";
 import type { OrderItem } from "../types/purchase/OrderItem";
 import { getProductById } from "../api/productService";
+import { OrdersRecommendations } from "../components/OrdersRecommendations";
 
 export function OrdersPage() {
   const { state, dispatch } = useApp();
@@ -173,6 +174,9 @@ export function OrdersPage() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
           Moje zamówienia ({userOrders.length})
         </h1>
+
+        <OrdersRecommendations />
+
         <div className="space-y-6">
           {userOrders.map((order) => {
             const total = order.items.reduce(

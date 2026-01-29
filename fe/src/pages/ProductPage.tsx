@@ -15,6 +15,8 @@ import { useRecommendations } from "../hooks/useRecommendations";
 import { useApp } from "../context/useApp";
 import { Loader } from "../components/common/Loader";
 import { SimilarProducts } from "../components/SimilarProducts";
+import { VisualSimilarProducts } from "../components/VisualSimilarProducts";
+import { AlsoBoughtProducts } from "../components/AlsoBoughtProducts";
 import { useTracking } from "../hooks/useTracking";
 
 function parseProductDescription(description: string) {
@@ -631,9 +633,25 @@ export function ProductPage() {
           </div>
         </div>
 
-        {/* Similar Products */}
+        {/* Similar Products - Content-Based */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SimilarProducts
+            productId={product.id}
+            currentProductName={product.productDisplayName}
+          />
+        </div>
+
+        {/* Visual Similar Products - Visual-Based */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VisualSimilarProducts
+            productId={product.id}
+            currentProductName={product.productDisplayName}
+          />
+        </div>
+
+        {/* Also Bought Products - CF item-to-item */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AlsoBoughtProducts
             productId={product.id}
             currentProductName={product.productDisplayName}
           />

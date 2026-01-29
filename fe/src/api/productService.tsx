@@ -114,6 +114,15 @@ export const getNewProducts = async (
   );
 };
 
+export const getTrendingProducts = async (
+  params: GetProductsRequest
+): Promise<ApiResult<GetProductsResponse>> => {
+  const query = toQueryString(params).toString();
+  return await get<GetProductsResponse>(
+    `${modulePrefix}/products/trending?${query}`
+  );
+};
+
 export const getMasterCategories = async (): Promise<
   ApiResult<MasterCategoriesResponse>
 > => {

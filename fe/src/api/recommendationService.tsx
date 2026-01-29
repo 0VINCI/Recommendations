@@ -133,3 +133,121 @@ export const getRecommendationsForUser = async (
     };
   }
 };
+
+// Visual-Based: podobne wizualnie produkty
+export const getVisualSimilarProducts = async (
+  productId: string,
+  topCount: number = 8
+): Promise<ApiResult<ProductDto[]>> => {
+  try {
+    const response = await get<ProductDto[]>(
+      `${visualPrefix}/similar-items/${productId}/products?topCount=${topCount}`
+    );
+
+    if (response.status === 404) {
+      return {
+        status: 404,
+        message: "Brak podobnych wizualnie produktów",
+      };
+    }
+
+    return response;
+  } catch {
+    return {
+      status: 500,
+      message: "Błąd podczas pobierania podobnych wizualnie produktów",
+    };
+  }
+};
+
+// CF item-to-item: klienci kupili również
+export const getCfSimilarProducts = async (
+  productId: string,
+  topCount: number = 8
+): Promise<ApiResult<ProductDto[]>> => {
+  try {
+    const response = await get<ProductDto[]>(
+      `${trackingPrefix}/cf/similar-items/${productId}/products?topCount=${topCount}`
+    );
+
+    if (response.status === 404) {
+      return {
+        status: 404,
+        message: "Brak danych o zakupach innych klientów",
+      };
+    }
+
+    return response;
+  } catch {
+    return {
+      status: 500,
+      message: "Błąd podczas pobierania rekomendacji",
+    };
+  }
+};
+
+// Ostatnio oglądane produkty
+export const getRecentlyViewedProducts = async (
+  userId: string,
+  limit: number = 8
+): Promise<ApiResult<ProductDto[]>> => {
+  try {
+    const response = await get<ProductDto[]>(
+      `${trackingPrefix}/recently-viewed/${userId}/products?limit=${limit}`
+    );
+
+    if (response.status === 404) {
+      return {
+        status: 404,
+        message: "Brak ostatnio oglądanych produktów",
+      };
+    }
+
+    return response;
+  } catch {
+    return {
+      status: 500,
+      message: "Błąd podczas pobierania ostatnio oglądanych produktów",
+    };
+  }
+};
+
+// Rekomendacje dla koszyka - CF item-to-item dla wielu produktów
+export const getCartRecommendations = async (
+  productIds: string[],
+  topCount: number = 8
+): Promise<ApiResult<ProductDto[]>> => {
+  if (productIds.length === 0) {
+    return { status: 200, data: [], message: "Empty cart" };
+  }
+
+  try {
+    // Pobierz rekomendacje dla każdego produktu z koszyka
+    const allRecommendations: ProductDto[] = [];
+    const seenIds = new Set(productIds); // Nie pokazuj produktów już w koszyku
+
+    for (const productId of productIds.slice(0, 3)) { // Limit do 3 produktów żeby nie przeciążać
+      const response = await getCfSimilarProducts(productId, 4);
+      if (response.status === 200 && response.data) {
+        for (const product of response.data) {
+          if (!seenIds.has(String(product.id))) {
+            seenIds.add(String(product.id));
+            allRecommendations.push(product);
+          }
+        }
+      }
+    }
+
+    // Ogranicz do topCount
+    return {
+      status: 200,
+      data: allRecommendations.slice(0, topCount),
+      message: "Success",
+    };
+  } catch {
+    return {
+      status: 500,
+      message: "Błąd podczas pobierania rekomendacji dla koszyka",
+    };
+  }
+};

@@ -6,6 +6,9 @@ import { useProducts } from "../hooks/useProducts";
 import { useEffect } from "react";
 import { Loader } from "../components/common/Loader";
 import { RotatingBanners } from "../components/common/RotatingBanners";
+import { RecentlyViewedSection } from "../components/RecentlyViewedSection";
+import { TrendingSection } from "../components/TrendingSection";
+import { TopRatedSection } from "../components/TopRatedSection";
 
 export function HomePage() {
   const {
@@ -27,7 +30,6 @@ export function HomePage() {
     getNewProducts(1, 20);
   }, []);
 
-  const featuredProducts = products?.slice(0, 8) || [];
 
   if (bestsellersLoading || newProductsLoading) {
     return (
@@ -44,6 +46,12 @@ export function HomePage() {
 
       {/* Personalized Recommendations (CF user-to-item) - only for logged in users */}
       <ForYouSection />
+
+      {/* Trending Products - only for non-logged users (logged users see ForYouSection) */}
+      <TrendingSection />
+
+      {/* Recently Viewed - only for logged in users */}
+      <RecentlyViewedSection />
 
       {/* Bestsellers Section */}
       <section className="py-20 bg-white dark:bg-gray-800">
@@ -121,24 +129,8 @@ export function HomePage() {
           )}
         </div>
       </section>
-      {/* Featured Products */}
-      <section className="py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Polecane Produkty
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Wyselekcjonowane przez nas produkty, które pokochasz
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Top Rated Products */}
+      <TopRatedSection />
       {/* Special Offers */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

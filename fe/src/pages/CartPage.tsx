@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { getUserCartDb } from "../api/cartService";
 import { getProductById } from "../api/productService";
 import type { CartItemDbResponse } from "../types/cart/CartApi";
+import { CartRecommendations } from "../components/CartRecommendations";
 
 export function CartPage() {
   const { state, dispatch } = useApp();
@@ -234,6 +235,8 @@ export function CartPage() {
             </div>
           </div>
         </div>
+
+        <CartRecommendations />
       </div>
     </div>
   );
