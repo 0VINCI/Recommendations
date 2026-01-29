@@ -12,7 +12,6 @@ import { TopRatedSection } from "../components/TopRatedSection";
 
 export function HomePage() {
   const {
-    products,
     bestsellers,
     bestsellersLoading,
     bestsellersError,
